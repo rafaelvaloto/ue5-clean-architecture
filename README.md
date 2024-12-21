@@ -1,4 +1,10 @@
-﻿- Source
+# Basic clean architecture UE-5.x
+
+This project is a eu-5 c++ application with a basic principle of a clean architecture-based structure, with separation of components and their responsibilities using use cases.
+
+## Estrutura do Projeto
+
+- Source
   - Project
       - Interfaces
           - PlayerCharacter ``` -- Interfaces dos components de PlayerCharacter ```
