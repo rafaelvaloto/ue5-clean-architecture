@@ -45,7 +45,7 @@ void ABallStaticMeshActor::Tick(float DeltaTime)
 	if (Spline)
 	{
 		FVector Trajectory = FVector(GetActorLocation().X * 2, GetActorLocation().Y * 2, 0.f);
-		UTrajectoryRuntimeDrawUseCase::HandleTrajectoryRuntimeDraw(Spline, Trajectory, DeltaTime);
+		UTrajectoryRuntimeDrawUseCase::Handle(Spline, Trajectory, DeltaTime);
 	}
 }
 

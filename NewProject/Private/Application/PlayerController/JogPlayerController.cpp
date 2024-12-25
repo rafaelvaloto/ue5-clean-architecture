@@ -65,5 +65,5 @@ void AJogPlayerController::Move(const FInputActionValue& InputController)
 	}
 
 	FVector InputVector = InputController.Get<FVector>();
-	UMovementCharacterUseCase::HandleCharacterMovement(PlayerCharacter->MovementPlayerCharacter, InputVector);
+	UMovementCharacterUseCase::Handle(PlayerCharacter->MovementPlayerCharacter, InputVector);
 }

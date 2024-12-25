@@ -9,7 +9,7 @@ UTrajectoryRuntimeDrawUseCase::UTrajectoryRuntimeDrawUseCase()
 	//
 }
 
-void UTrajectoryRuntimeDrawUseCase::HandleTrajectoryRuntimeDraw
+void UTrajectoryRuntimeDrawUseCase::Handle
 (
 	TScriptInterface<ISplineDrawComponentInterface> SplineBallComponentInterface,
 	const FVector& Input,

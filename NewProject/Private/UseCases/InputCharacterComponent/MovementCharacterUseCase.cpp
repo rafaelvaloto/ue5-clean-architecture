@@ -9,7 +9,7 @@ UMovementCharacterUseCase::UMovementCharacterUseCase()
 	// Default values
 }
 
-void UMovementCharacterUseCase::HandleCharacterMovement(TScriptInterface<IInputCharacterInterface> MovementComponent, FVector InputController)
+void UMovementCharacterUseCase::Handle(TScriptInterface<IInputCharacterInterface> MovementComponent, FVector InputController)
 {
 	// Chama o component e aplica movimentação ao Character
 	MovementComponent->Move(InputController);

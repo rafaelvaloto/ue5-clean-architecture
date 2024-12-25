@@ -18,7 +18,7 @@ class NEWPROJECT_API UTrajectoryRuntimeDrawUseCase : public UObject
 public:
 	UTrajectoryRuntimeDrawUseCase();
 
-	static void HandleTrajectoryRuntimeDraw
+	static void Handle
 	(
 		TScriptInterface<ISplineDrawComponentInterface> SplineBallComponentInterface,
 		const FVector& Input,
