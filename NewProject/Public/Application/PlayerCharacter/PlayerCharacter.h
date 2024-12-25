@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
-#include "Components/PlayerCharacter/MovementCharacterComponent.h"
+#include "Components/Character/InputCharacterComponent.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "PlayerCharacter.generated.h"
 
+
 UCLASS()
-class NEWPROJECT_API APlayerCharacter : public APawn
+class NEWPROJECT_API APlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -28,9 +30,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "IMovementComponent")
-	UMovementCharacterComponent* MovementPlayerCharacter;
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ICustomMovementComponent")
+	UInputCharacterComponent* MovementPlayerCharacter;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* CameraComponent;
 

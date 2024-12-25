@@ -3,7 +3,7 @@
 
 #include "Application/PlayerController/JogPlayerController.h"
 #include "Application/PlayerCharacter/PlayerCharacter.h"
-#include "UseCases/PlayerCharacter/MovementCharacterUseCase.h"
+#include "NewProject/Public/UseCases/InputCharacterComponent/MovementCharacterUseCase.h"
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"

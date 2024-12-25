@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "NewProject/Interfaces/PlayerCharacter/MovementCharacterInterface.h"
+#include "NewProject/Interfaces/CharacterComponents/InputCharacterInterface.h"
 #include "MovementCharacterUseCase.generated.h"
 
 /**
@@ -18,5 +18,5 @@ class NEWPROJECT_API UMovementCharacterUseCase : public UObject
 public:
 	UMovementCharacterUseCase();
 
-	static void HandleCharacterMovement(TScriptInterface<IMovementCharacterInterface> MovementComponent, FVector InputController);
+	static void HandleCharacterMovement(TScriptInterface<IInputCharacterInterface> MovementComponent, FVector InputController);
 };

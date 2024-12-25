@@ -1,15 +1,15 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UseCases/PlayerCharacter/MovementCharacterUseCase.h"
-#include "Components/PlayerCharacter/MovementCharacterComponent.h"
+#include "NewProject/Public/UseCases/InputCharacterComponent/MovementCharacterUseCase.h"
+#include "Components/Character/InputCharacterComponent.h"
 
 UMovementCharacterUseCase::UMovementCharacterUseCase()
 {
 	// Default values
 }
 
-void UMovementCharacterUseCase::HandleCharacterMovement(TScriptInterface<IMovementCharacterInterface> MovementComponent, FVector InputController)
+void UMovementCharacterUseCase::HandleCharacterMovement(TScriptInterface<IInputCharacterInterface> MovementComponent, FVector InputController)
 {
 	// Chama o component e aplica movimentação ao Character
 	MovementComponent->Move(InputController);

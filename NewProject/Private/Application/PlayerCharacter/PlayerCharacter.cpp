@@ -3,6 +3,8 @@
 
 #include "Application/PlayerCharacter/PlayerCharacter.h"
 
+#include "Components/Character/InputCharacterComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -10,19 +12,27 @@ APlayerCharacter::APlayerCharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// Inicialize o componente de movimentação
-	MovementPlayerCharacter = CreateDefaultSubobject<UMovementCharacterComponent>(TEXT("IMovementComponent"));
-
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	RootComponent = SpringArmComponent;
+	SpringArmComponent->SetupAttachment(RootComponent);
 	
 	SpringArmComponent->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
-	SpringArmComponent->TargetArmLength = 300.f;
+	SpringArmComponent->TargetArmLength = 1200.f;
 	SpringArmComponent->bUsePawnControlRotation = true;
 
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
-	
+	CameraComponent->bUsePawnControlRotation = false;
+
+	CameraComponent->AddLocalOffset(FVector(-400.f, 0.f, 550.f));
+	CameraComponent->AddRelativeRotation(FRotator(-40.f, 0.f, 0.f));
+
+	// Inicialize o componente de movimentação
+	MovementPlayerCharacter = CreateDefaultSubobject<UInputCharacterComponent>(TEXT("ICustomMovementComponent"));
+	MovementPlayerCharacter->RegisterComponent();
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+	GetCharacterMovement()->bIgnoreBaseRotation = true;
 }
 
 // Called when the game starts or when spawned

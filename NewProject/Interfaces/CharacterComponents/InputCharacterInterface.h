@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "MovementCharacterInterface.generated.h"
+#include "InputCharacterInterface.generated.h"
 
 
 
 // This class does not need to be modified.
 UINTERFACE()
-class UMovementCharacterInterface : public UInterface
+class UInputCharacterInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -18,10 +18,9 @@ class UMovementCharacterInterface : public UInterface
 /**
  * 
  */
-class NEWPROJECT_API IMovementCharacterInterface
+class NEWPROJECT_API IInputCharacterInterface
 {
 	GENERATED_BODY()
-
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual void Move(FVector InputController) = 0;
