@@ -1,5 +1,4 @@
-﻿**README_EN.md:**
-# Basic clean architecture UE-5.x
+﻿# Basic clean architecture UE-5.x
 This project is a UE-5 C++ application with a basic principle of a clean architecture-based structure, with separation of components and their responsibilities using use cases.
 
 In the Example structure below we are creating a basic movement component for our Character, separating the responsibilities into layers and decoupling the component, which can be reused in any other part of the system through use cases.
