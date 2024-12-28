@@ -14,14 +14,14 @@ AJogPlayerController::AJogPlayerController()
 	PrimaryActorTick.bCanEverTick = true;
 
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContext(
-		TEXT("/Game/ThirdPerson/Input/IMC_Default.IMC_Default"));
+		TEXT("/Game/Input/IMC_GDCMotionMatching.IMC_GDCMotionMatching"));
 	if (InputMappingContext.Succeeded())
 	{
 		IMC_Default = InputMappingContext.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionMoveAsset(
-		TEXT("/Script/EnhancedInput.InputAction'/Game/ThirdPerson/Input/Actions/IA_Move.IA_Move'"));
+		TEXT("/Game/Input/IA_Move.IA_Move"));
 	if (InputActionMoveAsset.Succeeded())
 	{
 		IA_Move = InputActionMoveAsset.Object;
@@ -57,6 +57,7 @@ void AJogPlayerController::SetupInputComponent()
 
 void AJogPlayerController::Move(const FInputActionValue& InputController)
 {
+	
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (!PlayerCharacter)
 	{

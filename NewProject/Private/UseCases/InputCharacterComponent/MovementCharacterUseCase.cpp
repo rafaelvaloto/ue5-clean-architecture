@@ -4,12 +4,12 @@
 #include "NewProject/Public/UseCases/InputCharacterComponent/MovementCharacterUseCase.h"
 #include "Components/Character/InputCharacterComponent.h"
 
-UMovementCharacterUseCase::UMovementCharacterUseCase()
-{
-	// Default values
-}
 
-void UMovementCharacterUseCase::Handle(TScriptInterface<IInputCharacterInterface> MovementComponent, FVector InputController)
+void UMovementCharacterUseCase::Handle
+(
+	const TScriptInterface<IInputCharacterInterface>& MovementComponent,
+	const FVector& InputController
+)
 {
 	// Chama o component e aplica movimentação ao Character
 	MovementComponent->Move(InputController);

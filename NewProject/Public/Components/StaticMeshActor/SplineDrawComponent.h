@@ -22,7 +22,7 @@ public:
 	virtual void AddSplinePointFunction() override;
 	virtual float GetDistance() override;
 	virtual float GetCurrentDistance() override;
-	virtual float GetCuurentVelocity() override;
+	virtual float GetCurrentVelocity() override;
 	virtual float CalculateSplineLength(FVector TrajectoryEnd) override;
 
 	float CurrentDistance = 0.0f;

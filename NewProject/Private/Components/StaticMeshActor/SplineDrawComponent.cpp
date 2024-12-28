@@ -66,7 +66,7 @@ float USplineDrawComponent::GetCurrentDistance()
 	return CurrentDistance;
 }
 
-float USplineDrawComponent::GetCuurentVelocity()
+float USplineDrawComponent::GetCurrentVelocity()
 {
 	return GetOwner()->GetVelocity().Size2D();
 }

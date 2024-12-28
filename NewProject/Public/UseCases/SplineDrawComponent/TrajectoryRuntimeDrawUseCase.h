@@ -20,7 +20,7 @@ public:
 
 	static void Handle
 	(
-		TScriptInterface<ISplineDrawComponentInterface> SplineBallComponentInterface,
+		const TScriptInterface<ISplineDrawComponentInterface>& SplineBallComponentInterface,
 		const FVector& Input,
 		float DeltaTime
 	);

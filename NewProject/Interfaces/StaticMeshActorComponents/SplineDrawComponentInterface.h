@@ -30,6 +30,6 @@ public:
 	
 	virtual float GetDistance() = 0;
 	virtual float GetCurrentDistance() = 0;
-	virtual float GetCuurentVelocity() = 0;
+	virtual float GetCurrentVelocity() = 0;
 	virtual float CalculateSplineLength(FVector TrajectoryEnd) = 0;
 };

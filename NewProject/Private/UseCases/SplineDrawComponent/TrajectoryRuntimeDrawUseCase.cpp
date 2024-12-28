@@ -11,17 +11,19 @@ UTrajectoryRuntimeDrawUseCase::UTrajectoryRuntimeDrawUseCase()
 
 void UTrajectoryRuntimeDrawUseCase::Handle
 (
-	TScriptInterface<ISplineDrawComponentInterface> SplineBallComponentInterface,
+	const TScriptInterface<ISplineDrawComponentInterface>& SplineBallComponentInterface,
 	const FVector& Input,
-	float DeltaTime
+	const float DeltaTime
 )
 {
-	float Distance = SplineBallComponentInterface->GetDistance();
-	if (Distance > 0.0f)
+	if (
+		const float Distance = SplineBallComponentInterface->GetDistance();
+		Distance > 0.0f
+	)
 	{
-		float DistanceAt = SplineBallComponentInterface->GetCurrentDistance();
-		float VelocityAt = SplineBallComponentInterface->GetCuurentVelocity();
-		float CurrentDistance = DistanceAt + (VelocityAt * DeltaTime);
+		const float DistanceAt = SplineBallComponentInterface->GetCurrentDistance();
+		const float VelocityAt = SplineBallComponentInterface->GetCurrentVelocity();
+		const float CurrentDistance = DistanceAt + (VelocityAt * DeltaTime);
 
 		SplineBallComponentInterface->SetCurrentDistance(CurrentDistance);
 		if (CurrentDistance > Distance)
@@ -34,11 +36,11 @@ void UTrajectoryRuntimeDrawUseCase::Handle
 		return;
 	}
 
-	float Average = SplineBallComponentInterface->CalculateSplineLength(Input);
+	const float Average = SplineBallComponentInterface->CalculateSplineLength(Input);
 	SplineBallComponentInterface->SetDistance(Average * 1.4f);
 	SplineBallComponentInterface->AddSplinePointFunction();
 
 	// Input * Force 
-	FVector LinearVelocity = Input.GetSafeNormal() * 200.0f;
+	const FVector LinearVelocity = Input.GetSafeNormal() * 200.0f;
 	SplineBallComponentInterface->SetComponentVelocity(LinearVelocity);
 }

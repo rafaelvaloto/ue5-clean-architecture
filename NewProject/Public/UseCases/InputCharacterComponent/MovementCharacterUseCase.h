@@ -16,7 +16,5 @@ class NEWPROJECT_API UMovementCharacterUseCase : public UObject
 	GENERATED_BODY()
 
 public:
-	UMovementCharacterUseCase();
-
-	static void Handle(TScriptInterface<IInputCharacterInterface> MovementComponent, FVector InputController);
+	static void Handle(const TScriptInterface<IInputCharacterInterface>& MovementComponent, const FVector& InputController);
 };

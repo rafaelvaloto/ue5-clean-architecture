@@ -48,9 +48,3 @@ void ABallStaticMeshActor::Tick(float DeltaTime)
 		UTrajectoryRuntimeDrawUseCase::Handle(Spline, Trajectory, DeltaTime);
 	}
 }
-
-void ABallStaticMeshActor::AddLinearVelocity(const FVector& LinearVelocity)
-{
-	GetStaticMeshComponent()->SetPhysicsLinearVelocity(LinearVelocity);
-}
-
