@@ -5,8 +5,10 @@
 #include "Components/Character/InputCharacterComponent.h"
 #include "Components/Character/UpdateAttributesCharacterComponent.h"
 #include "Components/Character/UpdateStateCharacterComponent.h"
+#include "Components/Character/UpdateTrajectoryCharacterComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "NewProject/Public/UseCases/UpdateAttributesCharacterComponent/UpdateAttributesCharacterComponentUseCase.h"
+#include "UseCases/CharacterTrajectoryComponent/CharacterTrajectoryComponentUseCase.h"
 #include "UseCases/UpdateStateCharacterComponent/UpdateStateCharacterComponentUseCase.h"
 
 // Sets default values
@@ -21,26 +23,45 @@ APlayerCharacter::APlayerCharacter()
 	SetupCameraComponents();
 	SetupAnimInstanceBlueprint();
 
+	bUseControllerRotationYaw = false;
+	
 	// Configs GetCharacterMovement()
-	GetCharacterMovement()->bIgnoreBaseRotation = false;
+	GetCharacterMovement()->bIgnoreBaseRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+
+	GetCharacterMovement()->MaxWalkSpeed = 201.f;
+	GetCharacterMovement()->MaxAcceleration = 200.f;
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	SelectChoose = true;
 }
 
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
+	if (UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Running)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 600.f;
+	}
+
+	if (UpdateStateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Running)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 201.f;
+	}
+
+	// Update Persistent Attrs Character, Velocity, Location etc..
 	UUpdateAttributesCharacterComponentUseCase::Handle(UpdatedBaseAttributesComponent, this);
+
+	// Update Character Trajectory Component
+	UCharacterTrajectoryComponentUseCase::Handle(TrajectoryComponent, UpdatedBaseAttributesComponent, DeltaTime);
+
+	// Update Machine State Character, Idle, Walk etc..
 	UUpdateStateCharacterComponentUseCase::Handle(UpdateStateCharacterComponent, UpdatedBaseAttributesComponent);
 }
 
@@ -53,7 +74,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void APlayerCharacter::SetupComponents()
 {
 	// UCharacterTrajectoryComponent Component Plugin
-	TrajectoryComponent = CreateDefaultSubobject<UCharacterTrajectoryComponent>(TEXT("TrajectoryComponent"));
+	TrajectoryComponent = CreateDefaultSubobject<UUpdateTrajectoryCharacterComponent>(TEXT("TrajectoryComponent"));
 	TrajectoryComponent->RegisterComponent();
 
 	// Inicializa o componente que recebe a entrada do controle e insere a movimentação no Character

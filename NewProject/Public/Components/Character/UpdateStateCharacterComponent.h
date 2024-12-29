@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "NewProject/Enums/CharacterStates/PlayerCharacterStateEnum.h"
 #include "NewProject/Interfaces/CharacterComponents/UpdateStateCharacterComponentInterface.h"
 #include "UpdateStateCharacterComponent.generated.h"
 
@@ -22,15 +23,15 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "State Machine")
-	EPlayerCharacterState CurrentState = EPlayerCharacterState::Idle;
+	EPlayerCharacterStateEnum CurrentState = EPlayerCharacterStateEnum::Idle;
 
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
-	virtual void SetCurrentState(EPlayerCharacterState State) override;
-	virtual EPlayerCharacterState GetState() override;
+	virtual void SetCurrentState(EPlayerCharacterStateEnum State) override;
+	virtual EPlayerCharacterStateEnum GetState() override;
 
-	static FText GetStateDisplayName(EPlayerCharacterState State);
+	static FText GetStateDisplayName(EPlayerCharacterStateEnum State);
 };

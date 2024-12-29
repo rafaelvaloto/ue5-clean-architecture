@@ -9,7 +9,6 @@ UUpdateAttributesCharacterComponent::UUpdateAttributesCharacterComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 	// ...
 }
 
@@ -18,7 +17,6 @@ UUpdateAttributesCharacterComponent::UUpdateAttributesCharacterComponent()
 void UUpdateAttributesCharacterComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	// ...
 }
 
@@ -31,6 +29,10 @@ void UUpdateAttributesCharacterComponent::TickComponent(float DeltaTime, ELevelT
 	// ...
 }
 
+void UUpdateAttributesCharacterComponent::SetLocationCurrent(const FVector LocationAt)
+{
+}
+
 void UUpdateAttributesCharacterComponent::SetVelocityCurrent(const FVector VelocityAt)
 {
 	CurrentVelocity = VelocityAt;
@@ -39,6 +41,11 @@ void UUpdateAttributesCharacterComponent::SetVelocityCurrent(const FVector Veloc
 FVector UUpdateAttributesCharacterComponent::GetVelocityCurrent()
 {
 	return CurrentVelocity;
+}
+
+FVector UUpdateAttributesCharacterComponent::GetLocationCurrent()
+{
+	return CurrentLocation;
 }
 
 float UUpdateAttributesCharacterComponent::GetVelocitySize()

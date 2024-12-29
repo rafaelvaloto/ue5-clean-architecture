@@ -14,30 +14,29 @@ void UUpdateStateCharacterComponentUseCase::Handle
 	
 	if (
 		VelocityCurrent > 0.0f &&
-		VelocityCurrent <= 100.0f
+		VelocityCurrent < 201.0f
 	)
 	{
-		if (ComponentState->GetState() != EPlayerCharacterState::Walking)
+		if (ComponentState->GetState() != EPlayerCharacterStateEnum::Walking)
 		{
-			ComponentState->SetCurrentState(EPlayerCharacterState::Walking);
+			ComponentState->SetCurrentState(EPlayerCharacterStateEnum::Walking);
 		}
 		return;
 	}
 
 	if (
-		VelocityCurrent > 0.0f &&
-		VelocityCurrent > 100.0f
+		VelocityCurrent > 200.0f
 	)
 	{
-		if (ComponentState->GetState() != EPlayerCharacterState::Running)
+		if (ComponentState->GetState() != EPlayerCharacterStateEnum::Running)
 		{
-			ComponentState->SetCurrentState(EPlayerCharacterState::Running);
+			ComponentState->SetCurrentState(EPlayerCharacterStateEnum::Running);
 		}
 		return;
 	}
 
-	if (ComponentState->GetState() != EPlayerCharacterState::Idle)
+	if (ComponentState->GetState() != EPlayerCharacterStateEnum::Idle)
 	{
-		ComponentState->SetCurrentState(EPlayerCharacterState::Idle);
+		ComponentState->SetCurrentState(EPlayerCharacterStateEnum::Idle);
 	}
 }

@@ -22,8 +22,12 @@ class NEWPROJECT_API IUpdateAttributesCharacterComponentInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	virtual void SetLocationCurrent(FVector VelocityAt) = 0;
 	virtual void SetVelocityCurrent(FVector VelocityAt) = 0;
+
 	virtual FVector GetVelocityCurrent() = 0;
+	virtual FVector GetLocationCurrent() = 0;
+	
 	virtual float GetVelocitySize() = 0;
 	virtual float GetVelocitySize2D() = 0;
 };

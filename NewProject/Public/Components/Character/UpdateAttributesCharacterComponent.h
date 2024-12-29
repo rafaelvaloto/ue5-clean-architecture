@@ -26,12 +26,17 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
+	virtual void SetLocationCurrent(const FVector LocationAt) override;
 	virtual void SetVelocityCurrent(const FVector VelocityAt) override;
 	virtual FVector GetVelocityCurrent() override;
+	virtual FVector GetLocationCurrent() override;
 
 	virtual float GetVelocitySize() override;
 	virtual float GetVelocitySize2D() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Velocity")
 	FVector CurrentVelocity = FVector::ZeroVector;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Location")
+	FVector CurrentLocation = FVector::ZeroVector;
 };

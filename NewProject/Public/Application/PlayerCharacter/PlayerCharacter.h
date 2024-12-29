@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CharacterTrajectoryComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/Character/InputCharacterComponent.h"
 #include "Components/Character/UpdateAttributesCharacterComponent.h"
 #include "Components/Character/UpdateStateCharacterComponent.h"
+#include "Components/Character/UpdateTrajectoryCharacterComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "PlayerCharacter.generated.h"
@@ -58,9 +58,5 @@ public:
 	UUpdateStateCharacterComponent* UpdateStateCharacterComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "TrajectoryComponent")
-	UCharacterTrajectoryComponent* TrajectoryComponent;
-
-	// Init Section Variables
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Variables Chooser")
-	bool SelectChoose;
+	UUpdateTrajectoryCharacterComponent* TrajectoryComponent;
 };

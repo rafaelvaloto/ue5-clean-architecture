@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NewProject/Enums/CharacterStates/PlayerCharacterState.h"
+#include "NewProject/Enums/CharacterStates/PlayerCharacterStateEnum.h"
 #include "UObject/Interface.h"
 #include "UpdateStateCharacterComponentInterface.generated.h"
 
@@ -23,6 +23,6 @@ class NEWPROJECT_API IUpdateStateCharacterComponentInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void SetCurrentState(EPlayerCharacterState State) = 0;
-	virtual EPlayerCharacterState GetState() = 0;
+	virtual void SetCurrentState(EPlayerCharacterStateEnum State) = 0;
+	virtual EPlayerCharacterStateEnum GetState() = 0;
 };

@@ -30,37 +30,36 @@ void UUpdateStateCharacterComponent::TickComponent(float DeltaTime, ELevelTick T
                                                    FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	// ...
 }
 
-void UUpdateStateCharacterComponent::SetCurrentState(EPlayerCharacterState State)
+void UUpdateStateCharacterComponent::SetCurrentState(EPlayerCharacterStateEnum State)
 {
 	UE_LOG(LogTemp, Warning, TEXT("State[%d]:  %s"), State, *GetStateDisplayName(State).ToString());
 
 	CurrentState = State;
 }
 
-EPlayerCharacterState UUpdateStateCharacterComponent::GetState()
+EPlayerCharacterStateEnum UUpdateStateCharacterComponent::GetState()
 {
 	AActor *Actor = GetOwner();
 	if (!Actor)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Actor not found in UUpdateStateCharacterComponent::GetState"));
-		return EPlayerCharacterState::Idle;
+		return EPlayerCharacterStateEnum::Idle;
 	}
 	
 	return CurrentState;
 }
 
-FText UUpdateStateCharacterComponent::GetStateDisplayName(EPlayerCharacterState State)
+FText UUpdateStateCharacterComponent::GetStateDisplayName(EPlayerCharacterStateEnum State)
 {
-	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EPlayerCharacterState"), true);
+	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EPlayerCharacterStateEnum"), true);
 	if (!EnumPtr)
 	{
 		return FText::FromString("Invalid State");
 	}
 
 	// Retorna o DisplayName como FText
-	return EnumPtr->GetDisplayNameTextByValue(static_cast<int64>(State));
+	return EnumPtr->GetDisplayNameTextByValue(static_cast<uint8>(State));
 }

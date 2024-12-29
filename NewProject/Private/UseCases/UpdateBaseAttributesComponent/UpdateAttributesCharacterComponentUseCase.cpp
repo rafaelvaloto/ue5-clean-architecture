@@ -9,4 +9,5 @@ void UUpdateAttributesCharacterComponentUseCase::Handle(
 )
 {
 	Component->SetVelocityCurrent(Actor->GetVelocity());
+	Component->SetLocationCurrent(Actor->GetActorLocation());
 }
