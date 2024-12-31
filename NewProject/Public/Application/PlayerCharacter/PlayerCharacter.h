@@ -8,6 +8,7 @@
 #include "Components/Character/UpdateAttributesCharacterComponent.h"
 #include "Components/Character/UpdateStateCharacterComponent.h"
 #include "Components/Character/UpdateTrajectoryCharacterComponent.h"
+#include "Components/MotionMatchHelpers/SelectorPoseSearchDatabaseComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "PlayerCharacter.generated.h"
@@ -51,11 +52,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ICustomMovementComponent")
 	UInputCharacterComponent* MovementPlayerCharacter;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IUpdatedBaseAttributesComponentInterface")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IUpdatedBaseAttributesComponent")
 	UUpdateAttributesCharacterComponent* UpdatedBaseAttributesComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "IUUpdateStateCharacterComponent")
 	UUpdateStateCharacterComponent* UpdateStateCharacterComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "ISelectorPoseSearchDatabaseComponent")
+	USelectorPoseSearchDatabaseComponent* SelectorPoseSearchDatabaseComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "TrajectoryComponent")
 	UUpdateTrajectoryCharacterComponent* TrajectoryComponent;

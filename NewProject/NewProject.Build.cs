@@ -11,14 +11,14 @@ public class NewProject : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
 			"Core",
-			"CoreUObject",
 			"Engine",
+			"CoreUObject",
+			"InputCore",
 			"InputCore",
 			"EnhancedInput",
-			"Chooser",
 			"PoseSearch",
-			"MotionTrajectory",
-			"MotionWarping"
+			"MotionWarping",
+			"MotionTrajectory"
 		});
 
 		// PrivateDependencyModuleNames.AddRange(new string[] {  });

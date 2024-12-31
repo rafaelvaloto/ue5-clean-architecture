@@ -6,10 +6,13 @@
 #include "Components/Character/UpdateAttributesCharacterComponent.h"
 #include "Components/Character/UpdateStateCharacterComponent.h"
 #include "Components/Character/UpdateTrajectoryCharacterComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "NewProject/Public/UseCases/UpdateAttributesCharacterComponent/UpdateAttributesCharacterComponentUseCase.h"
+#include "Components/MotionMatchHelpers/SelectorPoseSearchDatabaseComponent.h"
 #include "UseCases/CharacterTrajectoryComponent/CharacterTrajectoryComponentUseCase.h"
 #include "UseCases/UpdateStateCharacterComponent/UpdateStateCharacterComponentUseCase.h"
+#include "UseCases/SelectorPoseSearchDatabaseComponent/UpdateNodePoseSearchDatabaseUseCase.h"
+#include "UseCases/UpdateAttributesCharacterComponent/UpdateAttributesCharacterComponentUseCase.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -24,7 +27,7 @@ APlayerCharacter::APlayerCharacter()
 	SetupAnimInstanceBlueprint();
 
 	bUseControllerRotationYaw = false;
-	
+
 	// Configs GetCharacterMovement()
 	GetCharacterMovement()->bIgnoreBaseRotation = true;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -38,6 +41,12 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (SelectorPoseSearchDatabaseComponent)
+	{
+		// Update Machine State Character, Idle, Walk etc..
+		UUpdateNodePoseSearchDatabaseUseCase::Handle(SelectorPoseSearchDatabaseComponent);
+	}
 }
 
 // Called every frame
@@ -90,6 +99,11 @@ void APlayerCharacter::SetupComponents()
 	UpdateStateCharacterComponent = CreateDefaultSubobject<UUpdateStateCharacterComponent>(
 		TEXT("IUpdateStateCharacterComponentInterface"));
 	UpdateStateCharacterComponent->RegisterComponent();
+
+	// Inicialize o componente que atualiza o PoseSearchDatabases no nó MotionMatch em AnimBlueprint
+	SelectorPoseSearchDatabaseComponent = CreateDefaultSubobject<USelectorPoseSearchDatabaseComponent>(
+		TEXT("ISelectorPoseSearchDatabaseComponent"));
+	SelectorPoseSearchDatabaseComponent->RegisterComponent();
 }
 
 void APlayerCharacter::SetupCameraComponents()
@@ -118,7 +132,7 @@ void APlayerCharacter::SetupSkeletonMesh() const
 		UE_LOG(LogTemp, Error, TEXT("SkeletonMesh not found"));
 		return;
 	}
-	
+
 	GetMesh()->SetSkeletalMesh(SkeletonMesh.Object);
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -88.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
@@ -133,6 +147,6 @@ void APlayerCharacter::SetupAnimInstanceBlueprint() const
 		UE_LOG(LogTemp, Error, TEXT("AnimInstanceClass not found"));
 		return;
 	}
-	
+
 	GetMesh()->SetAnimInstanceClass(AnimInstanceClass.Class);
 }
