@@ -21,7 +21,6 @@ void UUpdateStateCharacterComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 
@@ -37,7 +36,11 @@ void UUpdateStateCharacterComponent::SetCurrentState(EPlayerCharacterStateEnum S
 {
 	UE_LOG(LogTemp, Warning, TEXT("State[%d]:  %s"), State, *GetStateDisplayName(State).ToString());
 
+	PreviousState = CurrentState;
 	CurrentState = State;
+	
+	// Chama o delegate
+	OnStateChanged.Broadcast(CurrentState, PreviousState);
 }
 
 EPlayerCharacterStateEnum UUpdateStateCharacterComponent::GetState()

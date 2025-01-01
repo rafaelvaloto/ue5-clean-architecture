@@ -8,18 +8,14 @@
 /**
  * 
  */
-class NEWPROJECT_API FActorWalkStartRule final : public IRuleBase
+class NEWPROJECT_API FActorIdleRule final : public IRuleBase
 {
-	float MinAccelerationThreshold;  // Limite mínimo de aceleração
-	float MaxAccelerationThreshold;  // Limite máximo de aceleração
-	float MinSpeedThreshold;
 	float MaxSpeedThreshold;
-
 public:
-	FActorWalkStartRule
-	(
-		float MinAccelerationThreshold = 5.0f, float MaxAccelerationThreshold = 15.0f, float MinSpeedThreshold = 5.0,  float MaxSpeedThreshold = 15.0
-	): MinAccelerationThreshold(MinAccelerationThreshold), MaxAccelerationThreshold(MaxAccelerationThreshold), MinSpeedThreshold(MinSpeedThreshold), MaxSpeedThreshold(MaxSpeedThreshold) {}
+	FActorIdleRule(
+		float MaxSpeedThreshold = 0.0f
+	): MaxSpeedThreshold(MaxSpeedThreshold) {};
+
 
 	virtual bool Validate(const UObject* Target) const override
 	{
@@ -33,15 +29,7 @@ public:
 		FVector Acceleration = (Velocity - PrevVelocity) / GetDeltaTime();
 		float AccelMagnitude = Acceleration.Size();
 
-		bool IsAccelInRange = (AccelMagnitude >= MinAccelerationThreshold && AccelMagnitude <= MaxAccelerationThreshold);
-		bool IsSpeedValid = Speed >= MinSpeedThreshold && Speed <= MaxSpeedThreshold;
-
-		return IsAccelInRange && IsSpeedValid;
-	}
-
-	virtual FString GetRuleName() const override
-	{
-		return FString::Printf(TEXT("FActorWalkStartRule"));
+		return (Speed <= MaxSpeedThreshold);
 	}
 
 private:
@@ -58,4 +46,5 @@ private:
 	{
 		return FApp::GetDeltaTime(); // Ou use seu sistema de temporização
 	}
+	
 };

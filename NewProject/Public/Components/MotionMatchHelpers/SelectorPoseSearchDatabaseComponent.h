@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "NewProject/Enums/CharacterStates/PlayerCharacterStateEnum.h"
 #include "NewProject/Interfaces/Helpers/EntityAsset.h"
 #include "PoseSearch/PoseSearchDatabase.h"
 #include "NewProject/Interfaces/MotionMatchHelpersComponents/SelectorPoseSearchDatabaseInterface.h"
@@ -22,12 +23,27 @@ public:
 	USelectorPoseSearchDatabaseComponent();
 	virtual ~USelectorPoseSearchDatabaseComponent() override;
 
-	virtual UPoseSearchDatabase* GetDatabase(uint32 Index) override;
+	virtual void BeginPlay() override;
+
+	virtual UPoseSearchDatabase* GetDatabase() override;
+	virtual void SetDatabaseCurrent(const uint32 Index) override;
+	
 	virtual void LoadDatabaseAsset(const FString& DirectoryEntity) override;
+	virtual void DefaultDatabaseAsset(const FString& DirectoryEntityAsset) override;
 
 	TArray<TSharedPtr<IEntityAsset>> FoundHeaderFiles;
+	virtual TArray<TSharedPtr<IEntityAsset>> GetEntitiesAsset() override;
+
+	UFUNCTION()
+	void Handle(EPlayerCharacterStateEnum CurrentState, EPlayerCharacterStateEnum PreviousState);
+
+	UFUNCTION()
+	virtual AActor* GetActor() override;
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pose Search Database")
 	TArray<UPoseSearchDatabase*> Databases;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pose Search Database")
+	UPoseSearchDatabase* DatabaseCurrent;
 };

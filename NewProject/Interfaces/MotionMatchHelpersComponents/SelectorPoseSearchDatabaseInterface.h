@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NewProject/Interfaces/Helpers/EntityAsset.h"
 #include "UObject/Interface.h"
 #include "PoseSearch/PoseSearchDatabase.h"
 #include "SelectorPoseSearchDatabaseInterface.generated.h"
@@ -24,5 +25,10 @@ class NEWPROJECT_API ISelectorPoseSearchDatabaseInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual void LoadDatabaseAsset(const FString& DirectoryEntity) = 0;
-	virtual UPoseSearchDatabase* GetDatabase(uint32 Index) = 0;
+	virtual void DefaultDatabaseAsset(const FString& DirectoryEntityAsset) = 0;
+	virtual UPoseSearchDatabase* GetDatabase() = 0;
+	virtual void SetDatabaseCurrent(const uint32 Index) = 0;
+	virtual TArray<TSharedPtr<IEntityAsset>> GetEntitiesAsset() = 0;
+
+	virtual AActor* GetActor() = 0;
 };

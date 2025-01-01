@@ -41,12 +41,6 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (SelectorPoseSearchDatabaseComponent)
-	{
-		// Update Machine State Character, Idle, Walk etc..
-		UUpdateNodePoseSearchDatabaseUseCase::Handle(SelectorPoseSearchDatabaseComponent);
-	}
 }
 
 // Called every frame
@@ -103,7 +97,16 @@ void APlayerCharacter::SetupComponents()
 	// Inicialize o componente que atualiza o PoseSearchDatabases no nó MotionMatch em AnimBlueprint
 	SelectorPoseSearchDatabaseComponent = CreateDefaultSubobject<USelectorPoseSearchDatabaseComponent>(
 		TEXT("ISelectorPoseSearchDatabaseComponent"));
+	
+	SelectorPoseSearchDatabaseComponent->LoadDatabaseAsset(
+		"C:\\Users\\rafae\\Documents\\Unreal Projects\\NewProject\\Source\\NewProject\\Entities\\PoseSearchDatabases"
+		);
+	SelectorPoseSearchDatabaseComponent->DefaultDatabaseAsset(
+		"/Game/Characters/UEFN_Mannequin/Animations/MotionMatchingData/Databases/Dense/PSD_Dense_Stand_Idles.PSD_Dense_Stand_Idles"
+		);
+	
 	SelectorPoseSearchDatabaseComponent->RegisterComponent();
+	// End Component Initialize PoseSearch Databses
 }
 
 void APlayerCharacter::SetupCameraComponents()

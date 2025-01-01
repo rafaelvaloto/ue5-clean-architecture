@@ -55,4 +55,16 @@ public:
 		}
 	}
 
+	// Implementação do método abstrato por callback
+	virtual bool ValidWhen(const std::function<bool(const std::vector<std::any>&)>& Callback, const std::vector<std::any>& Params) override
+	{
+		if (!Callback)
+		{
+			return true; // Retorno padrão caso nenhum callback seja definido
+		}
+
+		// Executa o callback com os parâmetros fornecidos
+		return Callback(Params);
+	}
+
 };

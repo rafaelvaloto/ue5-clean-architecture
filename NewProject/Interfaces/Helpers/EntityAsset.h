@@ -4,13 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "RuleBase.h"
+#include <functional>
+#include <any>
+#include <vector>
 
 /**
  * 
  */
 class NEWPROJECT_API IEntityAsset
 {
-
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual ~IEntityAsset() = default;
@@ -28,4 +30,6 @@ public:
 	virtual void ListRules() = 0;
 	virtual void PrintInformation() = 0;
 	virtual void Initialize() = 0;
+
+	virtual bool ValidWhen(const std::function<bool(const std::vector<std::any>&)>& Callback, const std::vector<std::any>& Params) = 0;
 };

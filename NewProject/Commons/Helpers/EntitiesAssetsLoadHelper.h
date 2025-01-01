@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "NewProject/Commons/Providers/Entities/EntityFactoryRegistry.h"
+#include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandIdlesEntity.h"
 #include "NewProject/Entities/PoseSearchDatabases/PSD_SparseStandWalkStartsEntity.h"
 #include "NewProject/Interfaces/Helpers/EntityAsset.h"
 #include "EntitiesAssetsLoadHelper.generated.h"
@@ -58,6 +59,10 @@ public:
 	{
 		FEntityFactoryRegistry::Register(TEXT("FPSD_SparseStandWalkStartsEntity"), []() -> IEntityAsset* {
 			return new FPSD_SparseStandWalkStartsEntity();
+		});
+
+		FEntityFactoryRegistry::Register(TEXT("FPSD_DenseStandIdlesEntity"), []() -> IEntityAsset* {
+			return new FPSD_DenseStandIdlesEntity();
 		});
 		
 		UE_LOG(LogTemp, Log, TEXT("Entities registradas com sucesso."));
