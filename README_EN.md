@@ -25,11 +25,15 @@ In the Example structure below we are creating a basic movement component for ou
     │       │   FRuleManager.h
     │       │   
     │       └───SelectorPoseSearchDatabaseRules
+    │               FActorIdleRule.h
     │               FActorWalkStartRule.h
+    │               FActorWalkStopRule.h
     │
     ├───Entities
     │   └───PoseSearchDatabases
+    │           PSD_DenseStandIdlesEntity.h
     │           PSD_SparseStandWalkStartsEntity.h
+    │           PSD_SparseStandWalkStopsEntity.h
     │
     ├───Enums
     │   ├───CharacterStates
@@ -37,6 +41,7 @@ In the Example structure below we are creating a basic movement component for ou
     │   │
     │   └───PoseSearchDatabaseModeStates
     │           PoseSearchDatabaseModeStateEnum.h
+    │           SelectorDatabaseValidateRuleModeEnum.h
     │
     ├───Interfaces
     │   ├───CharacterComponents
@@ -89,6 +94,7 @@ In the Example structure below we are creating a basic movement component for ou
     │       │
     │       ├───SelectorPoseSearchDatabaseComponent
     │       │       UpdateNodePoseSearchDatabaseUseCase.cpp
+    │       │       UpdatePoseSearchDatabaseWithDescelerationUseCase.cpp
     │       │
     │       ├───SplineDrawComponent
     │       │       TrajectoryRuntimeDrawUseCase.cpp
@@ -135,6 +141,7 @@ In the Example structure below we are creating a basic movement component for ou
             │
             ├───SelectorPoseSearchDatabaseComponent
             │       UpdateNodePoseSearchDatabaseUseCase.h
+            │       UpdatePoseSearchDatabaseWithDescelerationUseCase.h
             │
             ├───SplineDrawComponent
             │       TrajectoryRuntimeDrawUseCase.h
@@ -144,5 +151,6 @@ In the Example structure below we are creating a basic movement component for ou
             │
             └───UpdateStateCharacterComponent
                     UpdateStateCharacterComponentUseCase.h
+
 
 ```

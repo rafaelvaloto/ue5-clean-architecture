@@ -25,11 +25,15 @@ Na estrutura abaixo, estamos criando um componente básico de movimento para o n
     │       │   FRuleManager.h
     │       │   
     │       └───SelectorPoseSearchDatabaseRules
+    │               FActorIdleRule.h
     │               FActorWalkStartRule.h
+    │               FActorWalkStopRule.h
     │
     ├───Entities
     │   └───PoseSearchDatabases
+    │           PSD_DenseStandIdlesEntity.h
     │           PSD_SparseStandWalkStartsEntity.h
+    │           PSD_SparseStandWalkStopsEntity.h
     │
     ├───Enums
     │   ├───CharacterStates
@@ -37,6 +41,7 @@ Na estrutura abaixo, estamos criando um componente básico de movimento para o n
     │   │
     │   └───PoseSearchDatabaseModeStates
     │           PoseSearchDatabaseModeStateEnum.h
+    │           SelectorDatabaseValidateRuleModeEnum.h
     │
     ├───Interfaces
     │   ├───CharacterComponents
@@ -89,6 +94,7 @@ Na estrutura abaixo, estamos criando um componente básico de movimento para o n
     │       │
     │       ├───SelectorPoseSearchDatabaseComponent
     │       │       UpdateNodePoseSearchDatabaseUseCase.cpp
+    │       │       UpdatePoseSearchDatabaseWithDescelerationUseCase.cpp
     │       │
     │       ├───SplineDrawComponent
     │       │       TrajectoryRuntimeDrawUseCase.cpp
@@ -135,6 +141,7 @@ Na estrutura abaixo, estamos criando um componente básico de movimento para o n
             │
             ├───SelectorPoseSearchDatabaseComponent
             │       UpdateNodePoseSearchDatabaseUseCase.h
+            │       UpdatePoseSearchDatabaseWithDescelerationUseCase.h
             │
             ├───SplineDrawComponent
             │       TrajectoryRuntimeDrawUseCase.h
@@ -144,6 +151,5 @@ Na estrutura abaixo, estamos criando um componente básico de movimento para o n
             │
             └───UpdateStateCharacterComponent
                     UpdateStateCharacterComponentUseCase.h
-
 
 ```
