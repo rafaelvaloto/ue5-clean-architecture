@@ -13,7 +13,5 @@ UUpdateTrajectoryCharacterComponent::UUpdateTrajectoryCharacterComponent(const F
 
 void UUpdateTrajectoryCharacterComponent::OnMovementUpdated(float DeltaSeconds, FVector OldLocation, FVector OldVelocity)
 {
-	UE_LOG(LogTemp, Warning, TEXT("DeltaSeconds %f"), DeltaSeconds);
-	UE_LOG(LogTemp, Warning, TEXT("OldLocation %s"), *OldLocation.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("OldVelocity %s"), *OldVelocity.ToString());
+	
 }

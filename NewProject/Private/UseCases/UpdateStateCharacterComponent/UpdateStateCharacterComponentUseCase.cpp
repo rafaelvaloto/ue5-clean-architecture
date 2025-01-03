@@ -11,12 +11,12 @@ void UUpdateStateCharacterComponentUseCase::Handle
 )
 {
 	const float VelocityCurrent = ComponentBaseAttributes->GetVelocitySize();
-	
 	if (
-		VelocityCurrent > 0.0f &&
+		VelocityCurrent > 0.001f &&
 		VelocityCurrent < 201.0f
 	)
 	{
+		UE_LOG(LogTemp, Error, TEXT("Velocity: %f"), VelocityCurrent);
 		if (ComponentState->GetState() != EPlayerCharacterStateEnum::Walking)
 		{
 			ComponentState->SetCurrentState(EPlayerCharacterStateEnum::Walking);
@@ -25,7 +25,7 @@ void UUpdateStateCharacterComponentUseCase::Handle
 	}
 
 	if (
-		VelocityCurrent > 200.0f
+		VelocityCurrent > 600.0f
 	)
 	{
 		if (ComponentState->GetState() != EPlayerCharacterStateEnum::Running)

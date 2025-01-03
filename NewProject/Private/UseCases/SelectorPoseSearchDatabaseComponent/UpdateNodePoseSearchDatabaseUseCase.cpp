@@ -3,6 +3,7 @@
 
 #include "UseCases/SelectorPoseSearchDatabaseComponent/UpdateNodePoseSearchDatabaseUseCase.h"
 #include "Components/MotionMatchHelpers/SelectorPoseSearchDatabaseComponent.h"
+#include "NewProject/Enums/PoseSearchDatabaseModeStates/SelectorDatabaseValidateRuleModeEnum.h"
 
 void UUpdateNodePoseSearchDatabaseUseCase::Handle
 (
@@ -14,44 +15,57 @@ void UUpdateNodePoseSearchDatabaseUseCase::Handle
 	TArray<TSharedPtr<IEntityAsset>> EntitiesAssets = Component->GetEntitiesAsset();
 
 	int32 Index = 0;
-	for (TSharedPtr<IEntityAsset> Entity : EntitiesAssets)
+	for (const TSharedPtr<IEntityAsset>& Entity : EntitiesAssets)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Entity: %s"), *Entity->GetNameAsset())
+		Entity->ListRules();
 
+		UE_LOG(LogTemp, Error, TEXT("Entity %s"), *Entity->GetNameAsset());
+		UE_LOG(LogTemp, Error, TEXT("GetTypeValidateRule %d"), Entity->GetTypeValidateRule());
+		UE_LOG(LogTemp, Error, TEXT("ESelectorDatabaseValidateRuleModeEnum %d"), ESelectorDatabaseValidateRuleModeEnum::StateCharacter);
+
+		// Filtrar apenas entidades de um tipo específico
 		if (
-			Entity->GetNameAsset() == TEXT("PSD_Sparse_Stand_Walk_Starts") &&
-			Entity->ValidWhen(ValidWhenTransitionIdleToWalk, { CurrentState, PreviousState })
+			Entity->GetTypeValidateRule() == ESelectorDatabaseValidateRuleModeEnum::All ||
+			Entity->GetTypeValidateRule() == ESelectorDatabaseValidateRuleModeEnum::Velocity
 		)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("ValidWhen: ValidWhenTransitionIdleToWalk"))
-
-			Entity->Initialize();
-			UE_LOG(LogTemp, Warning, TEXT("ValidWhen: ValidWhenTransitionIdleToWalk Initialize()"))
-
-			if (Entity->ValidateAll(Component->GetActor()))
-			{
-				UE_LOG(LogTemp, Warning, TEXT("ValidWhen: ValidWhenTransitionIdleToWalk ValidateAll"))
-				Component->SetDatabaseCurrent(Index);
-			}
+			UE_LOG(LogTemp, Warning, TEXT("Continue %d"), Entity->GetTypeValidateRule());
+			Index++;
+			continue;
 		}
-		
+
 		if (
-			Entity->GetNameAsset() == TEXT("PSD_Dense_Stand_Idles") &&
 			CurrentState == EPlayerCharacterStateEnum::Idle
 		)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("ValidWhen: CurrentState == EPlayerCharacterStateEnum::Idle"))
-
-			Entity->Initialize();
-			UE_LOG(LogTemp, Warning, TEXT("ValidWhen: CurrentState == EPlayerCharacterStateEnum::Idle"))
-
-			if (Entity->ValidateAll(Component->GetActor()))
-			{
-				UE_LOG(LogTemp, Warning, TEXT("ValidWhen: CurrentState == EPlayerCharacterStateEnum::Idle"))
-				Component->SetDatabaseCurrent(Index);
-			}
+			UE_LOG(LogTemp, Error, TEXT("Idle"));
+			Component->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
+			Component
+				->DefaultDatabaseAsset(
+					"/Game/Characters/UEFN_Mannequin/Animations/MotionMatchingData/Databases/Dense/PSD_Dense_Stand_Idles.PSD_Dense_Stand_Idles"
+				);
+			Component->SetDatabaseCurrent(Index);
+			break;
 		}
-		
-		Index++; // Incrementa o índice
+
+		if (
+			Entity->ValidateAll(
+				Component->GetActor(),
+				{
+					ESelectorDatabaseValidateRuleModeEnum::StateCharacter, CurrentState, PreviousState
+				}
+			)
+		)
+		{
+			Component->SetInterruptMode(EPoseSearchInterruptMode::InterruptOnDatabaseChange);
+			Component->SetDatabaseCurrent(Index);
+
+			Component->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
+			break;
+		}
+
+		Index++;
 	}
+
+	UE_LOG(LogTemp, Error, TEXT("Selected Database %s"), *Component->GetDatabase()->GetName());
 }

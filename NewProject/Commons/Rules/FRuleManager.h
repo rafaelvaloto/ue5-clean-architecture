@@ -10,14 +10,26 @@ class NEWPROJECT_API FRuleManager: public IEntityAsset
 {
 	
 public:
-	virtual ~FRuleManager() override
+	FRuleManager() :
+		NameAsset("DefaultRuleName"),
+		PathAsset("DefaultRulePath")
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Object of FRuleManager deleted at %p"), this);
-		Rules.Empty();
-		Rules.Reset();
+		UE_LOG(LogTemp, Warning, TEXT("Object of FRuleManager created at %p"), this);
 	}
 	
-	TArray<TSharedPtr<IRuleBase>> Rules;
+	//
+	virtual ~FRuleManager() override
+	{
+		Rules.Reset();
+		Rules.Empty();
+		
+		UE_LOG(LogTemp, Warning, TEXT("Object of FRuleManager deleted at %p"), this);
+	}
+
+	virtual ESelectorDatabaseValidateRuleModeEnum GetTypeValidateRule() override
+	{
+		return ESelectorDatabaseValidateRuleModeEnum::All;
+	}
 
 	/**
 	 * Adiciona uma nova regra
@@ -27,11 +39,27 @@ public:
 		Rules.Add(Rule);
 	}
 
+	virtual void ListRules() override
+	{
+		for (const TSharedPtr<IRuleBase> Rule : Rules)
+		{
+			UE_LOG(LogTemp, Log, TEXT("Listando Regras: %s"), *Rule->GetRuleName());
+		}
+	}
+
 	/**
 	 * Valida todas as regras em relação ao alvo fornecido
 	 */
-	virtual bool ValidateAll(const UObject* Target) override
+	virtual bool ValidateAll(const UObject* Target, const std::vector<std::any>& Params) override
 	{
+		if (!ValidWhen(Params))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ValidWhen falhou %s"), *GetNameAsset());
+			return false;
+		}
+
+		UE_LOG(LogTemp, Warning, TEXT("ValidWhen passou %s"), *GetNameAsset());
+		
 		for (const TSharedPtr<IRuleBase> Rule : Rules)
 		{
 			if (!Rule->Validate(Target))
@@ -44,27 +72,32 @@ public:
 		return true; // Todas as regras foram satisfeitas
 	}
 
-	/**
-	 * Opcional: Lista todas as regras registradas
-	 */
-	virtual void ListRules() override
-	{
-		for (const TSharedPtr<IRuleBase>& Rule : Rules)
-		{
-			UE_LOG(LogTemp, Log, TEXT("Regra Registrada: %s"), *Rule->GetRuleName());
-		}
-	}
-
 	// Implementação do método abstrato por callback
-	virtual bool ValidWhen(const std::function<bool(const std::vector<std::any>&)>& Callback, const std::vector<std::any>& Params) override
+	virtual bool ValidWhen(const std::vector<std::any>& Params) override
 	{
 		if (!Callback)
 		{
-			return true; // Retorno padrão caso nenhum callback seja definido
+			return true;
 		}
 
 		// Executa o callback com os parâmetros fornecidos
 		return Callback(Params);
 	}
 
+	virtual FString GetNameAsset() override
+	{
+		return NameAsset;
+	}
+
+	virtual FString GetPathAsset() override
+	{
+		return PathAsset;
+	}
+
+	std::function<bool(const std::vector<std::any>&)> Callback;
+
+protected:
+	const char* NameAsset;
+	const char* PathAsset;
+	TArray<TSharedPtr<IRuleBase>> Rules;
 };

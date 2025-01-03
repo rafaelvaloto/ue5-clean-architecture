@@ -11,16 +11,7 @@
 class NEWPROJECT_API IRuleBase
 {
 public:
-	virtual ~IRuleBase()
-	{
-		IRuleBase* Rule = this;
-		if (Rule != nullptr)
-		{
-			delete Rule;
-			Rule = nullptr;
-			UE_LOG(LogTemp, Warning, TEXT("IRuleBase destrutor chamado - %p"), Rule);
-		}
-	}
+	virtual ~IRuleBase() = default;
 
 	/**
 	 * Método para validar a regra

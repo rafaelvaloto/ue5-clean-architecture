@@ -35,12 +35,27 @@ void UUpdateAttributesCharacterComponent::SetLocationCurrent(const FVector Locat
 
 void UUpdateAttributesCharacterComponent::SetVelocityCurrent(const FVector VelocityAt)
 {
+	if (VelocityAt.Size() <= 0.001f)
+	{
+		PreviousVelocity = VelocityAt;
+		CurrentVelocity = VelocityAt;
+		return;
+	}
+	
+	PreviousVelocity = CurrentVelocity;
 	CurrentVelocity = VelocityAt;
+
+	OnDeceleration.Broadcast(PreviousVelocity.Size(), CurrentVelocity.Size());
 }
 
 FVector UUpdateAttributesCharacterComponent::GetVelocityCurrent()
 {
 	return CurrentVelocity;
+}
+
+FVector UUpdateAttributesCharacterComponent::GetPreviousVelocity()
+{
+	return PreviousVelocity;
 }
 
 FVector UUpdateAttributesCharacterComponent::GetLocationCurrent()
@@ -56,5 +71,10 @@ float UUpdateAttributesCharacterComponent::GetVelocitySize()
 float UUpdateAttributesCharacterComponent::GetVelocitySize2D()
 {
 	return CurrentVelocity.Size2D();
+}
+
+float UUpdateAttributesCharacterComponent::GetPreviousVelocitySize()
+{
+	return PreviousVelocity.Size();
 }
 

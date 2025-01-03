@@ -30,15 +30,23 @@ public:
 	
 	virtual void LoadDatabaseAsset(const FString& DirectoryEntity) override;
 	virtual void DefaultDatabaseAsset(const FString& DirectoryEntityAsset) override;
+	
+	virtual void SetInterruptMode(EPoseSearchInterruptMode Mode) override;
+	virtual EPoseSearchInterruptMode GetInterruptMode() override;
 
 	TArray<TSharedPtr<IEntityAsset>> FoundHeaderFiles;
 	virtual TArray<TSharedPtr<IEntityAsset>> GetEntitiesAsset() override;
 
 	UFUNCTION()
-	void Handle(EPlayerCharacterStateEnum CurrentState, EPlayerCharacterStateEnum PreviousState);
+	void OnState(EPlayerCharacterStateEnum CurrentState, EPlayerCharacterStateEnum PreviousState);
+
+	UFUNCTION()
+	void OnDeceleration(float PrevVelocity, float CurrentVelocity);
 
 	UFUNCTION()
 	virtual AActor* GetActor() override;
+
+	bool bIsBlockingDeceleration = false;
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pose Search Database")
@@ -46,4 +54,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pose Search Database")
 	UPoseSearchDatabase* DatabaseCurrent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pose Search Database")
+	EPoseSearchInterruptMode InterruptModeCurrent = EPoseSearchInterruptMode::DoNotInterrupt;
 };

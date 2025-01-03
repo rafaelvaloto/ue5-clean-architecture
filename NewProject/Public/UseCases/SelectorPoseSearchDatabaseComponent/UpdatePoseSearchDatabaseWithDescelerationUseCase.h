@@ -3,18 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/Character/UpdateStateCharacterComponent.h"
-#include "NewProject/Enums/CharacterStates/PlayerCharacterStateEnum.h"
 #include "NewProject/Interfaces/MotionMatchHelpersComponents/SelectorPoseSearchDatabaseInterface.h"
 #include "UObject/Object.h"
-#include "UpdateNodePoseSearchDatabaseUseCase.generated.h"
-
+#include "UpdatePoseSearchDatabaseWithDescelerationUseCase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class NEWPROJECT_API UUpdateNodePoseSearchDatabaseUseCase : public UObject
+class NEWPROJECT_API UUpdatePoseSearchDatabaseWithDescelerationUseCase : public UObject
 {
 	GENERATED_BODY()
 
@@ -22,9 +19,7 @@ public:
 	static void Handle
 	(
 		const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& Component,
-		EPlayerCharacterStateEnum CurrentState,
-		EPlayerCharacterStateEnum PreviousState
+		float PreviousVelocity,
+		float CurrentVelocity
 	);
 };
-
-

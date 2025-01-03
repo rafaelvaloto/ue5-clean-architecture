@@ -26,8 +26,10 @@ public:
 	virtual void SetVelocityCurrent(FVector VelocityAt) = 0;
 
 	virtual FVector GetVelocityCurrent() = 0;
+	virtual FVector GetPreviousVelocity() = 0;
 	virtual FVector GetLocationCurrent() = 0;
 	
 	virtual float GetVelocitySize() = 0;
 	virtual float GetVelocitySize2D() = 0;
+	virtual float GetPreviousVelocitySize() = 0;
 };

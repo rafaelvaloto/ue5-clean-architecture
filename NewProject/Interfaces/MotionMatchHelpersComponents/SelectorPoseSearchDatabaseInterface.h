@@ -5,8 +5,9 @@
 #include "CoreMinimal.h"
 #include "NewProject/Interfaces/Helpers/EntityAsset.h"
 #include "UObject/Interface.h"
-#include "PoseSearch/PoseSearchDatabase.h"
+#include "PoseSearch/PoseSearchLibrary.h"
 #include "SelectorPoseSearchDatabaseInterface.generated.h"
+
 
 // This class does not need to be modified.
 UINTERFACE()
@@ -29,6 +30,8 @@ public:
 	virtual UPoseSearchDatabase* GetDatabase() = 0;
 	virtual void SetDatabaseCurrent(const uint32 Index) = 0;
 	virtual TArray<TSharedPtr<IEntityAsset>> GetEntitiesAsset() = 0;
+	virtual void SetInterruptMode(EPoseSearchInterruptMode Mode) = 0;
+	virtual EPoseSearchInterruptMode GetInterruptMode() = 0;
 
 	virtual AActor* GetActor() = 0;
 };

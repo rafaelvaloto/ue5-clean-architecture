@@ -3,11 +3,17 @@
 
 #include "NewProject/Public/UseCases/UpdateAttributesCharacterComponent/UpdateAttributesCharacterComponentUseCase.h"
 
+#include "Application/PlayerCharacter/PlayerCharacter.h"
+
 void UUpdateAttributesCharacterComponentUseCase::Handle(
 	const TScriptInterface<IUpdateAttributesCharacterComponentInterface>& Component,
-	const AActor* Actor
+	const APlayerCharacter* Actor
 )
 {
-	Component->SetVelocityCurrent(Actor->GetVelocity());
-	Component->SetLocationCurrent(Actor->GetActorLocation());
+
+	const FVector Location = Actor->GetActorLocation();
+	const FVector Velocity = Actor->GetVelocity();
+	
+	Component->SetVelocityCurrent(Velocity);
+	Component->SetLocationCurrent(Location);
 }

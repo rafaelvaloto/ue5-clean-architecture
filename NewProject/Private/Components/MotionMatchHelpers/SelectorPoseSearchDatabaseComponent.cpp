@@ -3,9 +3,11 @@
 
 #include "NewProject/Public/Components/MotionMatchHelpers/SelectorPoseSearchDatabaseComponent.h"
 
+#include "Components/Character/UpdateAttributesCharacterComponent.h"
 #include "Components/Character/UpdateStateCharacterComponent.h"
 #include "NewProject/Commons/Helpers/EntitiesAssetsLoadHelper.h"
 #include "UseCases/SelectorPoseSearchDatabaseComponent/UpdateNodePoseSearchDatabaseUseCase.h"
+#include "UseCases/SelectorPoseSearchDatabaseComponent/UpdatePoseSearchDatabaseWithDescelerationUseCase.h"
 
 // Sets default values for this component's properties
 USelectorPoseSearchDatabaseComponent::USelectorPoseSearchDatabaseComponent()
@@ -37,7 +39,16 @@ void USelectorPoseSearchDatabaseComponent::BeginPlay()
 			// Update Machine State Character, Idle, Walk etc..
 
 			// Inscreve-se ao delegate para ouvir mudanças de estado
-			StateComponent->OnStateChanged.AddDynamic(this, &USelectorPoseSearchDatabaseComponent::Handle);
+			StateComponent->OnStateChanged.AddDynamic(this, &USelectorPoseSearchDatabaseComponent::OnState);
+		}
+
+		UUpdateAttributesCharacterComponent* AttributesCharacterComponent = Owner->FindComponentByClass<UUpdateAttributesCharacterComponent>();
+		if (AttributesCharacterComponent)
+		{
+			// Update Machine State Character, Idle, Walk etc..
+		
+			// Inscreve-se ao delegate para ouvir mudanças de estado
+			AttributesCharacterComponent->OnDeceleration.AddDynamic(this, &USelectorPoseSearchDatabaseComponent::OnDeceleration);
 		}
 	}
 }
@@ -47,9 +58,23 @@ TArray<TSharedPtr<IEntityAsset>> USelectorPoseSearchDatabaseComponent::GetEntiti
 	return FoundHeaderFiles;
 }
 
-void USelectorPoseSearchDatabaseComponent::Handle(EPlayerCharacterStateEnum CurrentState, EPlayerCharacterStateEnum PreviousState)
+void USelectorPoseSearchDatabaseComponent::OnState(EPlayerCharacterStateEnum CurrentState, EPlayerCharacterStateEnum PreviousState)
 {
+	bIsBlockingDeceleration = true;
 	UUpdateNodePoseSearchDatabaseUseCase::Handle(this, CurrentState, PreviousState);
+
+	bIsBlockingDeceleration = false;
+}
+
+void USelectorPoseSearchDatabaseComponent::OnDeceleration(float PrevVelocity, float CurrentVelocity)
+{
+	if (bIsBlockingDeceleration)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnDeceleration event blocked!"));
+		return;
+	}
+	
+	UUpdatePoseSearchDatabaseWithDescelerationUseCase::Handle(this, PrevVelocity, CurrentVelocity);	
 }
 
 AActor* USelectorPoseSearchDatabaseComponent::GetActor()
@@ -59,13 +84,10 @@ AActor* USelectorPoseSearchDatabaseComponent::GetActor()
 
 void USelectorPoseSearchDatabaseComponent::LoadDatabaseAsset(const FString& DirectoryEntity)
 {
-	UE_LOG(LogTemp, Log, TEXT("Chamando funcao UEntitiesAssetsLoadHelper::CreateEntitiesFromFiles"));
 	UEntitiesAssetsLoadHelper::CreateEntitiesFromFiles(DirectoryEntity, FoundHeaderFiles);
 
 	if (FoundHeaderFiles.Num() > 0)
 	{
-		UE_LOG(LogTemp, Log, TEXT("FoundClass.Num() > 0, %d"), FoundHeaderFiles.Num());
-
 		for (TSharedPtr<IEntityAsset> File : FoundHeaderFiles)
 		{
 			if (File.IsValid())
@@ -74,17 +96,9 @@ void USelectorPoseSearchDatabaseComponent::LoadDatabaseAsset(const FString& Dire
 				if (Asset)
 				{
 					Databases.Add(Asset);
-					UE_LOG(LogTemp, Log, TEXT("Add Databse: %s"), *File->GetPathAsset());
 				}
-				
-				UE_LOG(LogTemp, Log, TEXT("PrintInformation: in FoundHeaderFiles"));
 				File->PrintInformation();
 			}
-		}
-
-		if (Databases.Num() > 0)
-		{
-			UE_LOG(LogTemp, Log, TEXT("Databses: %d"), Databases.Num());
 		}
 	}
 }
@@ -99,6 +113,16 @@ void USelectorPoseSearchDatabaseComponent::DefaultDatabaseAsset(const FString& D
 	}
 	
 	DatabaseCurrent = DefaultDB;
+}
+
+void USelectorPoseSearchDatabaseComponent::SetInterruptMode(EPoseSearchInterruptMode Mode)
+{
+	InterruptModeCurrent = Mode;
+}
+
+EPoseSearchInterruptMode USelectorPoseSearchDatabaseComponent::GetInterruptMode()
+{
+	return InterruptModeCurrent;
 }
 
 UPoseSearchDatabase* USelectorPoseSearchDatabaseComponent::GetDatabase()

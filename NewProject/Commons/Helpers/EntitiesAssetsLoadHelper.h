@@ -6,6 +6,7 @@
 #include "NewProject/Commons/Providers/Entities/EntityFactoryRegistry.h"
 #include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandIdlesEntity.h"
 #include "NewProject/Entities/PoseSearchDatabases/PSD_SparseStandWalkStartsEntity.h"
+#include "NewProject/Entities/PoseSearchDatabases/PSD_SparseStandWalkStopsEntity.h"
 #include "NewProject/Interfaces/Helpers/EntityAsset.h"
 #include "EntitiesAssetsLoadHelper.generated.h"
 
@@ -50,7 +51,8 @@ public:
 				UE_LOG(LogTemp, Warning, TEXT("Nenhuma classe encontrada para: %s"), *FileName);
 				continue;
 			}
-			
+
+			NewEntity->Initialize();
 			Entities.Add(NewEntity);
 		}
 	}
@@ -63,6 +65,10 @@ public:
 
 		FEntityFactoryRegistry::Register(TEXT("FPSD_DenseStandIdlesEntity"), []() -> IEntityAsset* {
 			return new FPSD_DenseStandIdlesEntity();
+		});
+
+		FEntityFactoryRegistry::Register(TEXT("FPSD_SparseStandWalkStopsEntity"), []() -> IEntityAsset* {
+			return new FPSD_SparseStandWalkStopsEntity();
 		});
 		
 		UE_LOG(LogTemp, Log, TEXT("Entities registradas com sucesso."));

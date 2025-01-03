@@ -7,6 +7,8 @@
 #include "NewProject/Interfaces/CharacterComponents/UpdateAttributesCharacterComponentInterface.h"
 #include "UpdateAttributesCharacterComponent.generated.h"
 
+// Defina o tipo de delegate (com parâmetros na desaceleracao)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDeceleration, float, PrevVelocity, float, Velocity);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class NEWPROJECT_API UUpdateAttributesCharacterComponent : public UActorComponent, public IUpdateAttributesCharacterComponentInterface
@@ -29,13 +31,21 @@ public:
 	virtual void SetLocationCurrent(const FVector LocationAt) override;
 	virtual void SetVelocityCurrent(const FVector VelocityAt) override;
 	virtual FVector GetVelocityCurrent() override;
+	virtual FVector GetPreviousVelocity() override;
 	virtual FVector GetLocationCurrent() override;
 
 	virtual float GetVelocitySize() override;
 	virtual float GetVelocitySize2D() override;
+	virtual float GetPreviousVelocitySize() override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Velocity")
+	FOnDeceleration OnDeceleration;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Velocity")
 	FVector CurrentVelocity = FVector::ZeroVector;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Velocity")
+	FVector PreviousVelocity = FVector::ZeroVector;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Location")
 	FVector CurrentLocation = FVector::ZeroVector;

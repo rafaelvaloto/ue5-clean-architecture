@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Application/PlayerCharacter/PlayerCharacter.h"
 #include "NewProject/Interfaces/Helpers/RuleBase.h"
 
 /**
@@ -10,34 +11,43 @@
  */
 class NEWPROJECT_API FActorWalkStartRule final : public IRuleBase
 {
-	float MinAccelerationThreshold;  // Limite mínimo de aceleração
-	float MaxAccelerationThreshold;  // Limite máximo de aceleração
-	float MinSpeedThreshold;
+	float MaxAccelerationThreshold;
 	float MaxSpeedThreshold;
 
 public:
 	FActorWalkStartRule
 	(
-		float MinAccelerationThreshold = 5.0f, float MaxAccelerationThreshold = 15.0f, float MinSpeedThreshold = 5.0,  float MaxSpeedThreshold = 15.0
-	): MinAccelerationThreshold(MinAccelerationThreshold), MaxAccelerationThreshold(MaxAccelerationThreshold), MinSpeedThreshold(MinSpeedThreshold), MaxSpeedThreshold(MaxSpeedThreshold) {}
+		const float MaxAccelerationThreshold = 50.0f, const float MaxSpeedThreshold = 30.f
+	): MaxAccelerationThreshold(MaxAccelerationThreshold), MaxSpeedThreshold(MaxSpeedThreshold) {}
 
+	virtual ~FActorWalkStartRule() override
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FActorWalkStartRule destrutor chamado - %p"), this);
+	}
+	
 	virtual bool Validate(const UObject* Target) const override
 	{
-		const AActor* Actor = Cast<AActor>(Target);
+		const APlayerCharacter* Actor = Cast<APlayerCharacter>(Target);
 		if (!Actor) return false;
 
-		FVector Velocity = Actor->GetVelocity();
-		float Speed = Velocity.Size();
+		const float DeltaTime = GetDeltaTime();
+		
+		const float Speed = Actor->UpdatedBaseAttributesComponent->GetVelocitySize();
+		const FVector PrevVelocity = Actor->UpdatedBaseAttributesComponent->GetPreviousVelocity();
+		const FVector CurrentVelocity = Actor->GetVelocity();
 
-		FVector PrevVelocity = GetPreviousVelocity(Actor);
-		FVector Acceleration = (Velocity - PrevVelocity) / GetDeltaTime();
-		float AccelMagnitude = Acceleration.Size();
+		const float AccelMagnitude = (CurrentVelocity - PrevVelocity).Size() / DeltaTime;
 
-		bool IsAccelInRange = (AccelMagnitude >= MinAccelerationThreshold && AccelMagnitude <= MaxAccelerationThreshold);
-		bool IsSpeedValid = Speed >= MinSpeedThreshold && Speed <= MaxSpeedThreshold;
+		if (const bool IsValid = AccelMagnitude <= MaxAccelerationThreshold && Speed <= MaxSpeedThreshold; !IsValid)
+		{
+			UE_LOG(LogTemp, Error, TEXT("FActorWalkStartRule Invalid %s"), *GetRuleName()); // ( Adicione uma mensagem de log aqui
+			return false;
+		}
 
-		return IsAccelInRange && IsSpeedValid;
+		UE_LOG(LogTemp, Error, TEXT("FActorWalkStartRule Valid %s"), *GetRuleName()); // ( Adicione uma mensagem de log aqui
+		return true;
 	}
+	
 
 	virtual FString GetRuleName() const override
 	{
@@ -45,14 +55,6 @@ public:
 	}
 
 private:
-	// Método fictício para obter a velocidade anterior (você pode implementar isso com um sistema mais robusto)
-	FVector GetPreviousVelocity(const AActor* Actor) const
-	{
-		// Exemplo: Obtenha isso de um sistema de rastreamento ou buffer dentro de um componente customizado.
-		// Placeholder
-		return FVector::ZeroVector;
-	}
-
 	// Método fictício para obter o "DeltaTime" (ou seja, o intervalo de tempo entre cálculos)
 	float GetDeltaTime() const
 	{

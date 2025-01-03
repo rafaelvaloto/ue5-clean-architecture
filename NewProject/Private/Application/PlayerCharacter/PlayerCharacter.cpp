@@ -33,8 +33,9 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
-	GetCharacterMovement()->MaxWalkSpeed = 201.f;
-	GetCharacterMovement()->MaxAcceleration = 200.f;
+	GetCharacterMovement()->MaxWalkSpeed = 201.0f;
+	GetCharacterMovement()->MaxAcceleration = 35.0f;
+	GetCharacterMovement()->MinAnalogWalkSpeed = 0.01f;
 }
 
 // Called when the game starts or when spawned
@@ -51,21 +52,23 @@ void APlayerCharacter::Tick(float DeltaTime)
 	if (UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Running)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 600.f;
+		GetCharacterMovement()->MaxAcceleration = 100.f;
 	}
 
 	if (UpdateStateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Running)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 201.f;
+		GetCharacterMovement()->MaxAcceleration = 35.f;
 	}
 
 	// Update Persistent Attrs Character, Velocity, Location etc..
 	UUpdateAttributesCharacterComponentUseCase::Handle(UpdatedBaseAttributesComponent, this);
 
-	// Update Character Trajectory Component
-	UCharacterTrajectoryComponentUseCase::Handle(TrajectoryComponent, UpdatedBaseAttributesComponent, DeltaTime);
-
 	// Update Machine State Character, Idle, Walk etc..
 	UUpdateStateCharacterComponentUseCase::Handle(UpdateStateCharacterComponent, UpdatedBaseAttributesComponent);
+
+	// Update Character Trajectory Component
+	UCharacterTrajectoryComponentUseCase::Handle(TrajectoryComponent, UpdatedBaseAttributesComponent, DeltaTime);
 }
 
 // Called to bind functionality to input

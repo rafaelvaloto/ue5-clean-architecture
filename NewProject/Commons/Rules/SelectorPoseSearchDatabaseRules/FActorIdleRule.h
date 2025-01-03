@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Application/PlayerCharacter/PlayerCharacter.h"
 #include "NewProject/Interfaces/Helpers/RuleBase.h"
 
 /**
@@ -13,33 +14,22 @@ class NEWPROJECT_API FActorIdleRule final : public IRuleBase
 	float MaxSpeedThreshold;
 public:
 	FActorIdleRule(
-		float MaxSpeedThreshold = 0.0f
+		float MaxSpeedThreshold = 0.01f
 	): MaxSpeedThreshold(MaxSpeedThreshold) {};
+
+	virtual ~FActorIdleRule() override
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FActorIdleRule destrutor chamado - %p"), this);
+	}
 
 
 	virtual bool Validate(const UObject* Target) const override
 	{
-		const AActor* Actor = Cast<AActor>(Target);
-		if (!Actor) return false;
-
-		FVector Velocity = Actor->GetVelocity();
-		float Speed = Velocity.Size();
-
-		FVector PrevVelocity = GetPreviousVelocity(Actor);
-		FVector Acceleration = (Velocity - PrevVelocity) / GetDeltaTime();
-		float AccelMagnitude = Acceleration.Size();
-
-		return (Speed <= MaxSpeedThreshold);
+		const APlayerCharacter* Actor = Cast<APlayerCharacter>(Target);
+		return Actor->UpdatedBaseAttributesComponent->GetVelocitySize() <= MaxSpeedThreshold;
 	}
 
 private:
-	// Método fictício para obter a velocidade anterior (você pode implementar isso com um sistema mais robusto)
-	FVector GetPreviousVelocity(const AActor* Actor) const
-	{
-		// Exemplo: Obtenha isso de um sistema de rastreamento ou buffer dentro de um componente customizado.
-		// Placeholder
-		return FVector::ZeroVector;
-	}
 
 	// Método fictício para obter o "DeltaTime" (ou seja, o intervalo de tempo entre cálculos)
 	float GetDeltaTime() const
