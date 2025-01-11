@@ -3,35 +3,36 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
 #include "NewProject/Commons/Rules/FRuleManager.h"
 #include "NewProject/Commons/Rules/SelectorPoseSearchDatabaseRules/FActorWalkStartRule.h"
 #include "NewProject/Enums/PoseSearchDatabaseModeStates/SelectorDatabaseValidateRuleModeEnum.h"
 
-class NEWPROJECT_API FPSD_SparseStandWalkStartsEntity : public FRuleManager
+class NEWPROJECT_API FPSD_DenseStandWalkStartsEntity : public FRuleManager
 {
-public:
-	FPSD_SparseStandWalkStartsEntity()
-	{
-		NameAsset = "PSD_Walk_Starts";
-		PathAsset = "/Game/Blueprints/MotionMatch/PSD_Walk_Starts.PSD_Walk_Starts";
 
+public:
+	FPSD_DenseStandWalkStartsEntity()
+	{
+		NameAsset = "PSD_Dense_Stand_Walk_Starts";
+		PathAsset = "/Game/Characters/UEFN_Mannequin/Animations/MotionMatchingData/Databases/Dense/PSD_Dense_Stand_Walk_Starts.PSD_Dense_Stand_Walk_Starts";
+		
 		Callback = [](const std::vector<std::any>& Params) -> bool {
-			if (Params.empty())
-			{
-				return true;
-			}
 
 			try
 			{
+				if (Params.empty())
+				{
+					return false;
+				}
+				
 				const ESelectorDatabaseValidateRuleModeEnum ModeValidate = std::any_cast<ESelectorDatabaseValidateRuleModeEnum>(Params[0]);
 
 				if (ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Velocity)
 				{
-					const float PreviousVelocity = std::any_cast<float>(Params[1]);
-					const float CurrentVelocity = std::any_cast<float>(Params[2]);
+					const float CurrentVelocity = std::any_cast<float>(Params[1]);
+					const float PreviousVelocity = std::any_cast<float>(Params[2]);
 				
-					return CurrentVelocity > 0.01 && PreviousVelocity <= CurrentVelocity;
+					return CurrentVelocity > PreviousVelocity;
 				}
 				
 				if (ModeValidate == ESelectorDatabaseValidateRuleModeEnum::StateCharacter)
@@ -42,37 +43,40 @@ public:
 					return (CurrentState == EPlayerCharacterStateEnum::Walking && PreviousState == EPlayerCharacterStateEnum::Idle);
 				}
 				
+				return false;
 			}
 			catch (const std::bad_any_cast&)
 			{
 				UE_LOG(LogTemp, Error, TEXT("Nao foi possivel converter os parametros, os tipos estavam errados!"));
 				return false;
 			}
-			
-			return false;
 		};
 	}
 
-	virtual ~FPSD_SparseStandWalkStartsEntity() override
+	virtual ~FPSD_DenseStandWalkStartsEntity() override
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Object of FPSD_SparseStandWalkStartsEntity deleted at %p"), this);
+		UE_LOG(LogTemp, Warning, TEXT("Object of PSD_DenseStandWalkStartsEntity deleted at %p"), this);
 	}
 
-	virtual ESelectorDatabaseValidateRuleModeEnum GetTypeValidateRule() override
+	virtual TArray<ESelectorDatabaseValidateRuleModeEnum> GetTypesValidateRule() override
 	{
-		return ESelectorDatabaseValidateRuleModeEnum::VelocityAndState;
+		return {
+			ESelectorDatabaseValidateRuleModeEnum::Velocity,
+			ESelectorDatabaseValidateRuleModeEnum::Acceleration,
+			ESelectorDatabaseValidateRuleModeEnum::StateCharacter
+		};
 	}
 
 	// Inicializa as Rules para valicao
 	virtual void Initialize() override
 	{
-		const TSharedPtr<IRuleBase> Rule = MakeShared<FActorWalkStartRule>();
+		IRuleBase* Rule = new FActorWalkStartRule();
 		AddRule(Rule);
 	}
 	
 	virtual void ListRules() override
 	{
-		for (const TSharedPtr<IRuleBase> Rule : Rules)
+		for (IRuleBase* Rule : Rules)
 		{
 			UE_LOG(LogTemp, Log, TEXT("Listando regras: %s"), *Rule->GetRuleName());
 		}

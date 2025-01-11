@@ -3,4 +3,10 @@
 #include "NewProject.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, NewProject, "NewProject" );
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, NewProject, "NewProject");
+
+
+
+
+
+

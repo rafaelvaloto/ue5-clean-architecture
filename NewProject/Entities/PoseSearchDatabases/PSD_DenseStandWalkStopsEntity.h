@@ -5,20 +5,16 @@
 #include "CoreMinimal.h"
 #include "NewProject/Commons/Rules/FRuleManager.h"
 #include "NewProject/Commons/Rules/SelectorPoseSearchDatabaseRules/FActorWalkStopRule.h"
-#include "NewProject/Interfaces/Helpers/RuleBase.h"
 
-/**
- * 
- */
-class NEWPROJECT_API FPSD_SparseStandWalkStopsEntity : public FRuleManager
+class NEWPROJECT_API FPSD_DenseStandWalkStopsEntity : public FRuleManager
 {
+	
 public:
-	FPSD_SparseStandWalkStopsEntity()
+	FPSD_DenseStandWalkStopsEntity()
 	{
-		NameAsset = "PSD_Sparse_Stand_Walk_Stops";
-		PathAsset =
-			"/Game/Characters/UEFN_Mannequin/Animations/MotionMatchingData/Databases/Sparse/PSD_Sparse_Stand_Walk_Stops.PSD_Sparse_Stand_Walk_Stops";
-
+		NameAsset = "PSD_Dense_Stand_Walk_Stops";
+		PathAsset = "/Game/Characters/UEFN_Mannequin/Animations/MotionMatchingData/Databases/Dense/PSD_Dense_Stand_Walk_Stops.PSD_Dense_Stand_Walk_Stops";
+		
 		Callback = [](const std::vector<std::any>& Params) -> bool
 		{
 			if (Params.empty())
@@ -36,10 +32,8 @@ public:
 					const float CurrentVelocity = std::any_cast<float>(Params[1]);
 					const float PreviousVelocity = std::any_cast<float>(Params[2]);
 
-					if (const bool bIsValid = PreviousVelocity > CurrentVelocity; !bIsValid)
+					if (const bool bIsValid = PreviousVelocity < CurrentVelocity; bIsValid)
 					{
-						UE_LOG(LogTemp, Error, TEXT("PreviousVelocity: %f"), PreviousVelocity);
-						UE_LOG(LogTemp, Error, TEXT("CurrentVelocity: %f"), CurrentVelocity);
 						return false;
 					}
 
@@ -56,26 +50,28 @@ public:
 		};
 	}
 
-	~FPSD_SparseStandWalkStopsEntity()
+	virtual ~FPSD_DenseStandWalkStopsEntity() override
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Object of FPSD_SparseStandWalkStopsEntity deleted at %p"), this);
+		UE_LOG(LogTemp, Warning, TEXT("Object of PSD_DenseStandWalkStopsEntity deleted at %p"), this);
 	}
 
-	virtual ESelectorDatabaseValidateRuleModeEnum GetTypeValidateRule() override
+	virtual TArray<ESelectorDatabaseValidateRuleModeEnum> GetTypesValidateRule() override
 	{
-		return ESelectorDatabaseValidateRuleModeEnum::Velocity;
+		return {
+			ESelectorDatabaseValidateRuleModeEnum::Deceleration
+		};
 	}
 
 	// Inicializa as Rules para valicao
 	virtual void Initialize() override
 	{
-		const TSharedPtr<IRuleBase> Rule = MakeShared<FActorWalkStopRule>();
+		IRuleBase* Rule = new FActorWalkStopRule();
 		AddRule(Rule);
 	}
 
 	virtual void ListRules() override
 	{
-		for (const TSharedPtr<IRuleBase> Rule : Rules)
+		for (IRuleBase* Rule : Rules)
 		{
 			UE_LOG(LogTemp, Log, TEXT("Listando regras: %s"), *Rule->GetRuleName());
 		}
@@ -83,6 +79,6 @@ public:
 
 	virtual void PrintInformation() override
 	{
-		UE_LOG(LogTemp, Warning, TEXT("FPSD_SparseStandWalkStopsEntity exc method PrintInformation"));
+		UE_LOG(LogTemp, Warning, TEXT("PSD_DenseStandWalkStopsEntity exc method PrintInformation"));
 	}
 };

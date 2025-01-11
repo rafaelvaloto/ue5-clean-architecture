@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Application/PlayerCharacter/PlayerCharacter.h"
 #include "NewProject/Interfaces/Helpers/RuleBase.h"
 
 /**
@@ -13,9 +14,9 @@ class NEWPROJECT_API FActorWalkStopRule : public IRuleBase
 	float MaxSpeedThreshold;
 
 public:
-	FActorWalkStopRule
+	explicit FActorWalkStopRule
 	(
-		float MaxSpeedThreshold = 20.0f
+		const float MaxSpeedThreshold = 20.0f
 	): MaxSpeedThreshold(MaxSpeedThreshold) {}
 
 	virtual ~FActorWalkStopRule() override
@@ -41,12 +42,5 @@ public:
 	virtual FString GetRuleName() const override
 	{
 		return FString::Printf(TEXT("FActorWalkStopRule"));
-	}
-
-private:
-	// Método fictício para obter o "DeltaTime" (ou seja, o intervalo de tempo entre cálculos)
-	float GetDeltaTime() const
-	{
-		return FApp::GetDeltaTime(); // Ou use seu sistema de temporização
 	}
 };

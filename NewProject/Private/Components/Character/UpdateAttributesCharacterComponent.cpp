@@ -4,12 +4,13 @@
 #include "Components/Character/UpdateAttributesCharacterComponent.h"
 
 // Sets default values for this component's properties
-UUpdateAttributesCharacterComponent::UUpdateAttributesCharacterComponent()
+UUpdateAttributesCharacterComponent::UUpdateAttributesCharacterComponent():
+	MagnitudeAcceleration(0.0f),
+	bIsDetectedDirectionChange(false)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	// ...
 }
 
 
@@ -23,29 +24,93 @@ void UUpdateAttributesCharacterComponent::BeginPlay()
 
 // Called every frame
 void UUpdateAttributesCharacterComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                                    FActorComponentTickFunction* ThisTickFunction)
+                                                        FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	// ...
+
+	CalcMagnitudeAcceleration(DeltaTime);
+	DetectDirectionChange(DeltaTime);
+
+
+	// Despacha os eventos de broadcasts
+	DispatchEvent(DeltaTime);
 }
 
-void UUpdateAttributesCharacterComponent::SetLocationCurrent(const FVector LocationAt)
-{
-}
 
 void UUpdateAttributesCharacterComponent::SetVelocityCurrent(const FVector VelocityAt)
 {
-	if (VelocityAt.Size() <= 0.001f)
+	if (VelocityAt.Size() <= 0.01f)
 	{
 		PreviousVelocity = VelocityAt;
 		CurrentVelocity = VelocityAt;
 		return;
 	}
-	
+
 	PreviousVelocity = CurrentVelocity;
 	CurrentVelocity = VelocityAt;
+}
 
-	OnDeceleration.Broadcast(PreviousVelocity.Size(), CurrentVelocity.Size());
+
+void UUpdateAttributesCharacterComponent::DetectDirectionChange(float DeltaTime)
+{
+	bIsDetectedDirectionChange = false;
+	
+	// Obtenha a direção de movimento atual
+	const FVector CurrentDirection = GetVelocityCurrent().GetSafeNormal();
+
+	// Verifique se há uma alteração de direção
+	if (
+		!PreviousDirection.IsNearlyZero() &&
+		!FVector::PointsAreNear(CurrentDirection, PreviousDirection, 0.01f))
+	{
+		UE_LOG(LogTemp, Log, TEXT("Mudança de direção detectada! Direção anterior: %s, Direção atual: %s"),
+		       *PreviousDirection.ToString(), *CurrentDirection.ToString());
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Mudou direcao"));
+		}
+
+		PreviousDirection = CurrentDirection;
+		bIsDetectedDirectionChange = true;
+		return;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Mesma direcao"));
+
+	PreviousDirection = CurrentDirection;
+}
+
+void UUpdateAttributesCharacterComponent::DispatchEvent(float DeltaTime)
+{
+	const float CurrentSize = GetVelocitySize();
+	const float PreviousSize = GetPreviousVelocitySize();
+
+	if (CurrentSize < PreviousSize)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UUpdateAttributesCharacterComponent::OnDeceleration"));
+		OnDeceleration.Broadcast(PreviousSize, CurrentSize);
+		return;
+	}
+
+	OnAcceleration.Broadcast(PreviousSize, CurrentSize);
+}
+
+void UUpdateAttributesCharacterComponent::CalcMagnitudeAcceleration(const float DeltaTime)
+{
+	if (CurrentVelocity.IsNearlyZero())
+	{
+		return;
+	}
+
+	const FVector CurrentSize = GetVelocityCurrent();
+	const FVector PreviousSize = GetPreviousVelocity();
+
+	MagnitudeAcceleration = (CurrentSize - PreviousSize).Size() / DeltaTime;
+}
+
+void UUpdateAttributesCharacterComponent::SetLocationCurrent(const FVector LocationAt)
+{
 }
 
 FVector UUpdateAttributesCharacterComponent::GetVelocityCurrent()
@@ -63,6 +128,11 @@ FVector UUpdateAttributesCharacterComponent::GetLocationCurrent()
 	return CurrentLocation;
 }
 
+float UUpdateAttributesCharacterComponent::GetMagnitudeAcceleration()
+{
+	return MagnitudeAcceleration;
+}
+
 float UUpdateAttributesCharacterComponent::GetVelocitySize()
 {
 	return CurrentVelocity.Size();
@@ -73,8 +143,12 @@ float UUpdateAttributesCharacterComponent::GetVelocitySize2D()
 	return CurrentVelocity.Size2D();
 }
 
+bool UUpdateAttributesCharacterComponent::IsDetectedDirectionChange()
+{
+	return bIsDetectedDirectionChange;
+}
+
 float UUpdateAttributesCharacterComponent::GetPreviousVelocitySize()
 {
 	return PreviousVelocity.Size();
 }
-

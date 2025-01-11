@@ -7,6 +7,7 @@ enum class ESelectorDatabaseValidateRuleModeEnum : uint8
 {
 	StateCharacter UMETA(DisplayName = "StateCharacter"),
 	Velocity UMETA(DisplayName = "Velocity"),
-	VelocityAndState UMETA(DisplayName = "VelocityAndState"),
+	Deceleration UMETA(DisplayName = "Deceleration"),
+	Acceleration UMETA(DisplayName = "Acceleration"),
 	All UMETA(DisplayName = "All"),
 };

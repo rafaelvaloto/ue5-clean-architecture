@@ -10,7 +10,7 @@
 #include "NewProject/Interfaces/MotionMatchHelpersComponents/SelectorPoseSearchDatabaseInterface.h"
 #include "SelectorPoseSearchDatabaseComponent.generated.h"
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS()
 class NEWPROJECT_API USelectorPoseSearchDatabaseComponent : public UActorComponent, public ISelectorPoseSearchDatabaseInterface
 {
 	GENERATED_BODY()
@@ -34,8 +34,7 @@ public:
 	virtual void SetInterruptMode(EPoseSearchInterruptMode Mode) override;
 	virtual EPoseSearchInterruptMode GetInterruptMode() override;
 
-	TArray<TSharedPtr<IEntityAsset>> FoundHeaderFiles;
-	virtual TArray<TSharedPtr<IEntityAsset>> GetEntitiesAsset() override;
+	virtual TArray<IEntityAsset*> GetEntitiesAsset() override;
 
 	UFUNCTION()
 	void OnState(EPlayerCharacterStateEnum CurrentState, EPlayerCharacterStateEnum PreviousState);
@@ -44,9 +43,15 @@ public:
 	void OnDeceleration(float PrevVelocity, float CurrentVelocity);
 
 	UFUNCTION()
+	void OnAcceleration(float PrevVelocity, float CurrentVelocity);
+
+	UFUNCTION()
 	virtual AActor* GetActor() override;
 
-	bool bIsBlockingDeceleration = false;
+	bool bIsBlockingDeceleration;
+	bool bIsBlockingAcceleration;
+
+	TArray<IEntityAsset*> FoundHeaderFiles;
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pose Search Database")

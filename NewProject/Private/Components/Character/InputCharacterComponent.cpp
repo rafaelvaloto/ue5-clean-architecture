@@ -56,10 +56,10 @@ void UInputCharacterComponent::Move(FVector InputController)
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 	// Obtém a direção da frente
-	const FVector FowardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	const FVector FowardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	
 	Character->AddMovementInput(FowardDirection, InputController.Y);
-	Character->AddMovementInput(RightDirection, InputController.X);
+	Character->AddMovementInput(RightDirection, -InputController.X);
 }
 

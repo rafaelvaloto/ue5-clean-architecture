@@ -9,42 +9,37 @@
 /**
  * 
  */
-class NEWPROJECT_API FActorWalkStartRule final : public IRuleBase
+class NEWPROJECT_API FActorWalkStartRule : public IRuleBase
 {
 	float MaxAccelerationThreshold;
 	float MaxSpeedThreshold;
 
 public:
-	FActorWalkStartRule
+	explicit FActorWalkStartRule
 	(
-		const float MaxAccelerationThreshold = 50.0f, const float MaxSpeedThreshold = 30.f
+		const float MaxAccelerationThreshold = 600.0f, const float MaxSpeedThreshold = 5.0f
 	): MaxAccelerationThreshold(MaxAccelerationThreshold), MaxSpeedThreshold(MaxSpeedThreshold) {}
 
 	virtual ~FActorWalkStartRule() override
 	{
 		UE_LOG(LogTemp, Warning, TEXT("FActorWalkStartRule destrutor chamado - %p"), this);
 	}
-	
+
 	virtual bool Validate(const UObject* Target) const override
 	{
 		const APlayerCharacter* Actor = Cast<APlayerCharacter>(Target);
 		if (!Actor) return false;
 
-		const float DeltaTime = GetDeltaTime();
-		
 		const float Speed = Actor->UpdatedBaseAttributesComponent->GetVelocitySize();
-		const FVector PrevVelocity = Actor->UpdatedBaseAttributesComponent->GetPreviousVelocity();
-		const FVector CurrentVelocity = Actor->GetVelocity();
-
-		const float AccelMagnitude = (CurrentVelocity - PrevVelocity).Size() / DeltaTime;
+		const float AccelMagnitude = Actor->UpdatedBaseAttributesComponent->GetMagnitudeAcceleration();
 
 		if (const bool IsValid = AccelMagnitude <= MaxAccelerationThreshold && Speed <= MaxSpeedThreshold; !IsValid)
 		{
-			UE_LOG(LogTemp, Error, TEXT("FActorWalkStartRule Invalid %s"), *GetRuleName()); // ( Adicione uma mensagem de log aqui
+			UE_LOG(LogTemp, Error, TEXT("FActorWalkStartRule Invalid %s"), *GetRuleName());
 			return false;
 		}
 
-		UE_LOG(LogTemp, Error, TEXT("FActorWalkStartRule Valid %s"), *GetRuleName()); // ( Adicione uma mensagem de log aqui
+		UE_LOG(LogTemp, Error, TEXT("FActorWalkStartRule Valid %s"), *GetRuleName());
 		return true;
 	}
 	
@@ -52,12 +47,5 @@ public:
 	virtual FString GetRuleName() const override
 	{
 		return FString::Printf(TEXT("FActorWalkStartRule"));
-	}
-
-private:
-	// Método fictício para obter o "DeltaTime" (ou seja, o intervalo de tempo entre cálculos)
-	float GetDeltaTime() const
-	{
-		return FApp::GetDeltaTime(); // Ou use seu sistema de temporização
 	}
 };

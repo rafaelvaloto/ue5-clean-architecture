@@ -2,46 +2,46 @@
 
 #pragma once
 
+#include <functional>
 #include "CoreMinimal.h"
 #include "NewProject/Interfaces/Helpers/EntityAsset.h"
 #include "NewProject/Interfaces/Helpers/RuleBase.h"
 
-class NEWPROJECT_API FRuleManager: public IEntityAsset
+
+class NEWPROJECT_API FRuleManager : public IEntityAsset
 {
 	
 public:
-	FRuleManager() :
+	FRuleManager():
 		NameAsset("DefaultRuleName"),
 		PathAsset("DefaultRulePath")
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Object of FRuleManager created at %p"), this);
 	}
-	
+
 	//
 	virtual ~FRuleManager() override
 	{
-		Rules.Reset();
-		Rules.Empty();
-		
-		UE_LOG(LogTemp, Warning, TEXT("Object of FRuleManager deleted at %p"), this);
-	}
+		Callback = nullptr;
+		NameAsset = "DefaultRuleName";
+		PathAsset = "DefaultRulePath";
 
-	virtual ESelectorDatabaseValidateRuleModeEnum GetTypeValidateRule() override
-	{
-		return ESelectorDatabaseValidateRuleModeEnum::All;
+		Rules.Reset();
+		UE_LOG(LogTemp, Warning, TEXT("Object of FRuleManager Rules at %d"), Rules.Num());
+		UE_LOG(LogTemp, Warning, TEXT("Object of FRuleManager deleted at %p"), this);
 	}
 
 	/**
 	 * Adiciona uma nova regra
 	 */
-	virtual void AddRule(const TSharedPtr<IRuleBase> Rule) override
+	virtual void AddRule(IRuleBase* Rule) override
 	{
 		Rules.Add(Rule);
 	}
 
 	virtual void ListRules() override
 	{
-		for (const TSharedPtr<IRuleBase> Rule : Rules)
+		for (IRuleBase* Rule : Rules)
 		{
 			UE_LOG(LogTemp, Log, TEXT("Listando Regras: %s"), *Rule->GetRuleName());
 		}
@@ -59,8 +59,8 @@ public:
 		}
 
 		UE_LOG(LogTemp, Warning, TEXT("ValidWhen passou %s"), *GetNameAsset());
-		
-		for (const TSharedPtr<IRuleBase> Rule : Rules)
+
+		for (IRuleBase* Rule : Rules)
 		{
 			if (!Rule->Validate(Target))
 			{
@@ -95,9 +95,10 @@ public:
 	}
 
 	std::function<bool(const std::vector<std::any>&)> Callback;
-
+	
 protected:
 	const char* NameAsset;
 	const char* PathAsset;
-	TArray<TSharedPtr<IRuleBase>> Rules;
+	TArray<IRuleBase*> Rules;
+	
 };

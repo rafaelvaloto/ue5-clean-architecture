@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "NewProject/Interfaces/MotionMatchHelpersComponents/SelectorPoseSearchDatabaseInterface.h"
 #include "UObject/Object.h"
-#include "UpdatePoseSearchDatabaseWithDescelerationUseCase.generated.h"
+#include "UpdatePoseSearchDatabaseWithAccelerationUseCase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class NEWPROJECT_API UUpdatePoseSearchDatabaseWithDescelerationUseCase : public UObject
+class NEWPROJECT_API UUpdatePoseSearchDatabaseWithAccelerationUseCase : public UObject
 {
 	GENERATED_BODY()
 

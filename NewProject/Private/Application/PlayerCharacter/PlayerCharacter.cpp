@@ -9,7 +9,7 @@
 #include "Components/MotionMatchHelpers/SelectorPoseSearchDatabaseComponent.h"
 #include "UseCases/CharacterTrajectoryComponent/CharacterTrajectoryComponentUseCase.h"
 #include "UseCases/UpdateStateCharacterComponent/UpdateStateCharacterComponentUseCase.h"
-#include "UseCases/SelectorPoseSearchDatabaseComponent/UpdateNodePoseSearchDatabaseUseCase.h"
+#include "UseCases/SelectorPoseSearchDatabaseComponent/UpdatePoseSearchDatabaseWithStateUseCase.h"
 #include "UseCases/UpdateAttributesCharacterComponent/UpdateAttributesCharacterComponentUseCase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -23,25 +23,26 @@ APlayerCharacter::APlayerCharacter()
 	// Init Components
 	SetupComponents();
 	SetupSkeletonMesh();
-	SetupCameraComponents();
 	SetupAnimInstanceBlueprint();
 
 	bUseControllerRotationYaw = false;
-
-	// Configs GetCharacterMovement()
-	GetCharacterMovement()->bIgnoreBaseRotation = true;
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->bUseControllerDesiredRotation = true;
 
-	GetCharacterMovement()->MaxWalkSpeed = 201.0f;
-	GetCharacterMovement()->MaxAcceleration = 35.0f;
-	GetCharacterMovement()->MinAnalogWalkSpeed = 0.01f;
+	GetCharacterMovement()->MinAnalogWalkSpeed = 0.001f;
+	GetCharacterMovement()->MaxWalkSpeed = 100.0f;
+	GetCharacterMovement()->MaxAcceleration = 1000.0f;
+	GetCharacterMovement()->BrakingDecelerationWalking = 1000.0f;
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SelectorPoseSearchDatabaseComponent->LoadDatabaseAsset(
+		"C:\\Users\\rafae\\Documents\\Unreal Projects\\NewProject\\Source\\NewProject\\Entities\\PoseSearchDatabases"
+		);
 }
 
 // Called every frame
@@ -49,18 +50,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Running)
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 600.f;
-		GetCharacterMovement()->MaxAcceleration = 100.f;
-	}
-
-	if (UpdateStateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Running)
-	{
-		GetCharacterMovement()->MaxWalkSpeed = 201.f;
-		GetCharacterMovement()->MaxAcceleration = 35.f;
-	}
-
+	// Update Movemnt condition
+	UpdateMovementMode(DeltaTime);
+	
 	// Update Persistent Attrs Character, Velocity, Location etc..
 	UUpdateAttributesCharacterComponentUseCase::Handle(UpdatedBaseAttributesComponent, this);
 
@@ -100,33 +92,29 @@ void APlayerCharacter::SetupComponents()
 	// Inicialize o componente que atualiza o PoseSearchDatabases no nó MotionMatch em AnimBlueprint
 	SelectorPoseSearchDatabaseComponent = CreateDefaultSubobject<USelectorPoseSearchDatabaseComponent>(
 		TEXT("ISelectorPoseSearchDatabaseComponent"));
-	
-	SelectorPoseSearchDatabaseComponent->LoadDatabaseAsset(
-		"C:\\Users\\rafae\\Documents\\Unreal Projects\\NewProject\\Source\\NewProject\\Entities\\PoseSearchDatabases"
-		);
 	SelectorPoseSearchDatabaseComponent->DefaultDatabaseAsset(
 		"/Game/Characters/UEFN_Mannequin/Animations/MotionMatchingData/Databases/Dense/PSD_Dense_Stand_Idles.PSD_Dense_Stand_Idles"
 		);
-	
 	SelectorPoseSearchDatabaseComponent->RegisterComponent();
 	// End Component Initialize PoseSearch Databses
 }
 
 void APlayerCharacter::SetupCameraComponents()
 {
-	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArmComponent->SetupAttachment(RootComponent);
-
-	SpringArmComponent->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
-	SpringArmComponent->TargetArmLength = 1200.f;
-	SpringArmComponent->bUsePawnControlRotation = true;
-
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
-	CameraComponent->bUsePawnControlRotation = false;
-
-	CameraComponent->AddLocalOffset(FVector(-400.f, 0.f, 550.f));
-	CameraComponent->AddRelativeRotation(FRotator(-40.f, 0.f, 0.f));
+	// SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	// SpringArmComponent->SetupAttachment(RootComponent);
+	//
+	// SpringArmComponent->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
+	// SpringArmComponent->bUsePawnControlRotation = false;
+	// SpringArmComponent->bDoCollisionTest = false;
+	// SpringArmComponent->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
+	//
+	// CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	// CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
+	// CameraComponent->bUsePawnControlRotation = false;
+	
+	// Alternativa para fixar os valores. Desative qualquer rotação dinâmica.
+	
 }
 
 void APlayerCharacter::SetupSkeletonMesh() const
@@ -141,7 +129,7 @@ void APlayerCharacter::SetupSkeletonMesh() const
 
 	GetMesh()->SetSkeletalMesh(SkeletonMesh.Object);
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -88.f));
-	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	GetMesh()->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));
 }
 
 void APlayerCharacter::SetupAnimInstanceBlueprint() const
@@ -155,4 +143,41 @@ void APlayerCharacter::SetupAnimInstanceBlueprint() const
 	}
 
 	GetMesh()->SetAnimInstanceClass(AnimInstanceClass.Class);
+}
+
+void APlayerCharacter::UpdateMovementMode(const float DeltaTime) const
+{
+	// Defina velocidades realistas
+	const float WalkSpeed = 100.0f;  // Velocidade para andar
+	const float RunSpeed = 500.0f;  // Velocidade para correr
+	const float AccelerationValue = 1000.0f; // Aceleração realista
+	const float DecelerationValue = 1000.0f; // Desaceleração realista
+
+	// Checa o estado atual do personagem (por exemplo, Walk ou Run)
+	if (UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Running)
+	{
+		// O personagem está correndo
+		GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(
+			GetCharacterMovement()->MaxWalkSpeed,
+			RunSpeed,
+			DeltaTime,
+			5.0f // Velocidade de interpolação
+		);
+
+		GetCharacterMovement()->MaxAcceleration = AccelerationValue;
+		GetCharacterMovement()->BrakingDecelerationWalking = DecelerationValue;
+		return;
+	}
+
+	// O personagem está andando
+	GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(
+		GetCharacterMovement()->MaxWalkSpeed,
+		WalkSpeed,
+		DeltaTime,
+		5.0f
+	);
+	
+	// Configura aceleração e desaceleração de forma independente
+	GetCharacterMovement()->MaxAcceleration = AccelerationValue;
+	GetCharacterMovement()->BrakingDecelerationWalking = DecelerationValue;
 }

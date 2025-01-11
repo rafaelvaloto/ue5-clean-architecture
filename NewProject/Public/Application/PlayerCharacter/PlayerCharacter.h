@@ -40,6 +40,7 @@ private:
 	void SetupSkeletonMesh() const;
 	void SetupCameraComponents();
 	void SetupAnimInstanceBlueprint() const;
+	void UpdateMovementMode(float DeltaTime) const;
 
 	// Components And Variables
 public:

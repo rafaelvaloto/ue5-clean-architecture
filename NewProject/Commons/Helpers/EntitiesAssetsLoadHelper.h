@@ -1,76 +1,99 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "NewProject/Commons/Providers/Entities/EntityFactoryRegistry.h"
 #include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandIdlesEntity.h"
-#include "NewProject/Entities/PoseSearchDatabases/PSD_SparseStandWalkStartsEntity.h"
-#include "NewProject/Entities/PoseSearchDatabases/PSD_SparseStandWalkStopsEntity.h"
+#include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandRunPivotsAllEntity.h"
+#include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandWalkPivotsEntity.h"
+#include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandWalkStartsEntity.h"
+#include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandWalkStopsEntity.h"
 #include "NewProject/Interfaces/Helpers/EntityAsset.h"
-#include "EntitiesAssetsLoadHelper.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class NEWPROJECT_API UEntitiesAssetsLoadHelper : public UObject
+
+class NEWPROJECT_API FEntitiesAssetsLoadHelper final
 {
-	GENERATED_BODY()
-
 public:
-	UEntitiesAssetsLoadHelper()
+	FEntitiesAssetsLoadHelper()
 	{
-		RegisterEntities();
 	}
-	
-	static void CreateEntitiesFromFiles(const FString& Directory, TArray<TSharedPtr<IEntityAsset>>& Entities)
+
+	~FEntitiesAssetsLoadHelper()
+	{
+	}
+
+	static void CreateEntitiesFromFiles(const FString& Directory, TArray<IEntityAsset*>& Entities)
 	{
 		// Encontrar os arquivos
 		TArray<FString> FoundFiles;
-		
+
 		IFileManager& FileManager = IFileManager::Get();
 		FileManager.FindFiles(FoundFiles, *Directory, TEXT("*.h"));
 
 		if (FoundFiles.Num() > 0)
 		{
-			FoundFiles.RemoveAll([](const FString& FileName) {
+			FoundFiles.RemoveAll([](const FString& FileName)
+			{
 				return FileName.IsEmpty(); // Remove arquivos com nomes vazios
-			});	
+			});
 		}
 
 		// Iterar pelos arquivos
 		for (const FString& File : FoundFiles)
 		{
 			FString FileName = FPaths::GetBaseFilename(File);
-			UE_LOG(LogTemp, Warning, TEXT("Dir list FileName: %s"), *FileName);
-
-			TSharedPtr<IEntityAsset> NewEntity = TSharedPtr<IEntityAsset>(FEntityFactoryRegistry::Create(FileName));
-			if (!NewEntity)
+			IEntityAsset* Entity = RegisterClass( TEXT("F") + FileName);
+			if (!Entity)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Nenhuma classe encontrada para: %s"), *FileName);
+				UE_LOG(LogTemp, Warning, TEXT("Entity not valid"));
 				continue;
 			}
 
-			NewEntity->Initialize();
-			Entities.Add(NewEntity);
+			Entity->Initialize();
+			Entities.Add(Entity);
 		}
 	}
 
-	static void RegisterEntities()
+	static IEntityAsset* RegisterClass(FString FileName)
 	{
-		FEntityFactoryRegistry::Register(TEXT("FPSD_SparseStandWalkStartsEntity"), []() -> IEntityAsset* {
-			return new FPSD_SparseStandWalkStartsEntity();
-		});
+		// Mapeamento entre o nome do arquivo e a classe correspondente
+		static TMap<FString, TFunction<IEntityAsset*()>> ClassMapping = {
+			{
+				TEXT("FPSD_DenseStandIdlesEntity"), []() -> IEntityAsset* {
+					return new FPSD_DenseStandIdlesEntity();
+				}
+			},
+			{
+				TEXT("FPSD_DenseStandRunPivotsAllEntity"), []() -> IEntityAsset* {
+					return new FPSD_DenseStandRunPivotsAllEntity();
+				}
+			},
+			{
+				TEXT("FPSD_DenseStandWalkPivotsEntity"), []() -> IEntityAsset* {
+					return new FPSD_DenseStandWalkPivotsEntity();
+				}
+			},
+			{
+				TEXT("FPSD_DenseStandWalkStartsEntity"), []() -> IEntityAsset* {
+					return new FPSD_DenseStandWalkStartsEntity();
+				}
+			},
+			{
+				TEXT("FPSD_DenseStandWalkStopsEntity"), []() -> IEntityAsset* {
+					return new FPSD_DenseStandWalkStopsEntity();
+				}
+			},
+		};
 
-		FEntityFactoryRegistry::Register(TEXT("FPSD_DenseStandIdlesEntity"), []() -> IEntityAsset* {
-			return new FPSD_DenseStandIdlesEntity();
-		});
+		if (ClassMapping.Contains(FileName))
+		{
+			// Obtém a fábrica definida no mapa e registra usando a função Register
+			FEntityFactoryRegistry::Register(FileName, ClassMapping[FileName]);
+			
+			UE_LOG(LogTemp, Warning, TEXT("Classe registrada para FileName: %s"), *FileName);
+			return FEntityFactoryRegistry::Create(FileName);
+		}
 
-		FEntityFactoryRegistry::Register(TEXT("FPSD_SparseStandWalkStopsEntity"), []() -> IEntityAsset* {
-			return new FPSD_SparseStandWalkStopsEntity();
-		});
-		
-		UE_LOG(LogTemp, Log, TEXT("Entities registradas com sucesso."));
+		UE_LOG(LogTemp, Error, TEXT("Nenhuma classe encontrada para FileName: %s"), *FileName);
+		return nullptr;
 	}
 };

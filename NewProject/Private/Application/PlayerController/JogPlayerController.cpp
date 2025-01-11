@@ -6,6 +6,7 @@
 #include "NewProject/Public/UseCases/InputCharacterComponent/MovementCharacterUseCase.h"
 #include "EnhancedInputComponent.h"
 #include "InputMappingContext.h"
+#include "Camera/CameraActor.h"
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"
 
 
@@ -26,11 +27,49 @@ AJogPlayerController::AJogPlayerController()
 	{
 		IA_Move = InputActionMoveAsset.Object;
 	}
+
+	
 }
 
 void AJogPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Defina uma câmera fixa em um ponto específico
+	bAutoManageActiveCameraTarget = false;
+
+	APlayerCameraManager* CameraManager = PlayerCameraManager;
+	if (CameraManager)
+	{
+		// Define o FOV ou outros ajustes necessários
+		CameraManager->SetFOV(90.f); // Campo de visão ajustado
+	}
+
+	
+	// Criar a câmera fixa (ou use um ACameraActor específico do cenário)
+	FVector FixedCameraLocation(-50.0f, -2000.0f, 900.0f);
+	FRotator FixedCameraRotation(-30.f, 90.0f, 0.0);
+
+	ACameraActor* FixedCamera = GetWorld()->SpawnActor<ACameraActor>(FixedCameraLocation, FixedCameraRotation);
+	if (FixedCamera)
+	{
+		FVector2D ViewportSize;
+		if (GEngine && GEngine->GameViewport)
+		{
+			GEngine->GameViewport->GetViewportSize(ViewportSize);
+
+			// Exemplo: Ajuste do Field of View baseado no tamanho
+			float NewFOV = (ViewportSize.X / ViewportSize.Y) * 90.0f; // Cálculo simples baseado na proporção de aspecto
+			FixedCamera->GetCameraComponent()->SetFieldOfView(NewFOV);
+		}
+		
+		float NewFOV = (ViewportSize.X / ViewportSize.Y) * 90.0f;
+
+		FixedCamera->GetCameraComponent()->SetFieldOfView(NewFOV);
+		
+		// Definindo a câmera como a visão atual
+		SetViewTarget(FixedCamera);
+	}
 
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
 		GetLocalPlayer()))

@@ -29,7 +29,7 @@ public:
 	virtual void DefaultDatabaseAsset(const FString& DirectoryEntityAsset) = 0;
 	virtual UPoseSearchDatabase* GetDatabase() = 0;
 	virtual void SetDatabaseCurrent(const uint32 Index) = 0;
-	virtual TArray<TSharedPtr<IEntityAsset>> GetEntitiesAsset() = 0;
+	virtual TArray<IEntityAsset*> GetEntitiesAsset() = 0;
 	virtual void SetInterruptMode(EPoseSearchInterruptMode Mode) = 0;
 	virtual EPoseSearchInterruptMode GetInterruptMode() = 0;
 

@@ -6,35 +6,32 @@
 #include "Application/PlayerCharacter/PlayerCharacter.h"
 #include "NewProject/Interfaces/Helpers/RuleBase.h"
 
+
 /**
  * 
  */
 class NEWPROJECT_API FActorIdleRule final : public IRuleBase
 {
 	float MaxSpeedThreshold;
+	
 public:
-	FActorIdleRule(
-		float MaxSpeedThreshold = 0.01f
-	): MaxSpeedThreshold(MaxSpeedThreshold) {};
+	explicit FActorIdleRule(
+		const float MaxSpeedThreshold = 0.01f
+	): MaxSpeedThreshold(MaxSpeedThreshold) {}
 
 	virtual ~FActorIdleRule() override
 	{
 		UE_LOG(LogTemp, Warning, TEXT("FActorIdleRule destrutor chamado - %p"), this);
 	}
 
-
 	virtual bool Validate(const UObject* Target) const override
 	{
 		const APlayerCharacter* Actor = Cast<APlayerCharacter>(Target);
 		return Actor->UpdatedBaseAttributesComponent->GetVelocitySize() <= MaxSpeedThreshold;
 	}
-
-private:
-
-	// Método fictício para obter o "DeltaTime" (ou seja, o intervalo de tempo entre cálculos)
-	float GetDeltaTime() const
-	{
-		return FApp::GetDeltaTime(); // Ou use seu sistema de temporização
-	}
 	
+	virtual FString GetRuleName() const override
+	{
+		return FString::Printf(TEXT("FActorIdle"));
+	}
 };
