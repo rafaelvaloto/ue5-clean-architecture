@@ -8,6 +8,7 @@
 #include "InputMappingContext.h"
 #include "Camera/CameraActor.h"
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"
+#include "UseCases/InputCharacterComponent/MovementCharacterControlYawUseCase.h"
 
 
 AJogPlayerController::AJogPlayerController()
@@ -26,6 +27,13 @@ AJogPlayerController::AJogPlayerController()
 	if (InputActionMoveAsset.Succeeded())
 	{
 		IA_Move = InputActionMoveAsset.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionControlRotationAsset(
+		TEXT("/Game/Input/IA_Control_Rotation.IA_Control_Rotation"));
+	if (InputActionControlRotationAsset.Succeeded())
+	{
+		IA_ControlRotation = InputActionControlRotationAsset.Object;
 	}
 
 	
@@ -91,8 +99,38 @@ void AJogPlayerController::SetupInputComponent()
 	}
 
 	EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AJogPlayerController::Move);
+	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Triggered, this, &AJogPlayerController::ControllRotation);
+	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Canceled, this, &AJogPlayerController::ControllRotationCanceled);
+	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Completed, this, &AJogPlayerController::ControllRotationCanceled);
 }
 
+void AJogPlayerController::ControllRotationCanceled(const FInputActionValue& InputController)
+{
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!PlayerCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PlayerCharacter not found"));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Canceled"));
+	
+	UMovementCharacterControlYawUseCase::Handle(PlayerCharacter->MovementPlayerCharacter, 0.0f);
+}
+void AJogPlayerController::ControllRotation(const FInputActionValue& InputController)
+{
+	float InputVector = InputController.Get<float>();
+
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!PlayerCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PlayerCharacter not found"));
+		return;
+	}
+	
+	UMovementCharacterControlYawUseCase::Handle(PlayerCharacter->MovementPlayerCharacter, InputVector);
+	UE_LOG(LogTemp, Warning, TEXT("ControllRotation %f"), InputVector);
+}
 
 void AJogPlayerController::Move(const FInputActionValue& InputController)
 {

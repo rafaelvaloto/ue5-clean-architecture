@@ -29,6 +29,7 @@ public:
 	virtual FVector GetVelocityCurrent() = 0;
 	virtual FVector GetPreviousVelocity() = 0;
 	virtual FVector GetLocationCurrent() = 0;
+	virtual FVector GetPreviousLocation() = 0;
 	virtual float GetMagnitudeAcceleration() = 0;
 
 	virtual void DetectDirectionChange(float DeltaTime) = 0;

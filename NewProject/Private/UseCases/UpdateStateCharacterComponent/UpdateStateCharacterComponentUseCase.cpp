@@ -14,51 +14,49 @@ void UUpdateStateCharacterComponentUseCase::Handle
 {
 	const bool IsDirectionChange = ComponentBaseAttributes->IsDetectedDirectionChange();
 	const float VelocityCurrent = ComponentBaseAttributes->GetVelocitySize();
+	const float AccelerationCurrent = ComponentBaseAttributes->GetMagnitudeAcceleration();
+	
 	if (
 		VelocityCurrent > 0.01f &&
-		VelocityCurrent < 100.0f
+		VelocityCurrent < 30.0f &&
+		AccelerationCurrent < 100.f
 	)
 	{
-		if (ComponentState->GetState() != EPlayerCharacterStateEnum::WalkingPivot && IsDirectionChange)
-		{
-			ComponentState->SetCurrentState(EPlayerCharacterStateEnum::WalkingPivot);
-			if (GEngine)
-			{
-				EPlayerCharacterStateEnum State = ComponentState->GetState();
-				FText val = UUpdateStateCharacterComponent::GetStateDisplayName(State);
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, val.ToString());
-			}
-			return;
-		}
-		
 		UE_LOG(LogTemp, Error, TEXT("Velocity: %f"), VelocityCurrent);
 		if (ComponentState->GetState() != EPlayerCharacterStateEnum::Walking)
 		{
 			ComponentState->SetCurrentState(EPlayerCharacterStateEnum::Walking);
 		}
+		
+		if (ComponentState->GetState() != EPlayerCharacterStateEnum::WalkingPivot && IsDirectionChange)
+		{
+			ComponentState->SetCurrentState(EPlayerCharacterStateEnum::WalkingPivot);
+		}
 		return;
 	}
 
 	if (
-		VelocityCurrent > 100.0f
+		VelocityCurrent > 30.0f ||
+		AccelerationCurrent > 100.f
 	)
 	{
-		if (ComponentState->GetState() != EPlayerCharacterStateEnum::RunningPivot && IsDirectionChange)
-		{
-			ComponentState->SetCurrentState(EPlayerCharacterStateEnum::RunningPivot);
-			if (GEngine)
-			{
-				EPlayerCharacterStateEnum State = ComponentState->GetState();
-				FText val = UUpdateStateCharacterComponent::GetStateDisplayName(State);
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, val.ToString());
-			}
-			return;
-		}
-		
 		if (ComponentState->GetState() != EPlayerCharacterStateEnum::Running)
 		{
 			ComponentState->SetCurrentState(EPlayerCharacterStateEnum::Running);
 		}
+		
+		if (ComponentState->GetState() != EPlayerCharacterStateEnum::RunningPivot && IsDirectionChange)
+		{
+			ComponentState->SetCurrentState(EPlayerCharacterStateEnum::RunningPivot);
+			return;
+		}
+
+		if (AccelerationCurrent > 0.0f || VelocityCurrent > 0.0f)
+		{
+			UE_LOG(LogTemp, Error, TEXT("AccelerationCurrent: %f"), AccelerationCurrent);
+			UE_LOG(LogTemp, Error, TEXT("VelocityCurrent: %f"), VelocityCurrent);	
+		}
+		
 		return;
 	}
 

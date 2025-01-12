@@ -43,7 +43,7 @@ public:
 	void OnDeceleration(float PrevVelocity, float CurrentVelocity);
 
 	UFUNCTION()
-	void OnAcceleration(float PrevVelocity, float CurrentVelocity);
+	void OnAcceleration(float PrevVelocity, float CurrentVelocity, float Acceleration);
 
 	UFUNCTION()
 	virtual AActor* GetActor() override;

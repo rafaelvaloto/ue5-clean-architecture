@@ -17,7 +17,7 @@ class NEWPROJECT_API FActorWalkStartRule : public IRuleBase
 public:
 	explicit FActorWalkStartRule
 	(
-		const float MaxAccelerationThreshold = 600.0f, const float MaxSpeedThreshold = 5.0f
+		const float MaxAccelerationThreshold = 100.0f, const float MaxSpeedThreshold = 5.0f
 	): MaxAccelerationThreshold(MaxAccelerationThreshold), MaxSpeedThreshold(MaxSpeedThreshold) {}
 
 	virtual ~FActorWalkStartRule() override

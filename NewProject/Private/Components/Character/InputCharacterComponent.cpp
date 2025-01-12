@@ -63,3 +63,18 @@ void UInputCharacterComponent::Move(FVector InputController)
 	Character->AddMovementInput(RightDirection, -InputController.X);
 }
 
+void UInputCharacterComponent::ControlYaw(const float InputValue)
+{
+	APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
+	if (!Character)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Character not found in UInputCharacterComponent::Move"));
+		return;
+	}
+
+	const bool bIsMoving = InputValue > 0.0f;
+
+	UE_LOG(LogTemp, Warning, TEXT("bIsMoving: %d"), bIsMoving);
+	Character->UpdateYawMovementRoot(bIsMoving);
+}
+

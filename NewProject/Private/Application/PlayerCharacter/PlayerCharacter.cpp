@@ -9,7 +9,6 @@
 #include "Components/MotionMatchHelpers/SelectorPoseSearchDatabaseComponent.h"
 #include "UseCases/CharacterTrajectoryComponent/CharacterTrajectoryComponentUseCase.h"
 #include "UseCases/UpdateStateCharacterComponent/UpdateStateCharacterComponentUseCase.h"
-#include "UseCases/SelectorPoseSearchDatabaseComponent/UpdatePoseSearchDatabaseWithStateUseCase.h"
 #include "UseCases/UpdateAttributesCharacterComponent/UpdateAttributesCharacterComponentUseCase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -26,13 +25,21 @@ APlayerCharacter::APlayerCharacter()
 	SetupAnimInstanceBlueprint();
 
 	bUseControllerRotationYaw = false;
+	bIsUpdatedYawControlChanged = false;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
-	GetCharacterMovement()->MinAnalogWalkSpeed = 0.001f;
-	GetCharacterMovement()->MaxWalkSpeed = 100.0f;
+	GetCharacterMovement()->MinAnalogWalkSpeed = 5.00f;
+	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
 	GetCharacterMovement()->MaxAcceleration = 1000.0f;
-	GetCharacterMovement()->BrakingDecelerationWalking = 1000.0f;
+	GetCharacterMovement()->BrakingDecelerationWalking = 100.0f;
+
+	GetRootComponent()->SetWorldScale3D(FVector(0.8f, 0.8f, 0.8f));
+}
+
+void APlayerCharacter::UpdateYawMovementRoot(const bool Value)
+{
+	bIsUpdatedYawControlChanged = Value;
 }
 
 // Called when the game starts or when spawned
@@ -42,7 +49,34 @@ void APlayerCharacter::BeginPlay()
 
 	SelectorPoseSearchDatabaseComponent->LoadDatabaseAsset(
 		"C:\\Users\\rafae\\Documents\\Unreal Projects\\NewProject\\Source\\NewProject\\Entities\\PoseSearchDatabases"
-		);
+	);
+}
+
+void APlayerCharacter::AddYawInputFromForwardVector(float DeltaTime)
+{
+	if (Controller)
+	{
+		// Obtém o ForwardVector do Character
+		FVector ForwardVector = GetActorForwardVector();
+
+		// Calcula o Rotator a partir do ForwardVector
+		FRotator ActorForwardRotation = FRotationMatrix::MakeFromX(ForwardVector).Rotator();
+
+		// Obtém o yaw do ForwardVector
+		float ForwardYaw = ActorForwardRotation.Yaw;
+
+		// Obtém o yaw atual do controlador
+		float ControllerYaw = Controller->GetControlRotation().Yaw;
+
+		// Calcula a diferença (delta do yaw)
+		float YawDifference = ForwardYaw - ControllerYaw;
+
+		// Adiciona input de rotação com base no DeltaYaw
+		AddControllerYawInput(YawDifference * DeltaTime);
+
+		// Log para depuração (opcional)
+		UE_LOG(LogTemp, Warning, TEXT("ForwardYaw: %f | ControllerYaw: %f | YawDifference: %f"), ForwardYaw, ControllerYaw, YawDifference);
+	}
 }
 
 // Called every frame
@@ -50,9 +84,25 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	
+	
+	if (bIsUpdatedYawControlChanged)
+	{
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bUseControllerDesiredRotation = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		AddYawInputFromForwardVector(DeltaTime);
+	}
+	else
+	{
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bUseControllerDesiredRotation = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+	}
+	
 	// Update Movemnt condition
 	UpdateMovementMode(DeltaTime);
-	
+
 	// Update Persistent Attrs Character, Velocity, Location etc..
 	UUpdateAttributesCharacterComponentUseCase::Handle(UpdatedBaseAttributesComponent, this);
 
@@ -94,27 +144,9 @@ void APlayerCharacter::SetupComponents()
 		TEXT("ISelectorPoseSearchDatabaseComponent"));
 	SelectorPoseSearchDatabaseComponent->DefaultDatabaseAsset(
 		"/Game/Characters/UEFN_Mannequin/Animations/MotionMatchingData/Databases/Dense/PSD_Dense_Stand_Idles.PSD_Dense_Stand_Idles"
-		);
+	);
 	SelectorPoseSearchDatabaseComponent->RegisterComponent();
 	// End Component Initialize PoseSearch Databses
-}
-
-void APlayerCharacter::SetupCameraComponents()
-{
-	// SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	// SpringArmComponent->SetupAttachment(RootComponent);
-	//
-	// SpringArmComponent->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
-	// SpringArmComponent->bUsePawnControlRotation = false;
-	// SpringArmComponent->bDoCollisionTest = false;
-	// SpringArmComponent->SetRelativeRotation(FRotator(0.0f, 0.0f, 0.0f));
-	//
-	// CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	// CameraComponent->SetupAttachment(SpringArmComponent, USpringArmComponent::SocketName);
-	// CameraComponent->bUsePawnControlRotation = false;
-	
-	// Alternativa para fixar os valores. Desative qualquer rotação dinâmica.
-	
 }
 
 void APlayerCharacter::SetupSkeletonMesh() const
@@ -129,13 +161,14 @@ void APlayerCharacter::SetupSkeletonMesh() const
 
 	GetMesh()->SetSkeletalMesh(SkeletonMesh.Object);
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -88.f));
-	GetMesh()->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));
+	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 }
 
 void APlayerCharacter::SetupAnimInstanceBlueprint() const
 {
 	// Define a classe de AnimInstance no SkeletalMesh
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClass(TEXT("/Game/Blueprints/NewAnimBlueprint"));
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClass(
+		TEXT("/Game/Characters/UEFN_Mannequin/Meshes/SK_UEFN_Mannequin_AnimBlueprint"));
 	if (!AnimInstanceClass.Succeeded())
 	{
 		UE_LOG(LogTemp, Error, TEXT("AnimInstanceClass not found"));
@@ -148,35 +181,34 @@ void APlayerCharacter::SetupAnimInstanceBlueprint() const
 void APlayerCharacter::UpdateMovementMode(const float DeltaTime) const
 {
 	// Defina velocidades realistas
-	const float WalkSpeed = 100.0f;  // Velocidade para andar
-	const float RunSpeed = 500.0f;  // Velocidade para correr
+	const float RunSpeed = 500.0f; // Velocidade para correr
 	const float AccelerationValue = 1000.0f; // Aceleração realista
-	const float DecelerationValue = 1000.0f; // Desaceleração realista
+	const float DecelerationValue = 100.0f; // Desaceleração realista
 
 	// Checa o estado atual do personagem (por exemplo, Walk ou Run)
-	if (UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Running)
-	{
-		// O personagem está correndo
-		GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(
-			GetCharacterMovement()->MaxWalkSpeed,
-			RunSpeed,
-			DeltaTime,
-			5.0f // Velocidade de interpolação
-		);
-
-		GetCharacterMovement()->MaxAcceleration = AccelerationValue;
-		GetCharacterMovement()->BrakingDecelerationWalking = DecelerationValue;
-		return;
-	}
-
+	// if (UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Running)
+	// {
+	// 	// O personagem está correndo
+	// 	GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(
+	// 		GetCharacterMovement()->MaxWalkSpeed,
+	// 		RunSpeed,
+	// 		DeltaTime,
+	// 		5.0f // Velocidade de interpolação
+	// 	);
+	//
+	// 	GetCharacterMovement()->MaxAcceleration = AccelerationValue;
+	// 	GetCharacterMovement()->BrakingDecelerationWalking = DecelerationValue;
+	// 	return;
+	// }
+	//
 	// O personagem está andando
 	GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(
 		GetCharacterMovement()->MaxWalkSpeed,
-		WalkSpeed,
+		RunSpeed,
 		DeltaTime,
 		5.0f
 	);
-	
+
 	// Configura aceleração e desaceleração de forma independente
 	GetCharacterMovement()->MaxAcceleration = AccelerationValue;
 	GetCharacterMovement()->BrakingDecelerationWalking = DecelerationValue;

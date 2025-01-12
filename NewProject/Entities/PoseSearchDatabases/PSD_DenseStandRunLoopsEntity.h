@@ -2,25 +2,25 @@
 
 #pragma once
 
+#include <any>
+#include <vector>
+
 #include "CoreMinimal.h"
 #include "NewProject/Commons/Rules/FRuleManager.h"
-#include "NewProject/Commons/Rules/SelectorPoseSearchDatabaseRules/FActorWalkRule.h"
-#include "NewProject/Enums/PoseSearchDatabaseModeStates/SelectorDatabaseValidateRuleModeEnum.h"
+#include "NewProject/Commons/Rules/SelectorPoseSearchDatabaseRules/FActorRunRule.h"
 #include "NewProject/Enums/CharacterStates/PlayerCharacterStateEnum.h"
-
-
+#include "NewProject/Enums/PoseSearchDatabaseModeStates/SelectorDatabaseValidateRuleModeEnum.h"
 
 /**
  * 
  */
-class NEWPROJECT_API FPSD_DenseStandWalkLoopsEntity : public FRuleManager
+class NEWPROJECT_API FPSD_DenseStandRunLoopsEntity : public FRuleManager
 {
-	
 public:
-	FPSD_DenseStandWalkLoopsEntity()
+	FPSD_DenseStandRunLoopsEntity()
 	{
-		NameAsset = "PSD_Dense_Stand_Walk_Loops";
-		PathAsset = "/Game/Characters/UEFN_Mannequin/Animations/MotionMatchingData/Databases/Dense/PSD_Dense_Stand_Walk_Loops.PSD_Dense_Stand_Walk_Loops";
+		NameAsset = "PSD_Dense_Stand_Run_Loops";
+		PathAsset = "/Game/Characters/UEFN_Mannequin/Animations/MotionMatchingData/Databases/Dense/PSD_Dense_Stand_Run_Loops.PSD_Dense_Stand_Run_Loops";
 
 		Callback = [](const std::vector<std::any>& Params) -> bool
 		{
@@ -37,12 +37,17 @@ public:
 				if (ModeValidate == ESelectorDatabaseValidateRuleModeEnum::StateCharacter)
 				{
 					const EPlayerCharacterStateEnum CurrentState = std::any_cast<EPlayerCharacterStateEnum>(Params[1]);
-					return CurrentState == EPlayerCharacterStateEnum::Walking;
+					return CurrentState == EPlayerCharacterStateEnum::Running;
 				}
 
 				if (ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Velocity)
 				{
-					if (const float CurrentVelocity = std::any_cast<float>(Params[1]); CurrentVelocity > 5.f)
+					if (const float CurrentVelocity = std::any_cast<float>(Params[1]); CurrentVelocity > 30.f)
+					{
+						return true;
+					}
+
+					if (const float Acceleration = std::any_cast<float>(Params[3]); Acceleration > 100.f)
 					{
 						return true;
 					}
@@ -58,24 +63,24 @@ public:
 		};
 	}
 
-	virtual ~FPSD_DenseStandWalkLoopsEntity() override
+	virtual ~FPSD_DenseStandRunLoopsEntity() override
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Object of PSD_DenseStandWalkLoopsEntity deleted at %p"), this);
+		UE_LOG(LogTemp, Warning, TEXT("Object of FPSD_DenseStandRunLoopsEntity deleted at %p"), this);
 	}
 
 	virtual TArray<ESelectorDatabaseValidateRuleModeEnum> GetTypesValidateRule() override
 	{
 		return {
+			ESelectorDatabaseValidateRuleModeEnum::StateCharacter,
 			ESelectorDatabaseValidateRuleModeEnum::Velocity,
-			ESelectorDatabaseValidateRuleModeEnum::Acceleration,
-			ESelectorDatabaseValidateRuleModeEnum::StateCharacter
+			ESelectorDatabaseValidateRuleModeEnum::Acceleration
 		};
 	}
 
 	// Inicializa as Rules para validacao
 	virtual void Initialize() override
 	{
-		IRuleBase* Rule = new FActorWalkRule();
+		IRuleBase* Rule = new FActorRunRule();
 		AddRule(Rule);
 	}
 	
@@ -89,6 +94,7 @@ public:
 	
 	virtual void PrintInformation() override
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PSD_SparseStandWalkStartsEntity exc method PrintInformation"));
+		UE_LOG(LogTemp, Warning, TEXT("FPSD_DenseStandRunLoopsEntity exc method PrintInformation"));
 	}
+	
 };

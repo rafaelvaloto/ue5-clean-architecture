@@ -3,7 +3,9 @@
 #include "CoreMinimal.h"
 #include "NewProject/Commons/Providers/Entities/EntityFactoryRegistry.h"
 #include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandIdlesEntity.h"
+#include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandRunLoopsEntity.h"
 #include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandRunPivotsAllEntity.h"
+#include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandWalkLoopsEntity.h"
 #include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandWalkPivotsEntity.h"
 #include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandWalkStartsEntity.h"
 #include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandWalkStopsEntity.h"
@@ -41,14 +43,12 @@ public:
 		for (const FString& File : FoundFiles)
 		{
 			FString FileName = FPaths::GetBaseFilename(File);
-			IEntityAsset* Entity = RegisterClass( TEXT("F") + FileName);
+			IEntityAsset* Entity = RegisterClass(TEXT("F") + FileName);
 			if (!Entity)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Entity not valid"));
 				continue;
 			}
-
-			Entity->Initialize();
 			Entities.Add(Entity);
 		}
 	}
@@ -82,13 +82,23 @@ public:
 					return new FPSD_DenseStandWalkStopsEntity();
 				}
 			},
+			{
+				TEXT("FPSD_DenseStandWalkLoopsEntity"), []() -> IEntityAsset* {
+					return new FPSD_DenseStandWalkLoopsEntity();
+				}
+			},
+			{
+				TEXT("FPSD_DenseStandRunLoopsEntity"), []() -> IEntityAsset* {
+					return new FPSD_DenseStandRunLoopsEntity();
+				}
+			},
 		};
 
 		if (ClassMapping.Contains(FileName))
 		{
 			// Obtém a fábrica definida no mapa e registra usando a função Register
 			FEntityFactoryRegistry::Register(FileName, ClassMapping[FileName]);
-			
+
 			UE_LOG(LogTemp, Warning, TEXT("Classe registrada para FileName: %s"), *FileName);
 			return FEntityFactoryRegistry::Create(FileName);
 		}

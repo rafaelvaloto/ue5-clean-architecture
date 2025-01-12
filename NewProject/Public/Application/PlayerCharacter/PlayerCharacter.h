@@ -30,6 +30,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void AddYawInputFromForwardVector(float DeltaTime);
+
+	void UpdateYawMovementRoot(bool Value);
+
+	bool bIsUpdatedYawControlChanged;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -38,9 +44,9 @@ protected:
 private:
 	void SetupComponents();
 	void SetupSkeletonMesh() const;
-	void SetupCameraComponents();
 	void SetupAnimInstanceBlueprint() const;
 	void UpdateMovementMode(float DeltaTime) const;
+	
 
 	// Components And Variables
 public:

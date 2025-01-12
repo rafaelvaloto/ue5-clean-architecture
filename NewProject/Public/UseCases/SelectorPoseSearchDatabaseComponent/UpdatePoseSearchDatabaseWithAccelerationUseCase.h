@@ -20,6 +20,7 @@ public:
 	(
 		const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& Component,
 		float PreviousVelocity,
-		float CurrentVelocity
+		float CurrentVelocity,
+		float Acceleration
 	);
 };

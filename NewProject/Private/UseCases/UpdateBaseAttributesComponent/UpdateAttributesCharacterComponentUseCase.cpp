@@ -12,7 +12,7 @@ void UUpdateAttributesCharacterComponentUseCase::Handle(
 {
 
 	const FVector Location = Actor->GetActorLocation();
-	const FVector Velocity = Actor->GetVelocity();
+	const FVector Velocity = Actor->GetVelocity().Normalize() * Actor->GetVelocity();
 	
 	Component->SetVelocityCurrent(Velocity);
 	Component->SetLocationCurrent(Location);

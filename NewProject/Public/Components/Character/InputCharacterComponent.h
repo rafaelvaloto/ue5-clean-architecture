@@ -27,4 +27,5 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void Move(FVector InputController) override;
+	virtual void ControlYaw(const float InputValue) override;
 };

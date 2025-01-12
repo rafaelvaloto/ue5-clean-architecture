@@ -16,8 +16,8 @@ class NEWPROJECT_API FActorRunPivotsRule final : public IRuleBase
 	
 public:
 	explicit FActorRunPivotsRule(
-		const float MaxSpeedThreshold = 20.0f,
-		const float MinSpeedThreshold = 20.0f
+		const float MaxSpeedThreshold = 300.0f,
+		const float MinSpeedThreshold = 30.0f
 	): MaxSpeedThreshold(MaxSpeedThreshold), MinSpeedThreshold(MinSpeedThreshold) {}
 
 	virtual ~FActorRunPivotsRule() override

@@ -8,7 +8,8 @@ void UUpdatePoseSearchDatabaseWithAccelerationUseCase::Handle
 (
 	const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& Component,
 	float PreviousVelocity,
-	float CurrentVelocity
+	float CurrentVelocity,
+	float Acceleration
 )
 {
 	TArray<IEntityAsset*> EntitiesAssets = Component->GetEntitiesAsset();
@@ -30,12 +31,13 @@ void UUpdatePoseSearchDatabaseWithAccelerationUseCase::Handle
 			Entity->ValidateAll(
 				Component->GetActor(),
 				{
-					ESelectorDatabaseValidateRuleModeEnum::Velocity, CurrentVelocity, PreviousVelocity
+					ESelectorDatabaseValidateRuleModeEnum::Velocity, CurrentVelocity, PreviousVelocity, Acceleration
 				}
 			)
 		)
 		{
-			Component->SetInterruptMode(EPoseSearchInterruptMode::InterruptOnDatabaseChange);
+			UE_LOG(LogTemp, Warning, TEXT("Mudou para Acceleration"));
+			Component->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
 			Component->SetDatabaseCurrent(Index);
 			Component->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
 		}

@@ -85,6 +85,7 @@ void UUpdateAttributesCharacterComponent::DispatchEvent(float DeltaTime)
 {
 	const float CurrentSize = GetVelocitySize();
 	const float PreviousSize = GetPreviousVelocitySize();
+	const float Acceleration = GetMagnitudeAcceleration();
 
 	if (CurrentSize < PreviousSize)
 	{
@@ -93,24 +94,18 @@ void UUpdateAttributesCharacterComponent::DispatchEvent(float DeltaTime)
 		return;
 	}
 
-	OnAcceleration.Broadcast(PreviousSize, CurrentSize);
+	OnAcceleration.Broadcast(PreviousSize, CurrentSize, Acceleration);
 }
 
 void UUpdateAttributesCharacterComponent::CalcMagnitudeAcceleration(const float DeltaTime)
 {
-	if (CurrentVelocity.IsNearlyZero())
-	{
-		return;
-	}
-
-	const FVector CurrentSize = GetVelocityCurrent();
-	const FVector PreviousSize = GetPreviousVelocity();
-
-	MagnitudeAcceleration = (CurrentSize - PreviousSize).Size() / DeltaTime;
+	MagnitudeAcceleration = (GetVelocityCurrent() - GetPreviousVelocity()).Size() / DeltaTime;
 }
 
 void UUpdateAttributesCharacterComponent::SetLocationCurrent(const FVector LocationAt)
 {
+	PreviousLocation = CurrentLocation;
+	CurrentLocation = LocationAt;
 }
 
 FVector UUpdateAttributesCharacterComponent::GetVelocityCurrent()
@@ -126,6 +121,11 @@ FVector UUpdateAttributesCharacterComponent::GetPreviousVelocity()
 FVector UUpdateAttributesCharacterComponent::GetLocationCurrent()
 {
 	return CurrentLocation;
+}
+
+FVector UUpdateAttributesCharacterComponent::GetPreviousLocation()
+{
+	return PreviousLocation;
 }
 
 float UUpdateAttributesCharacterComponent::GetMagnitudeAcceleration()

@@ -45,15 +45,15 @@ public:
 
         // Cria e armazena a instância imediatamente após o registro
         IEntityAsset* NewInstance = FactoryFunction();
-        if (NewInstance)
-        {
-            GetInstanceCache().Add(ClassName, NewInstance);
-            UE_LOG(LogTemp, Warning, TEXT("Instância criada e armazenada para a classe: %s"), *ClassName);
-        }
-        else
+        if (!NewInstance)
         {
             UE_LOG(LogTemp, Warning, TEXT("Erro ao criar instância para a classe: %s"), *ClassName);
+            return;
         }
+
+        NewInstance->Initialize(); // Inicializa as regras de validacao da classe
+        GetInstanceCache().Add(ClassName, NewInstance);
+        UE_LOG(LogTemp, Warning, TEXT("Instância criada e armazenada para a classe: %s"), *ClassName);
     }
 
     // Criar uma entidade ou retornar uma instância já criada

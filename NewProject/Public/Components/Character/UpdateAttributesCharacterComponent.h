@@ -9,7 +9,7 @@
 
 // Defina o tipo de delegate (com parâmetros na desaceleracao)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDeceleration, float, PrevVelocity, float, Velocity);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAcceleration, float, PrevVelocity, float, Velocity);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAcceleration, float, PrevVelocity, float, Velocity, float, Acceleration);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class NEWPROJECT_API UUpdateAttributesCharacterComponent : public UActorComponent, public IUpdateAttributesCharacterComponentInterface
@@ -34,6 +34,7 @@ public:
 	virtual FVector GetVelocityCurrent() override;
 	virtual FVector GetPreviousVelocity() override;
 	virtual FVector GetLocationCurrent() override;
+	virtual FVector GetPreviousLocation() override;
 	virtual float GetMagnitudeAcceleration() override;
 
 	virtual float GetVelocitySize() override;
@@ -50,7 +51,7 @@ public:
 	FOnDeceleration OnDeceleration;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Velocity")
-	FOnDeceleration OnAcceleration;
+	FOnAcceleration OnAcceleration;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Velocity")
 	FVector CurrentVelocity = FVector::ZeroVector;
@@ -60,6 +61,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Location")
 	FVector CurrentLocation = FVector::ZeroVector;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Location")
+	FVector PreviousLocation = FVector::ZeroVector;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Velocity")
 	float MagnitudeAcceleration;

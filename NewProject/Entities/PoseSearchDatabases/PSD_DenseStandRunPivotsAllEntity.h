@@ -20,7 +20,29 @@ public:
 
 		Callback = [](const std::vector<std::any>& Params) -> bool
 		{
-			return true;
+			try
+			{
+				if (Params.empty())
+				{
+					return false;
+				}
+
+				const ESelectorDatabaseValidateRuleModeEnum ModeValidate = std::any_cast<
+					ESelectorDatabaseValidateRuleModeEnum>(Params[0]);
+
+				if (ModeValidate == ESelectorDatabaseValidateRuleModeEnum::StateCharacter)
+				{
+					const EPlayerCharacterStateEnum CurrentState = std::any_cast<EPlayerCharacterStateEnum>(Params[1]);
+					return CurrentState == EPlayerCharacterStateEnum::RunningPivot;
+				}
+				
+				return false;
+			}
+			catch (const std::bad_any_cast&)
+			{
+				UE_LOG(LogTemp, Error, TEXT("Nao foi possivel converter os parametros, os tipos estavam errados!"));
+				return false;
+			}
 		};
 	}
 

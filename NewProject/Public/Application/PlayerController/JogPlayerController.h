@@ -23,10 +23,15 @@ public:
 	virtual void SetupInputComponent() override;
 
 	void Move(const FInputActionValue& InputController);
+	void ControllRotation(const FInputActionValue& InputController);
+	void ControllRotationCanceled(const FInputActionValue& InputController);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Deafult Mapping Context")
 	UInputMappingContext* IMC_Default;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input Actions")
 	UInputAction* IA_Move;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input Actions")
+	UInputAction* IA_ControlRotation;
 };

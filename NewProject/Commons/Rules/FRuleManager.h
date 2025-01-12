@@ -54,21 +54,18 @@ public:
 	{
 		if (!ValidWhen(Params))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("ValidWhen falhou %s"), *GetNameAsset());
 			return false;
 		}
-
-		UE_LOG(LogTemp, Warning, TEXT("ValidWhen passou %s"), *GetNameAsset());
 
 		for (IRuleBase* Rule : Rules)
 		{
 			if (!Rule->Validate(Target))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Regra falhou: %s"), *Rule->GetRuleName());
 				return false; // Falha na validação
 			}
 		}
 
+		UE_LOG(LogTemp, Warning, TEXT("Regra passou %s"), *GetNameAsset());
 		return true; // Todas as regras foram satisfeitas
 	}
 

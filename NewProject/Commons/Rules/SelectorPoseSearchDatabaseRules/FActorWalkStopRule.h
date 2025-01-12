@@ -16,7 +16,7 @@ class NEWPROJECT_API FActorWalkStopRule : public IRuleBase
 public:
 	explicit FActorWalkStopRule
 	(
-		const float MaxSpeedThreshold = 20.0f
+		const float MaxSpeedThreshold = 1.0f
 	): MaxSpeedThreshold(MaxSpeedThreshold) {}
 
 	virtual ~FActorWalkStopRule() override
@@ -30,11 +30,8 @@ public:
 
 		if (const bool IsValid = Actor->UpdatedBaseAttributesComponent->GetVelocitySize() <= MaxSpeedThreshold; !IsValid)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("FActorWalkStopRule::Validate - %s"), *GetRuleName());
 			return false;
 		}
-
-		UE_LOG(LogTemp, Warning, TEXT("FActorWalkStopRule::Validate - %s"), *GetRuleName());
 		return true;
 	}
 	

@@ -87,14 +87,14 @@ auto USelectorPoseSearchDatabaseComponent::OnDeceleration(const float PrevVeloci
 	UUpdatePoseSearchDatabaseWithDecelerationUseCase::Handle(this, PrevVelocity, CurrentVelocity);
 }
 
-void USelectorPoseSearchDatabaseComponent::OnAcceleration(const float PrevVelocity, const float CurrentVelocity)
+void USelectorPoseSearchDatabaseComponent::OnAcceleration(const float PrevVelocity, const float CurrentVelocity, const float Acceleration)
 {
 	if (bIsBlockingAcceleration)
 	{
 		return;
 	}
 
-	UUpdatePoseSearchDatabaseWithAccelerationUseCase::Handle(this, PrevVelocity, CurrentVelocity);
+	UUpdatePoseSearchDatabaseWithAccelerationUseCase::Handle(this, PrevVelocity, CurrentVelocity, Acceleration);
 }
 
 AActor* USelectorPoseSearchDatabaseComponent::GetActor()
