@@ -25,4 +25,5 @@ class NEWPROJECT_API IUpdateStateCharacterComponentInterface
 public:
 	virtual void SetCurrentState(EPlayerCharacterStateEnum State) = 0;
 	virtual EPlayerCharacterStateEnum GetState() = 0;
+	virtual EPlayerCharacterStateEnum GetPeviousState() = 0;
 };

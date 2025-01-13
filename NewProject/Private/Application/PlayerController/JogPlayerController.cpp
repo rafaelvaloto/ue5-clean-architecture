@@ -36,6 +36,13 @@ AJogPlayerController::AJogPlayerController()
 		IA_ControlRotation = InputActionControlRotationAsset.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionTackleAsset(
+		TEXT("/Game/Input/IA_Tackle.IA_Tackle"));
+	if (InputActionTackleAsset.Succeeded())
+	{
+		IA_Tackle = InputActionTackleAsset.Object;
+	}
+
 	
 }
 
@@ -44,19 +51,11 @@ void AJogPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	// Defina uma câmera fixa em um ponto específico
-	bAutoManageActiveCameraTarget = false;
-
-	APlayerCameraManager* CameraManager = PlayerCameraManager;
-	if (CameraManager)
-	{
-		// Define o FOV ou outros ajustes necessários
-		CameraManager->SetFOV(90.f); // Campo de visão ajustado
-	}
-
+	bAutoManageActiveCameraTarget = true;
 	
 	// Criar a câmera fixa (ou use um ACameraActor específico do cenário)
-	FVector FixedCameraLocation(-50.0f, -2000.0f, 900.0f);
-	FRotator FixedCameraRotation(-30.f, 90.0f, 0.0);
+	FVector FixedCameraLocation(1000.0f, 0.0f, 1200.0f);
+	FRotator FixedCameraRotation(-40.f, -180.0f, 0.0);
 
 	ACameraActor* FixedCamera = GetWorld()->SpawnActor<ACameraActor>(FixedCameraLocation, FixedCameraRotation);
 	if (FixedCamera)
@@ -66,14 +65,8 @@ void AJogPlayerController::BeginPlay()
 		{
 			GEngine->GameViewport->GetViewportSize(ViewportSize);
 
-			// Exemplo: Ajuste do Field of View baseado no tamanho
-			float NewFOV = (ViewportSize.X / ViewportSize.Y) * 90.0f; // Cálculo simples baseado na proporção de aspecto
-			FixedCamera->GetCameraComponent()->SetFieldOfView(NewFOV);
+			UE_LOG(LogTemp, Error, TEXT("ViewportSize: %f, %f"), ViewportSize.X, ViewportSize.Y)
 		}
-		
-		float NewFOV = (ViewportSize.X / ViewportSize.Y) * 90.0f;
-
-		FixedCamera->GetCameraComponent()->SetFieldOfView(NewFOV);
 		
 		// Definindo a câmera como a visão atual
 		SetViewTarget(FixedCamera);
@@ -102,8 +95,24 @@ void AJogPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Triggered, this, &AJogPlayerController::ControllRotation);
 	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Canceled, this, &AJogPlayerController::ControllRotationCanceled);
 	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Completed, this, &AJogPlayerController::ControllRotationCanceled);
+	EnhancedInputComponent->BindAction(IA_Tackle, ETriggerEvent::Started, this, &AJogPlayerController::Tackle);
 }
 
+void AJogPlayerController::Tackle(const FInputActionValue& InputController)
+{
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!PlayerCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PlayerCharacter not found"));
+		return;
+	}
+
+	if (PlayerCharacter->UpdateStateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle)
+	{
+		PlayerCharacter->SelectorPoseSearchDatabaseComponent->WaitingNotifyAnim = EWaitingNotifyAnimEnum::Waiting;
+		PlayerCharacter->UpdateStateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Tackle);	
+	}
+}
 void AJogPlayerController::ControllRotationCanceled(const FInputActionValue& InputController)
 {
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());

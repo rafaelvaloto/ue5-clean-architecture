@@ -42,12 +42,12 @@ public:
 
 				if (ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Velocity)
 				{
-					if (const float CurrentVelocity = std::any_cast<float>(Params[1]); CurrentVelocity > 30.f)
+					if (const float CurrentVelocity = std::any_cast<float>(Params[1]); CurrentVelocity > 20.f)
 					{
 						return true;
 					}
 
-					if (const float Acceleration = std::any_cast<float>(Params[3]); Acceleration > 100.f)
+					if (const float Acceleration = std::any_cast<float>(Params[3]); Acceleration > 50.f)
 					{
 						return true;
 					}
@@ -71,7 +71,6 @@ public:
 	virtual TArray<ESelectorDatabaseValidateRuleModeEnum> GetTypesValidateRule() override
 	{
 		return {
-			ESelectorDatabaseValidateRuleModeEnum::StateCharacter,
 			ESelectorDatabaseValidateRuleModeEnum::Velocity,
 			ESelectorDatabaseValidateRuleModeEnum::Acceleration
 		};

@@ -3,6 +3,8 @@
 
 #include "Components/Character/UpdateAttributesCharacterComponent.h"
 
+#include "Application/PlayerCharacter/PlayerCharacter.h"
+
 // Sets default values for this component's properties
 UUpdateAttributesCharacterComponent::UUpdateAttributesCharacterComponent():
 	MagnitudeAcceleration(0.0f),
@@ -89,7 +91,6 @@ void UUpdateAttributesCharacterComponent::DispatchEvent(float DeltaTime)
 
 	if (CurrentSize < PreviousSize)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UUpdateAttributesCharacterComponent::OnDeceleration"));
 		OnDeceleration.Broadcast(PreviousSize, CurrentSize);
 		return;
 	}

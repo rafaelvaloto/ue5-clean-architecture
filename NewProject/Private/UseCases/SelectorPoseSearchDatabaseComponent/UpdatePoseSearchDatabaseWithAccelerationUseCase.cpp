@@ -22,7 +22,6 @@ void UUpdatePoseSearchDatabaseWithAccelerationUseCase::Handle
 			!Entity->GetTypesValidateRule().Contains(ESelectorDatabaseValidateRuleModeEnum::Acceleration)
 		)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("NotContains ESelectorDatabaseValidateRuleModeEnum::Acceleration"));
 			Index++;
 			continue;
 		}

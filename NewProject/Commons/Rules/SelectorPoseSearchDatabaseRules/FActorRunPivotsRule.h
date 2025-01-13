@@ -12,13 +12,15 @@
 class NEWPROJECT_API FActorRunPivotsRule final : public IRuleBase
 {
 	const float MaxSpeedThreshold;
-	const float MinSpeedThreshold;
-	
+	const float MinAccelerationThreshold;
+
 public:
 	explicit FActorRunPivotsRule(
-		const float MaxSpeedThreshold = 300.0f,
-		const float MinSpeedThreshold = 30.0f
-	): MaxSpeedThreshold(MaxSpeedThreshold), MinSpeedThreshold(MinSpeedThreshold) {}
+		const float MaxSpeedThreshold = 500.0f,
+		const float MinAccelerationThreshold = 49.0f
+	): MaxSpeedThreshold(MaxSpeedThreshold), MinAccelerationThreshold(MinAccelerationThreshold)
+	{
+	}
 
 	virtual ~FActorRunPivotsRule() override
 	{
@@ -29,13 +31,21 @@ public:
 	{
 		const APlayerCharacter* Actor = Cast<APlayerCharacter>(Target);
 		if (!Actor) return false;
-		
+
 		const float Speed = Actor->UpdatedBaseAttributesComponent->GetVelocitySize();
-		if (Speed > MinSpeedThreshold && Speed < MaxSpeedThreshold) return true;
-		
+		const float Acceleration = Actor->UpdatedBaseAttributesComponent->GetMagnitudeAcceleration();
+		const float isDetectDirectChange = Actor->UpdatedBaseAttributesComponent->IsDetectedDirectionChange();
+		if (
+			Acceleration >= MinAccelerationThreshold && Speed <= MaxSpeedThreshold ||
+			isDetectDirectChange
+		)
+		{
+			return true;
+		}
+
 		return false;
 	}
-	
+
 	virtual FString GetRuleName() const override
 	{
 		return FString::Printf(TEXT("FActorRunPivotsRule"));

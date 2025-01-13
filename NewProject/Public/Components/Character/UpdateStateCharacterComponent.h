@@ -41,6 +41,7 @@ public:
 
 	virtual void SetCurrentState(EPlayerCharacterStateEnum State) override;
 	virtual EPlayerCharacterStateEnum GetState() override;
+	virtual EPlayerCharacterStateEnum GetPeviousState() override;
 
 	static FText GetStateDisplayName(EPlayerCharacterStateEnum State);
 };

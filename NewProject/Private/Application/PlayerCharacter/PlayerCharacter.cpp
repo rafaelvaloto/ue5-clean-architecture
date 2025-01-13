@@ -26,8 +26,6 @@ APlayerCharacter::APlayerCharacter()
 
 	bUseControllerRotationYaw = false;
 	bIsUpdatedYawControlChanged = false;
-	GetCharacterMovement()->bUseControllerDesiredRotation = false;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	GetCharacterMovement()->MinAnalogWalkSpeed = 5.00f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
@@ -47,58 +45,18 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotação baseada no movimento.
+	GetCharacterMovement()->bUseControllerDesiredRotation = false; // Ignore o ControlRotation
+
 	SelectorPoseSearchDatabaseComponent->LoadDatabaseAsset(
 		"C:\\Users\\rafae\\Documents\\Unreal Projects\\NewProject\\Source\\NewProject\\Entities\\PoseSearchDatabases"
 	);
-}
-
-void APlayerCharacter::AddYawInputFromForwardVector(float DeltaTime)
-{
-	if (Controller)
-	{
-		// Obtém o ForwardVector do Character
-		FVector ForwardVector = GetActorForwardVector();
-
-		// Calcula o Rotator a partir do ForwardVector
-		FRotator ActorForwardRotation = FRotationMatrix::MakeFromX(ForwardVector).Rotator();
-
-		// Obtém o yaw do ForwardVector
-		float ForwardYaw = ActorForwardRotation.Yaw;
-
-		// Obtém o yaw atual do controlador
-		float ControllerYaw = Controller->GetControlRotation().Yaw;
-
-		// Calcula a diferença (delta do yaw)
-		float YawDifference = ForwardYaw - ControllerYaw;
-
-		// Adiciona input de rotação com base no DeltaYaw
-		AddControllerYawInput(YawDifference * DeltaTime);
-
-		// Log para depuração (opcional)
-		UE_LOG(LogTemp, Warning, TEXT("ForwardYaw: %f | ControllerYaw: %f | YawDifference: %f"), ForwardYaw, ControllerYaw, YawDifference);
-	}
 }
 
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	
-	
-	if (bIsUpdatedYawControlChanged)
-	{
-		bUseControllerRotationYaw = false;
-		GetCharacterMovement()->bUseControllerDesiredRotation = true;
-		GetCharacterMovement()->bOrientRotationToMovement = false;
-		AddYawInputFromForwardVector(DeltaTime);
-	}
-	else
-	{
-		bUseControllerRotationYaw = false;
-		GetCharacterMovement()->bUseControllerDesiredRotation = false;
-		GetCharacterMovement()->bOrientRotationToMovement = true;
-	}
 	
 	// Update Movemnt condition
 	UpdateMovementMode(DeltaTime);

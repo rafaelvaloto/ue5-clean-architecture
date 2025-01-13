@@ -67,11 +67,18 @@ void USelectorPoseSearchDatabaseComponent::OnState(const EPlayerCharacterStateEn
 {
 	bIsBlockingDeceleration = true;
 	bIsBlockingAcceleration = true;
+
+	if (WaitingNotifyAnim == EWaitingNotifyAnimEnum::Waiting)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("WaitingNotifyAnim == EWaitingNotifyAnimEnum::Waiting"));
+		UUpdatePoseSearchDatabaseWithStateUseCase::Handle(this, CurrentState, PreviousState);
+		return;
+	}
+	
 	if (
 		const bool Return = UUpdatePoseSearchDatabaseWithStateUseCase::Handle(this, CurrentState, PreviousState); Return
 	)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UUpdatePoseSearchDatabaseWithStateUseCase::Handle"));
 		bIsBlockingDeceleration = false;
 		bIsBlockingAcceleration = false;
 	}

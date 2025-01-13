@@ -48,11 +48,15 @@ EPlayerCharacterStateEnum UUpdateStateCharacterComponent::GetState()
 	AActor *Actor = GetOwner();
 	if (!Actor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Actor not found in UUpdateStateCharacterComponent::GetState"));
 		return EPlayerCharacterStateEnum::Idle;
 	}
 	
 	return CurrentState;
+}
+
+EPlayerCharacterStateEnum UUpdateStateCharacterComponent::GetPeviousState()
+{
+	return PreviousState;
 }
 
 FText UUpdateStateCharacterComponent::GetStateDisplayName(EPlayerCharacterStateEnum State)

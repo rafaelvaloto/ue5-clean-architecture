@@ -67,8 +67,7 @@ public:
 	{
 		return {
 			ESelectorDatabaseValidateRuleModeEnum::Velocity,
-			ESelectorDatabaseValidateRuleModeEnum::Acceleration,
-			ESelectorDatabaseValidateRuleModeEnum::StateCharacter
+			ESelectorDatabaseValidateRuleModeEnum::Acceleration
 		};
 	}
 

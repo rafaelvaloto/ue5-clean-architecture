@@ -17,10 +17,6 @@ bool UUpdatePoseSearchDatabaseWithStateUseCase::Handle
 	int32 Index = 0;
 	for (IEntityAsset* Entity : EntitiesAssets)
 	{
-		Entity->ListRules();
-		
-		UE_LOG(LogTemp, Error, TEXT("ESelectorDatabaseValidateRuleModeEnum %d"), ESelectorDatabaseValidateRuleModeEnum::StateCharacter);
-
 		// Filtrar apenas entidades de um tipo específico
 		if (
 			!Entity->GetTypesValidateRule().Contains(ESelectorDatabaseValidateRuleModeEnum::StateCharacter)
@@ -45,9 +41,6 @@ bool UUpdatePoseSearchDatabaseWithStateUseCase::Handle
 			Component->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
 			break;
 		}
-
-
-		UE_LOG(LogTemp, Error, TEXT("Entity %s"), *Entity->GetNameAsset());
 		
 		if (
 			Entity->ValidateAll(
@@ -58,7 +51,9 @@ bool UUpdatePoseSearchDatabaseWithStateUseCase::Handle
 			)
 		)
 		{
+			Component->SetInterruptMode(EPoseSearchInterruptMode::InterruptOnDatabaseChange);
 			Component->SetDatabaseCurrent(Index);
+			Component->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
 		}
 		Index++;
 	}

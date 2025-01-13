@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "NewProject/Commons/Rules/FRuleManager.h"
-#include "NewProject/Commons/Rules/SelectorPoseSearchDatabaseRules/FActorRunPivotsRule.h"
+#include "NewProject/Commons/Rules/SelectorPoseSearchDatabaseRules/FActorIdleRule.h"
+#include "NewProject/Commons/Rules/SelectorPoseSearchDatabaseRules/FActorTackleRule.h"
 
 /**
  * 
  */
-class NEWPROJECT_API FPSD_DenseStandRunPivotsAllEntity : public FRuleManager
+class NEWPROJECT_API FPSD_RobootA1TackleEntity : public FRuleManager
 {
-	
 public:
-	FPSD_DenseStandRunPivotsAllEntity()
+	FPSD_RobootA1TackleEntity()
 	{
-		NameAsset = "PSD_Dense_Stand_Run_Pivots";
-		PathAsset = "/Game/Characters/UEFN_Mannequin/Animations/MotionMatchingData/Databases/Dense/PSD_Dense_Stand_Run_Pivots.PSD_Dense_Stand_Run_Pivots";
+		NameAsset = "PSD_Roboot_A1_Tackle";
+		PathAsset = "/Game/Blueprints/MotionMatch/PSD_Roboot_A1_Tackle.PSD_Roboot_A1_Tackle";
 
 		Callback = [](const std::vector<std::any>& Params) -> bool
 		{
@@ -35,16 +35,7 @@ public:
 					)
 				{
 					const EPlayerCharacterStateEnum CurrentState = std::any_cast<EPlayerCharacterStateEnum>(Params[1]);
-					const EPlayerCharacterStateEnum PreviousState = std::any_cast<EPlayerCharacterStateEnum>(Params[2]);
-					return CurrentState == EPlayerCharacterStateEnum::RunningPivot || PreviousState == EPlayerCharacterStateEnum::Running;
-				}
-
-				if (
-					ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Velocity
-					)
-				{
-					const float CurrentVelocity = std::any_cast<float>(Params[1]);
-					return CurrentVelocity >= 20.f;
+					return CurrentState == EPlayerCharacterStateEnum::Tackle;
 				}
 				
 				return false;
@@ -57,23 +48,22 @@ public:
 		};
 	}
 
-	virtual ~FPSD_DenseStandRunPivotsAllEntity() override
+	virtual ~FPSD_RobootA1TackleEntity() override
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Object of PSD_DenseStandRunPivotsAllEntity deleted at %p"), this);
+		UE_LOG(LogTemp, Warning, TEXT("Object of PSD_RobootA1TackleEntity deleted at %p"), this);
 	}
 
 	virtual TArray<ESelectorDatabaseValidateRuleModeEnum> GetTypesValidateRule() override
 	{
 		return {
-			ESelectorDatabaseValidateRuleModeEnum::StateCharacter,
-			ESelectorDatabaseValidateRuleModeEnum::Velocity
+			ESelectorDatabaseValidateRuleModeEnum::StateCharacter
 		};
 	}
 
 	// Inicializa as Rules para valicao
 	virtual void Initialize() override
 	{
-		IRuleBase* Rule = new FActorRunPivotsRule();
+		IRuleBase* Rule = new FActorTackleRule();
 		AddRule(Rule);
 	}
 
@@ -87,6 +77,6 @@ public:
 
 	virtual void PrintInformation() override
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PSD_DenseStandRunPivotsAllEntity exc method PrintInformation"));
+		UE_LOG(LogTemp, Warning, TEXT("PSD_RobootA1TackleEntity exc method PrintInformation"));
 	}
 };

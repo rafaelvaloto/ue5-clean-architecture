@@ -14,4 +14,5 @@ enum class EPlayerCharacterStateEnum : uint8
 	Jumping UMETA(DisplayName = "Jumping"), // Pulando
 	Attacking UMETA(DisplayName = "Attacking"), // Atacando
 	Dead UMETA(DisplayName = "Dead"), // Morto
+	Tackle UMETA(DisplayName = "Tackle"), // Boote
 };

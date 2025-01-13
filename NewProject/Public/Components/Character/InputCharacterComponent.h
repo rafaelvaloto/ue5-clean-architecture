@@ -28,4 +28,6 @@ public:
 
 	virtual void Move(FVector InputController) override;
 	virtual void ControlYaw(const float InputValue) override;
+	void ResetRotationForController() const;
+	void SetOrientRotationToMovement(bool bNewOrientRotationToMovement) const;
 };

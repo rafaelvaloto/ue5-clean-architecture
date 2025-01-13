@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "NewProject/Enums/CharacterStates/PlayerCharacterStateEnum.h"
+#include "NewProject/Enums/PoseSearchDatabaseModeStates/WaitingNotifyAnimEnum.h"
 #include "NewProject/Interfaces/Helpers/EntityAsset.h"
 #include "PoseSearch/PoseSearchDatabase.h"
 #include "NewProject/Interfaces/MotionMatchHelpersComponents/SelectorPoseSearchDatabaseInterface.h"
@@ -52,6 +53,8 @@ public:
 	bool bIsBlockingAcceleration;
 
 	TArray<IEntityAsset*> FoundHeaderFiles;
+
+	EWaitingNotifyAnimEnum WaitingNotifyAnim;
 	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pose Search Database")

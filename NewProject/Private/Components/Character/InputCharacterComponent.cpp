@@ -5,34 +5,24 @@
 
 #include "Application/PlayerCharacter/PlayerCharacter.h"
 #include "Application/PlayerController/JogPlayerController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 
 // Sets default values for this component's properties
 UInputCharacterComponent::UInputCharacterComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	
-	// ...
 }
 
-
-// Called when the game starts
 void UInputCharacterComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	// ...
 }
 
-
-// Called every frame
 void UInputCharacterComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                                FActorComponentTickFunction* ThisTickFunction)
+                                             FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 void UInputCharacterComponent::Move(FVector InputController)
@@ -44,37 +34,87 @@ void UInputCharacterComponent::Move(FVector InputController)
 		return;
 	}
 
-	AJogPlayerController* Controller = Cast<AJogPlayerController>(Character->GetController());
+	const AJogPlayerController* Controller = Cast<AJogPlayerController>(Character->GetController());
 	if (!Controller)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Controller not found in UInputCharacterComponent::Move"));
 		return;
 	}
-
-	// Obtém a direção para a frente com base na rotação do controlador
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-	// Obtém a direção da frente
-	const FVector FowardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	
-	Character->AddMovementInput(FowardDirection, InputController.Y);
+	// Mantém o movimento independente do estado atual de bIsMovingControlYaw.
+	const FRotator YawRotation(0, Controller->GetControlRotation().Yaw, 0);
+
+	// Consistência nas direções da frente e lateral.
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X); // Frente
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);  // Direita
+
+	// Aplica Input de movimento sem inversões.
+	Character->AddMovementInput(ForwardDirection, -InputController.Y);
 	Character->AddMovementInput(RightDirection, -InputController.X);
+}
+
+void UInputCharacterComponent::ResetRotationForController() const
+{
+	// Pega o personagem dono deste componente.
+	const APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
+	if (!Character)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Character not found in UInputCharacterComponent::ResetRotationForController"));
+		return;
+	}
+
+	// Pega o controlador associado ao personagem.
+	APlayerController* Controller = Cast<APlayerController>(Character->GetController());
+	if (!Controller)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Controller not found in UInputCharacterComponent::ResetRotationForController"));
+		return;
+	}
+
+	const FRotator DesiredRotation = Controller->GetDesiredRotation();
+
+	// Atualiza o ControlRotation com a DesiredRotation.
+	FRotator NewControlRotation = Controller->GetControlRotation();
+	NewControlRotation.Yaw = DesiredRotation.Yaw; // Alinha somente o Yaw.
+	Controller->SetControlRotation(NewControlRotation);
+}
+
+void UInputCharacterComponent::SetOrientRotationToMovement(const bool bNewOrientRotationToMovement) const
+{
+	const APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
+	if (!Character)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Character not found in UInputCharacterComponent::SetOrientRotationToMovement"));
+		return;
+	}
+
+	// Pega o movimento do personagem.
+	UCharacterMovementComponent* MovementComponent = Character->GetCharacterMovement();
+	if (!MovementComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Movement component not found in SetOrientRotationToMovement"));
+		return;
+	}
+
+	// Atualiza o estado de orientação para movimento.
+	MovementComponent->bOrientRotationToMovement = bNewOrientRotationToMovement;
+
+	if (!bNewOrientRotationToMovement)
+	{
+		// Se desligar OrientRotationToMovement, reseta o ControlRotation para alinhar com a malha.
+		ResetRotationForController();
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("bOrientRotationToMovement definido como: %s"), bNewOrientRotationToMovement ? TEXT("true") : TEXT("false"));
 }
 
 void UInputCharacterComponent::ControlYaw(const float InputValue)
 {
-	APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
-	if (!Character)
+	if (const APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner()); !Character)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Character not found in UInputCharacterComponent::Move"));
 		return;
 	}
 
-	const bool bIsMoving = InputValue > 0.0f;
-
-	UE_LOG(LogTemp, Warning, TEXT("bIsMoving: %d"), bIsMoving);
-	Character->UpdateYawMovementRoot(bIsMoving);
+	SetOrientRotationToMovement(InputValue <= 0.0f);
 }
-

@@ -9,6 +9,7 @@
 #include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandWalkPivotsEntity.h"
 #include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandWalkStartsEntity.h"
 #include "NewProject/Entities/PoseSearchDatabases/PSD_DenseStandWalkStopsEntity.h"
+#include "NewProject/Entities/PoseSearchDatabases/PSD_RobootA1TackleEntity.h"
 #include "NewProject/Interfaces/Helpers/EntityAsset.h"
 
 
@@ -90,6 +91,11 @@ public:
 			{
 				TEXT("FPSD_DenseStandRunLoopsEntity"), []() -> IEntityAsset* {
 					return new FPSD_DenseStandRunLoopsEntity();
+				}
+			},
+			{
+				TEXT("FPSD_RobootA1TackleEntity"), []() -> IEntityAsset* {
+					return new FPSD_RobootA1TackleEntity();
 				}
 			},
 		};

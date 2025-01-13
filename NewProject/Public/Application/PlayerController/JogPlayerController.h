@@ -25,6 +25,7 @@ public:
 	void Move(const FInputActionValue& InputController);
 	void ControllRotation(const FInputActionValue& InputController);
 	void ControllRotationCanceled(const FInputActionValue& InputController);
+	void Tackle(const FInputActionValue& InputController);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Deafult Mapping Context")
 	UInputMappingContext* IMC_Default;
@@ -34,4 +35,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input Actions")
 	UInputAction* IA_ControlRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input Actions")
+	UInputAction* IA_Tackle;
 };

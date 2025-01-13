@@ -30,8 +30,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void AddYawInputFromForwardVector(float DeltaTime);
-
 	void UpdateYawMovementRoot(bool Value);
 
 	bool bIsUpdatedYawControlChanged;
