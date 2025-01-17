@@ -55,7 +55,7 @@ bool UUpdatePoseSearchDatabaseWithStateUseCase::Handle
 				Entity->GetNameAsset() == "PSD_Roboot_A1_Tackle"
 				)
 			{
-				Component->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
+				Component->SetInterruptMode(EPoseSearchInterruptMode::ForceInterruptAndInvalidateContinuingPose);
 				Component->SetDatabaseCurrent(Index);
 
 				Component->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
