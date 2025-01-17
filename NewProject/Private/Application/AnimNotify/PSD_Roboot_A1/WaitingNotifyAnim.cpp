@@ -8,17 +8,18 @@
 // Lógica executada ao final da animação.
 void UWaitingNotifyAnim::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-
-	UE_LOG(LogTemp, Warning, TEXT("Fim da animacao"));
-	
 	// Garante que o MeshComp é válido.
 	if (!MeshComp) return;
 
-	// Obtém o proprietário do Mesh.
-	APlayerCharacter* Owner = Cast<APlayerCharacter>(MeshComp->GetOwner());
-	if (!Owner) return;
-
+	APlayerCharacter* Character = Cast<APlayerCharacter>(MeshComp->GetOwner());
+	if (!Character) return;
 	
-	Owner->SelectorPoseSearchDatabaseComponent->WaitingNotifyAnim = EWaitingNotifyAnimEnum::None;
-	Owner->UpdateStateCharacterComponent->SetCurrentState(Owner->UpdateStateCharacterComponent->GetPeviousState());
+	UE_LOG(LogTemp, Warning, TEXT("Fim da animacao %s"), *Character->GetName());
+	Character->SelectorPoseSearchDatabaseComponent->WaitingNotifyAnim = EWaitingNotifyAnimEnum::None;
+	if (Character->UpdateStateCharacterComponent->GetPeviousState() == EPlayerCharacterStateEnum::Tackle)
+	{
+		Character->UpdateStateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::WalkingPivot);
+		return;
+	}
+	Character->UpdateStateCharacterComponent->SetCurrentState(Character->UpdateStateCharacterComponent->GetPeviousState());
 }

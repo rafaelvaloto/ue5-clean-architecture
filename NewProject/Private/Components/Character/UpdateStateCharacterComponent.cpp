@@ -34,11 +34,15 @@ void UUpdateStateCharacterComponent::TickComponent(float DeltaTime, ELevelTick T
 
 void UUpdateStateCharacterComponent::SetCurrentState(EPlayerCharacterStateEnum State)
 {
-	UE_LOG(LogTemp, Warning, TEXT("State[%d]:  %s"), State, *GetStateDisplayName(State).ToString());
-
+	if (CurrentState == State)
+	{
+		return;
+	}
+	
 	PreviousState = CurrentState;
 	CurrentState = State;
-	
+
+	UE_LOG(LogTemp, Warning, TEXT("State[%d]:  %s"), State, *GetStateDisplayName(State).ToString());
 	// Chama o delegate
 	OnStateChanged.Broadcast(CurrentState, PreviousState);
 }

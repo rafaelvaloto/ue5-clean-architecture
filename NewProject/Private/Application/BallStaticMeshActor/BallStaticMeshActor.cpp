@@ -23,17 +23,30 @@ ABallStaticMeshActor::ABallStaticMeshActor()
 
 	SetActorScale3D(FVector(1.1f, 1.1f, 1.1f));
 	GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
-	GetStaticMeshComponent()->SetSimulatePhysics(true);
+	GetStaticMeshComponent()->SetSimulatePhysics(false);
 	GetStaticMeshComponent()->SetEnableGravity(true);
+	GetStaticMeshComponent()->SetCollisionProfileName(TEXT("OverlapAll"));
 	GetStaticMeshComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	GetStaticMeshComponent()->SetCollisionResponseToAllChannels(ECR_Block);
+	GetStaticMeshComponent()->SetCollisionObjectType(ECC_PhysicsBody);  // Exemplo: Configurado para corpo físico
+	GetStaticMeshComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	GetStaticMeshComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	//GetStaticMeshComponent()->SetCollisionResponseToAllChannels(ECR_Block);
 
+
+	SetRootComponent(GetStaticMeshComponent());
 	GetStaticMeshComponent()->SetupAttachment(RootComponent);
+}
+
+void ABallStaticMeshActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Colisão detectada com: %s"), *OtherActor->GetName());
 }
 
 // Called when the game starts or when spawned
 void ABallStaticMeshActor::BeginPlay()
 {
+	GetStaticMeshComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABallStaticMeshActor::OnOverlapBegin);
 	Super::BeginPlay();
 }
 
@@ -42,9 +55,9 @@ void ABallStaticMeshActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (Spline)
-	{
-		FVector Trajectory = FVector(GetActorLocation().X * 2, GetActorLocation().Y * 2, 0.f);
-		UTrajectoryRuntimeDrawUseCase::Handle(Spline, Trajectory, DeltaTime);
-	}
+	// if (Spline)
+	// {
+	// 	FVector Trajectory = FVector(GetActorLocation().X * 2, GetActorLocation().Y * 2, 0.f);
+	// 	UTrajectoryRuntimeDrawUseCase::Handle(Spline, Trajectory, DeltaTime);
+	// }
 }

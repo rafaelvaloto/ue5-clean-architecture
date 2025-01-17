@@ -126,7 +126,7 @@ void APlayerCharacter::SetupAnimInstanceBlueprint() const
 {
 	// Define a classe de AnimInstance no SkeletalMesh
 	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClass(
-		TEXT("/Game/Characters/UEFN_Mannequin/Meshes/SK_UEFN_Mannequin_AnimBlueprint"));
+		TEXT("/Game/Blueprints/ABP_SK_UEFN_Manequin_AminBlueprint"));
 	if (!AnimInstanceClass.Succeeded())
 	{
 		UE_LOG(LogTemp, Error, TEXT("AnimInstanceClass not found"));

@@ -54,7 +54,7 @@ void AJogPlayerController::BeginPlay()
 	bAutoManageActiveCameraTarget = true;
 	
 	// Criar a câmera fixa (ou use um ACameraActor específico do cenário)
-	FVector FixedCameraLocation(1000.0f, 0.0f, 1200.0f);
+	FVector FixedCameraLocation(600.0f, 0.0f, 600.0f);
 	FRotator FixedCameraRotation(-40.f, -180.0f, 0.0);
 
 	ACameraActor* FixedCamera = GetWorld()->SpawnActor<ACameraActor>(FixedCameraLocation, FixedCameraRotation);
@@ -94,8 +94,8 @@ void AJogPlayerController::SetupInputComponent()
 	EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AJogPlayerController::Move);
 	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Triggered, this, &AJogPlayerController::ControllRotation);
 	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Canceled, this, &AJogPlayerController::ControllRotationCanceled);
-	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Completed, this, &AJogPlayerController::ControllRotationCanceled);
-	EnhancedInputComponent->BindAction(IA_Tackle, ETriggerEvent::Started, this, &AJogPlayerController::Tackle);
+	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Canceled, this, &AJogPlayerController::ControllRotationCanceled);
+	EnhancedInputComponent->BindAction(IA_Tackle, ETriggerEvent::Triggered, this, &AJogPlayerController::Tackle);
 }
 
 void AJogPlayerController::Tackle(const FInputActionValue& InputController)
@@ -110,7 +110,7 @@ void AJogPlayerController::Tackle(const FInputActionValue& InputController)
 	if (PlayerCharacter->UpdateStateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle)
 	{
 		PlayerCharacter->SelectorPoseSearchDatabaseComponent->WaitingNotifyAnim = EWaitingNotifyAnimEnum::Waiting;
-		PlayerCharacter->UpdateStateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Tackle);	
+		PlayerCharacter->UpdateStateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Tackle);
 	}
 }
 void AJogPlayerController::ControllRotationCanceled(const FInputActionValue& InputController)
