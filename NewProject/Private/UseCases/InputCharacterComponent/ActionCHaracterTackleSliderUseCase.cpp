@@ -32,5 +32,5 @@ void UActionCHaracterTackleSliderUseCase::Handle(
 	}
 
 	SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::None);
-	StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Walking);
+	StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Idle);
 }
