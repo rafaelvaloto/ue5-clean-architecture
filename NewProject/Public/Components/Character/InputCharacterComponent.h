@@ -21,6 +21,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	void ResetRotationForController() const;
+	void SetOrientRotationToMovement(bool bNewOrientRotationToMovement) const;
+
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
@@ -28,6 +31,9 @@ public:
 
 	virtual void Move(FVector InputController) override;
 	virtual void ControlYaw(const float InputValue) override;
-	void ResetRotationForController() const;
-	void SetOrientRotationToMovement(bool bNewOrientRotationToMovement) const;
+	virtual void SetBlockMove(const bool bIsBlocked) override;
+	virtual bool GetBlockMove() override;
+
+private:
+	bool bIsBlockMove = false;
 };

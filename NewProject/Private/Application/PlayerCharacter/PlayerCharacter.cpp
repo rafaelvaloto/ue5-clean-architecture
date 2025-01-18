@@ -25,8 +25,6 @@ APlayerCharacter::APlayerCharacter()
 	SetupAnimInstanceBlueprint();
 
 	bUseControllerRotationYaw = false;
-	bIsUpdatedYawControlChanged = false;
-
 	GetCharacterMovement()->MinAnalogWalkSpeed = 5.00f;
 	GetCharacterMovement()->MaxWalkSpeed = 500.0f;
 	GetCharacterMovement()->MaxAcceleration = 1000.0f;
@@ -35,10 +33,6 @@ APlayerCharacter::APlayerCharacter()
 	GetRootComponent()->SetWorldScale3D(FVector(0.8f, 0.8f, 0.8f));
 }
 
-void APlayerCharacter::UpdateYawMovementRoot(const bool Value)
-{
-	bIsUpdatedYawControlChanged = Value;
-}
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
@@ -53,14 +47,47 @@ void APlayerCharacter::BeginPlay()
 	);
 }
 
+void APlayerCharacter::PlayDynamicMontage(UAnimSequence* AnimationSequence, FName SlotName, float PlayRate)
+{
+	if (!AnimationSequence || !GetMesh() || !GetMesh()->GetAnimInstance())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid Animation Sequence or Mesh/AnimInstance is null."));
+		return;
+	}
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	const UAnimMontage* DynamicMontage = AnimInstance->PlaySlotAnimationAsDynamicMontage(
+		AnimationSequence,  // A sequência de animação que será reproduzida
+		SlotName,           // Nome do slot no Animation Blueprint
+		0.25f,                // BlendInTime (tempo para interpolar o início da animação)
+		0.35f,                // BlendOutTime (tempo para interpolar o fim da animação)
+		PlayRate,                // PlayRate (taxa de reprodução da animação)
+		1                   // LoopCount (número de vezes que a animação será executada)
+	);
+
+	if (DynamicMontage)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Dynamic Montage started successfully!"));
+	}
+}
+
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	// Update Movemnt condition
-	UpdateMovementMode(DeltaTime);
 
+	if (StartInpulse)
+	{
+		FRotator CharacterRotation = GetOwner()->GetActorRotation(); // Rotação do personagem
+		const FVector TargetImpulse = CharacterRotation.Vector() * 600.0f; // Ajuste o valor como necessário
+		LaunchCharacter(
+		FMath::VInterpTo(GetOwner()->GetVelocity(), TargetImpulse, DeltaTime, 5.0f),
+		true,
+		true
+		);
+	}
+	
 	// Update Persistent Attrs Character, Velocity, Location etc..
 	UUpdateAttributesCharacterComponentUseCase::Handle(UpdatedBaseAttributesComponent, this);
 
@@ -125,49 +152,13 @@ void APlayerCharacter::SetupSkeletonMesh() const
 void APlayerCharacter::SetupAnimInstanceBlueprint() const
 {
 	// Define a classe de AnimInstance no SkeletalMesh
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClass(
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimInstanceClassAsset(
 		TEXT("/Game/Blueprints/ABP_SK_UEFN_Manequin_AminBlueprint"));
-	if (!AnimInstanceClass.Succeeded())
+	if (!AnimInstanceClassAsset.Succeeded())
 	{
 		UE_LOG(LogTemp, Error, TEXT("AnimInstanceClass not found"));
 		return;
 	}
 
-	GetMesh()->SetAnimInstanceClass(AnimInstanceClass.Class);
-}
-
-void APlayerCharacter::UpdateMovementMode(const float DeltaTime) const
-{
-	// Defina velocidades realistas
-	const float RunSpeed = 500.0f; // Velocidade para correr
-	const float AccelerationValue = 1000.0f; // Aceleração realista
-	const float DecelerationValue = 100.0f; // Desaceleração realista
-
-	// Checa o estado atual do personagem (por exemplo, Walk ou Run)
-	// if (UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Running)
-	// {
-	// 	// O personagem está correndo
-	// 	GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(
-	// 		GetCharacterMovement()->MaxWalkSpeed,
-	// 		RunSpeed,
-	// 		DeltaTime,
-	// 		5.0f // Velocidade de interpolação
-	// 	);
-	//
-	// 	GetCharacterMovement()->MaxAcceleration = AccelerationValue;
-	// 	GetCharacterMovement()->BrakingDecelerationWalking = DecelerationValue;
-	// 	return;
-	// }
-	//
-	// O personagem está andando
-	GetCharacterMovement()->MaxWalkSpeed = FMath::FInterpTo(
-		GetCharacterMovement()->MaxWalkSpeed,
-		RunSpeed,
-		DeltaTime,
-		5.0f
-	);
-
-	// Configura aceleração e desaceleração de forma independente
-	GetCharacterMovement()->MaxAcceleration = AccelerationValue;
-	GetCharacterMovement()->BrakingDecelerationWalking = DecelerationValue;
+	GetMesh()->SetAnimInstanceClass(AnimInstanceClassAsset.Class);
 }

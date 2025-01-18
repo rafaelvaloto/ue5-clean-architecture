@@ -25,6 +25,26 @@ void UInputCharacterComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+void UInputCharacterComponent::SetBlockMove(const bool bIsBlocked)
+{
+	bIsBlockMove = bIsBlocked;
+}
+
+bool UInputCharacterComponent::GetBlockMove()
+{
+	return bIsBlockMove;
+}
+
+void UInputCharacterComponent::ControlYaw(const float InputValue)
+{
+	if (const APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner()); !Character)
+	{
+		return;
+	}
+
+	SetOrientRotationToMovement(InputValue <= 0.0f);
+}
+
 void UInputCharacterComponent::Move(FVector InputController)
 {
 	APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
@@ -104,17 +124,4 @@ void UInputCharacterComponent::SetOrientRotationToMovement(const bool bNewOrient
 		// Se desligar OrientRotationToMovement, reseta o ControlRotation para alinhar com a malha.
 		ResetRotationForController();
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("bOrientRotationToMovement definido como: %s"), bNewOrientRotationToMovement ? TEXT("true") : TEXT("false"));
-}
-
-void UInputCharacterComponent::ControlYaw(const float InputValue)
-{
-	if (const APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner()); !Character)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Character not found in UInputCharacterComponent::Move"));
-		return;
-	}
-
-	SetOrientRotationToMovement(InputValue <= 0.0f);
 }

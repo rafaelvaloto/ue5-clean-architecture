@@ -11,8 +11,8 @@ void UMovementCharacterUseCase::Handle
 	const FVector& InputController
 )
 {
-	// Chama o component e aplica movimentação ao Character
-	MovementComponent->Move(InputController);
-
-	// Implementar Aqui Outras lógicas para esse UseCase...
+	if (!MovementComponent->GetBlockMove())
+	{
+		MovementComponent->Move(InputController);
+	}
 }

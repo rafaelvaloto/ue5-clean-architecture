@@ -35,6 +35,9 @@ public:
 	virtual void SetInterruptMode(EPoseSearchInterruptMode Mode) override;
 	virtual EPoseSearchInterruptMode GetInterruptMode() override;
 
+	virtual void SetWaitingNotifyAnim(EWaitingNotifyAnimEnum Mode) override;
+	virtual EWaitingNotifyAnimEnum GetWaitingNotifyAnim() override;
+
 	virtual TArray<IEntityAsset*> GetEntitiesAsset() override;
 
 	UFUNCTION()

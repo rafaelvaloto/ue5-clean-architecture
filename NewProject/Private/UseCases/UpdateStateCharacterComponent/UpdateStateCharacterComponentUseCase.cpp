@@ -22,7 +22,7 @@ void UUpdateStateCharacterComponentUseCase::Handle
 	}
 
 	if (
-		VelocityCurrent > 19.0f ||
+		VelocityCurrent > 25.0f ||
 		AccelerationCurrent > 50.f
 	)
 	{

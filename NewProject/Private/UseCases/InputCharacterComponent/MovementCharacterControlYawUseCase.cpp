@@ -8,5 +8,8 @@ void UMovementCharacterControlYawUseCase::Handle(
 		const float InputValue
 	)
 {
-	MovementComponent->ControlYaw(InputValue);
+	if (!MovementComponent->GetBlockMove())
+	{
+		MovementComponent->ControlYaw(InputValue);	
+	}
 }

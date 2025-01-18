@@ -25,4 +25,6 @@ class NEWPROJECT_API IInputCharacterInterface
 public:
 	virtual void Move(FVector InputController) = 0;
 	virtual void ControlYaw(const float InputValue) = 0;
+	virtual void SetBlockMove(const bool bIsBlocked) = 0;
+	virtual bool GetBlockMove() = 0;
 };

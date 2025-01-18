@@ -8,6 +8,8 @@
 #include "InputMappingContext.h"
 #include "Camera/CameraActor.h"
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"
+#include "UseCases/InputCharacterComponent/ActionCHaracterTackleSliderUseCase.h"
+#include "UseCases/InputCharacterComponent/ActionCharacterTackleUseCase.h"
 #include "UseCases/InputCharacterComponent/MovementCharacterControlYawUseCase.h"
 
 
@@ -41,6 +43,13 @@ AJogPlayerController::AJogPlayerController()
 	if (InputActionTackleAsset.Succeeded())
 	{
 		IA_Tackle = InputActionTackleAsset.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionTackleSliderAsset(
+		TEXT("/Game/Input/IA_TackleSlider.IA_TackleSlider"));
+	if (InputActionTackleSliderAsset.Succeeded())
+	{
+		IA_TackleSlider = InputActionTackleSliderAsset.Object;
 	}
 
 	
@@ -91,11 +100,33 @@ void AJogPlayerController::SetupInputComponent()
 		return;
 	}
 
+	// Locomotion
 	EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AJogPlayerController::Move);
 	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Triggered, this, &AJogPlayerController::ControllRotation);
 	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Canceled, this, &AJogPlayerController::ControllRotationCanceled);
-	EnhancedInputComponent->BindAction(IA_ControlRotation, ETriggerEvent::Canceled, this, &AJogPlayerController::ControllRotationCanceled);
+
+
+	// Actions  
 	EnhancedInputComponent->BindAction(IA_Tackle, ETriggerEvent::Triggered, this, &AJogPlayerController::Tackle);
+	EnhancedInputComponent->BindAction(IA_TackleSlider, ETriggerEvent::Triggered, this, &AJogPlayerController::TackleSlider);
+}
+
+void AJogPlayerController::TackleSlider(const FInputActionValue& InputController)
+{
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	if (!PlayerCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PlayerCharacter not found"));
+		return;
+	}
+
+	UActionCHaracterTackleSliderUseCase::Handle(
+			PlayerCharacter,
+			PlayerCharacter->MovementPlayerCharacter,
+			PlayerCharacter->UpdateStateCharacterComponent,
+			PlayerCharacter->SelectorPoseSearchDatabaseComponent,
+			true
+		);
 }
 
 void AJogPlayerController::Tackle(const FInputActionValue& InputController)
@@ -107,11 +138,13 @@ void AJogPlayerController::Tackle(const FInputActionValue& InputController)
 		return;
 	}
 
-	if (PlayerCharacter->UpdateStateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle)
-	{
-		PlayerCharacter->SelectorPoseSearchDatabaseComponent->WaitingNotifyAnim = EWaitingNotifyAnimEnum::Waiting;
-		PlayerCharacter->UpdateStateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Tackle);
-	}
+	UActionCharacterTackleUseCase::Handle(
+			PlayerCharacter,
+			PlayerCharacter->MovementPlayerCharacter,
+			PlayerCharacter->UpdateStateCharacterComponent,
+			PlayerCharacter->SelectorPoseSearchDatabaseComponent,
+			true
+		);
 }
 void AJogPlayerController::ControllRotationCanceled(const FInputActionValue& InputController)
 {
@@ -121,8 +154,6 @@ void AJogPlayerController::ControllRotationCanceled(const FInputActionValue& Inp
 		UE_LOG(LogTemp, Warning, TEXT("PlayerCharacter not found"));
 		return;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Canceled"));
 	
 	UMovementCharacterControlYawUseCase::Handle(PlayerCharacter->MovementPlayerCharacter, 0.0f);
 }
@@ -133,12 +164,10 @@ void AJogPlayerController::ControllRotation(const FInputActionValue& InputContro
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (!PlayerCharacter)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayerCharacter not found"));
 		return;
 	}
 	
 	UMovementCharacterControlYawUseCase::Handle(PlayerCharacter->MovementPlayerCharacter, InputVector);
-	UE_LOG(LogTemp, Warning, TEXT("ControllRotation %f"), InputVector);
 }
 
 void AJogPlayerController::Move(const FInputActionValue& InputController)
@@ -147,7 +176,6 @@ void AJogPlayerController::Move(const FInputActionValue& InputController)
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
 	if (!PlayerCharacter)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("PlayerCharacter not found"));
 		return;
 	}
 

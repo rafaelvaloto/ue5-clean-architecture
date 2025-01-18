@@ -42,7 +42,6 @@ void UUpdateStateCharacterComponent::SetCurrentState(EPlayerCharacterStateEnum S
 	PreviousState = CurrentState;
 	CurrentState = State;
 
-	UE_LOG(LogTemp, Warning, TEXT("State[%d]:  %s"), State, *GetStateDisplayName(State).ToString());
 	// Chama o delegate
 	OnStateChanged.Broadcast(CurrentState, PreviousState);
 }

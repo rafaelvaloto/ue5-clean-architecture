@@ -30,10 +30,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void UpdateYawMovementRoot(bool Value);
-
-	bool bIsUpdatedYawControlChanged;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -43,13 +39,15 @@ private:
 	void SetupComponents();
 	void SetupSkeletonMesh() const;
 	void SetupAnimInstanceBlueprint() const;
-	void UpdateMovementMode(float DeltaTime) const;
-	
 
 	// Components And Variables
 public:
+	bool StartInpulse = false;
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* CameraComponent;
+	
+	void PlayDynamicMontage(UAnimSequence* AnimationSequence, FName SlotName, float PlayRate);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* SpringArmComponent;

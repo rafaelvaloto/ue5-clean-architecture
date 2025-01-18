@@ -70,8 +70,6 @@ void USelectorPoseSearchDatabaseComponent::OnState(const EPlayerCharacterStateEn
 
 	if (WaitingNotifyAnim == EWaitingNotifyAnimEnum::Waiting)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("WaitingNotifyAnim == EWaitingNotifyAnimEnum::Waiting"));
-		UUpdatePoseSearchDatabaseWithStateUseCase::Handle(this, CurrentState, PreviousState);
 		return;
 	}
 	
@@ -145,6 +143,16 @@ void USelectorPoseSearchDatabaseComponent::SetInterruptMode(EPoseSearchInterrupt
 EPoseSearchInterruptMode USelectorPoseSearchDatabaseComponent::GetInterruptMode()
 {
 	return InterruptModeCurrent;
+}
+
+void USelectorPoseSearchDatabaseComponent::SetWaitingNotifyAnim(EWaitingNotifyAnimEnum Mode)
+{
+	WaitingNotifyAnim = Mode;
+}
+
+EWaitingNotifyAnimEnum USelectorPoseSearchDatabaseComponent::GetWaitingNotifyAnim()
+{
+	return WaitingNotifyAnim;
 }
 
 UPoseSearchDatabase* USelectorPoseSearchDatabaseComponent::GetDatabase()

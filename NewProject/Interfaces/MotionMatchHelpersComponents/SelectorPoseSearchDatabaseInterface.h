@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NewProject/Enums/PoseSearchDatabaseModeStates/WaitingNotifyAnimEnum.h"
 #include "NewProject/Interfaces/Helpers/EntityAsset.h"
 #include "UObject/Interface.h"
 #include "PoseSearch/PoseSearchLibrary.h"
@@ -30,6 +31,8 @@ public:
 	virtual UPoseSearchDatabase* GetDatabase() = 0;
 	virtual void SetDatabaseCurrent(const uint32 Index) = 0;
 	virtual TArray<IEntityAsset*> GetEntitiesAsset() = 0;
+	virtual void SetWaitingNotifyAnim(EWaitingNotifyAnimEnum Mode) = 0;
+	virtual EWaitingNotifyAnimEnum GetWaitingNotifyAnim() = 0;
 	virtual void SetInterruptMode(EPoseSearchInterruptMode Mode) = 0;
 	virtual EPoseSearchInterruptMode GetInterruptMode() = 0;
 

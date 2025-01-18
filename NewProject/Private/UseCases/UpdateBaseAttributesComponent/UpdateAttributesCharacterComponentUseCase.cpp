@@ -10,9 +10,8 @@ void UUpdateAttributesCharacterComponentUseCase::Handle(
 	const APlayerCharacter* Actor
 )
 {
-
 	const FVector Location = Actor->GetActorLocation();
-	const FVector Velocity = Actor->GetVelocity().Normalize() * Actor->GetVelocity();
+	const FVector Velocity = Actor->GetVelocity();
 	
 	Component->SetVelocityCurrent(Velocity);
 	Component->SetLocationCurrent(Location);
