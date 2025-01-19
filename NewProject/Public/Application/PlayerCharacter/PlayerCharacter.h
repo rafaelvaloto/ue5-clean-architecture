@@ -5,10 +5,13 @@
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "Components/Character/InputCharacterComponent.h"
+#include "Components/Character/PlayAnimMontageComponent.h"
+#include "Components/Character/SelectClosestBoneCharacterComponent.h"
 #include "Components/Character/UpdateAttributesCharacterComponent.h"
 #include "Components/Character/UpdateStateCharacterComponent.h"
 #include "Components/Character/UpdateTrajectoryCharacterComponent.h"
 #include "Components/MotionMatchHelpers/SelectorPoseSearchDatabaseComponent.h"
+#include "Components/StaticMeshActor/CurrentBallComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "PlayerCharacter.generated.h"
@@ -47,8 +50,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* CameraComponent;
 	
-	void PlayDynamicMontage(UAnimSequence* AnimationSequence, FName SlotName, float PlayRate);
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* SpringArmComponent;
 	
@@ -66,4 +67,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "TrajectoryComponent")
 	UUpdateTrajectoryCharacterComponent* TrajectoryComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BallActorComponent")
+	UCurrentBallComponent* BallActive;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelectClesestBone")
+	USelectClosestBoneCharacterComponent* ClosestBone;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AnimationComponent")
+	UPlayAnimMontageComponent* PlayAnimMontageComponent;
 };

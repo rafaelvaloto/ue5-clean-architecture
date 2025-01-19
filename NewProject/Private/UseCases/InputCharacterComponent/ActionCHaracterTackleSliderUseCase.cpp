@@ -4,8 +4,9 @@
 #include "UseCases/InputCharacterComponent/ActionCHaracterTackleSliderUseCase.h"
 
 void UActionCHaracterTackleSliderUseCase::Handle(
-	APlayerCharacter* Character,
-	const TScriptInterface<IInputCharacterInterface>& MovementComponent,
+	const TScriptInterface<ICurrentBallComponentInterface> CurrentBallComponent,
+	const TScriptInterface<ISelectClosestBoneCharacterComponentInterface> SelectBoneComponent,
+	const TScriptInterface<IPlayAnimMontageComponentInterface> PlayAnimMontageComponent,
 	const TScriptInterface<IUpdateStateCharacterComponentInterface>& StateCharacterComponent,
 	const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& SelectorPoseSearchDatabase,
 	const bool bIsStarted
@@ -13,16 +14,33 @@ void UActionCHaracterTackleSliderUseCase::Handle(
 {
 	if (bIsStarted)
 	{
+		const ESelectClosestBoneCharacterEnum DefineBoneAnim = SelectBoneComponent->SelectClosestFootBoneToBall(
+			CurrentBallComponent->CurrentBall());
+
 		SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::Waiting);
 		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::TackleSlider);
 		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
 
-		UAnimSequence* MyAnimationSequence = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/090_AA_Soccer_Player_SlideTackle_R.090_AA_Soccer_Player_SlideTackle_R"));
+		if (DefineBoneAnim == ESelectClosestBoneCharacterEnum::LeftFoot)
+		{
+			UAnimSequence* MyAnimationSequence = LoadObject<UAnimSequence>(
+				nullptr, TEXT(
+					"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/091_AA_Soccer_Player_SlideTackle_L.091_AA_Soccer_Player_SlideTackle_L"));
+			if (MyAnimationSequence)
+			{
+				PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f);
+				return;
+			}
+		}
+
+		UAnimSequence* MyAnimationSequence = LoadObject<UAnimSequence>(
+			nullptr, TEXT(
+				"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/090_AA_Soccer_Player_SlideTackle_R.090_AA_Soccer_Player_SlideTackle_R"));
 		if (MyAnimationSequence)
 		{
-			Character->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f);
+			PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f);
 		}
-		
+
 		return;
 	}
 

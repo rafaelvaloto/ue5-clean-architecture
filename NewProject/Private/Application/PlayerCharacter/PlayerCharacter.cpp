@@ -3,6 +3,7 @@
 
 #include "Application/PlayerCharacter/PlayerCharacter.h"
 #include "Components/Character/InputCharacterComponent.h"
+#include "Components/Character/PlayAnimMontageComponent.h"
 #include "Components/Character/UpdateAttributesCharacterComponent.h"
 #include "Components/Character/UpdateStateCharacterComponent.h"
 #include "Components/Character/UpdateTrajectoryCharacterComponent.h"
@@ -13,6 +14,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 
+class UCurrentBallComponent;
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -45,31 +47,7 @@ void APlayerCharacter::BeginPlay()
 	SelectorPoseSearchDatabaseComponent->LoadDatabaseAsset(
 		"C:\\Users\\rafae\\Documents\\Unreal Projects\\NewProject\\Source\\NewProject\\Entities\\PoseSearchDatabases"
 	);
-}
-
-void APlayerCharacter::PlayDynamicMontage(UAnimSequence* AnimationSequence, FName SlotName, float PlayRate)
-{
-	if (!AnimationSequence || !GetMesh() || !GetMesh()->GetAnimInstance())
-	{
-		UE_LOG(LogTemp, Error, TEXT("Invalid Animation Sequence or Mesh/AnimInstance is null."));
-		return;
-	}
-
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-
-	const UAnimMontage* DynamicMontage = AnimInstance->PlaySlotAnimationAsDynamicMontage(
-		AnimationSequence,  // A sequência de animação que será reproduzida
-		SlotName,           // Nome do slot no Animation Blueprint
-		0.25f,                // BlendInTime (tempo para interpolar o início da animação)
-		0.35f,                // BlendOutTime (tempo para interpolar o fim da animação)
-		PlayRate,                // PlayRate (taxa de reprodução da animação)
-		1                   // LoopCount (número de vezes que a animação será executada)
-	);
-
-	if (DynamicMontage)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Dynamic Montage started successfully!"));
-	}
+	
 }
 
 // Called every frame
@@ -109,6 +87,15 @@ void APlayerCharacter::SetupComponents()
 	// UCharacterTrajectoryComponent Component Plugin
 	TrajectoryComponent = CreateDefaultSubobject<UUpdateTrajectoryCharacterComponent>(TEXT("TrajectoryComponent"));
 	TrajectoryComponent->RegisterComponent();
+
+	BallActive = CreateDefaultSubobject<UCurrentBallComponent>(TEXT("BallActorComponent"));
+	BallActive->RegisterComponent();
+
+	ClosestBone = CreateDefaultSubobject<USelectClosestBoneCharacterComponent>(TEXT("SelectClesestBone"));
+	ClosestBone->RegisterComponent();
+
+	PlayAnimMontageComponent = CreateDefaultSubobject<UPlayAnimMontageComponent>(TEXT("AnimationComponent"));
+	PlayAnimMontageComponent->RegisterComponent();
 
 	// Inicializa o componente que recebe a entrada do controle e insere a movimentação no Character
 	MovementPlayerCharacter = CreateDefaultSubobject<UInputCharacterComponent>(TEXT("ICustomMovementComponent"));

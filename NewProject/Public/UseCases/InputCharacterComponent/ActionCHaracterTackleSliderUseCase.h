@@ -17,10 +17,11 @@ class NEWPROJECT_API UActionCHaracterTackleSliderUseCase : public UObject
 
 public:
 	static void Handle(
-			APlayerCharacter* Character,
-			const TScriptInterface<IInputCharacterInterface>& MovementComponent,
-			const TScriptInterface<IUpdateStateCharacterComponentInterface>& StateCharacterComponent,
-			const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& SelectorPoseSearchDatabase,
-			const bool bIsStarted
-		);
+		const TScriptInterface<ICurrentBallComponentInterface> CurrentBallComponent,
+		const TScriptInterface<ISelectClosestBoneCharacterComponentInterface> SelectBoneComponent,
+		const TScriptInterface<IPlayAnimMontageComponentInterface> PlayAnimMontageComponent,
+		const TScriptInterface<IUpdateStateCharacterComponentInterface>& StateCharacterComponent,
+		const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& SelectorPoseSearchDatabase,
+		const bool bIsStarted
+	);
 };

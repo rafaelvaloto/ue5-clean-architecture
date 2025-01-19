@@ -6,6 +6,7 @@ public class NewProject : ModuleRules
 {
 	public NewProject(ReadOnlyTargetRules Target) : base(Target)
 	{
+		
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[]
@@ -18,7 +19,8 @@ public class NewProject : ModuleRules
 			"EnhancedInput",
 			"PoseSearch",
 			"MotionWarping",
-			"MotionTrajectory"
+			"MotionTrajectory",
+			"IKRig"
 		});
 
 		// PrivateDependencyModuleNames.AddRange(new string[] {  });

@@ -1,8 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Application/AnimNotify/PSD_Roboot_A1/WaitingNotifyAnim.h"
-
 #include "Application/PlayerCharacter/PlayerCharacter.h"
 #include "UseCases/InputCharacterComponent/ActionCHaracterTackleSliderUseCase.h"
 #include "UseCases/InputCharacterComponent/ActionCharacterTackleUseCase.h"
@@ -15,18 +13,22 @@ void UWaitingNotifyAnim::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 
 	APlayerCharacter* Character = Cast<APlayerCharacter>(MeshComp->GetOwner());
 	if (!Character) return;
-	
+
+	Character->StartInpulse = !Character->StartInpulse; // Inverte o valor
+
 	UActionCharacterTackleUseCase::Handle(
-		Character,
-		Character->MovementPlayerCharacter,
-		Character->UpdateStateCharacterComponent,
-		Character->SelectorPoseSearchDatabaseComponent,
+	Character->BallActive,
+	Character->ClosestBone,
+	Character->PlayAnimMontageComponent,
+	Character->UpdateStateCharacterComponent,
+	Character->SelectorPoseSearchDatabaseComponent,
 		false
 	);
 
 	UActionCHaracterTackleSliderUseCase::Handle(
-		Character,
-		Character->MovementPlayerCharacter,
+		Character->BallActive,
+		Character->ClosestBone,
+		Character->PlayAnimMontageComponent,
 		Character->UpdateStateCharacterComponent,
 		Character->SelectorPoseSearchDatabaseComponent,
 		false

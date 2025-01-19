@@ -19,8 +19,9 @@ class NEWPROJECT_API UActionCharacterTackleUseCase : public UObject
 	GENERATED_BODY()
 public:
 	static void Handle(
-		APlayerCharacter* Character,
-		const TScriptInterface<IInputCharacterInterface>& MovementComponent,
+		const TScriptInterface<ICurrentBallComponentInterface> CurrentBallComponent,
+		const TScriptInterface<ISelectClosestBoneCharacterComponentInterface> SelectBoneComponent,
+		const TScriptInterface<IPlayAnimMontageComponentInterface> PlayAnimMontageComponent,
 		const TScriptInterface<IUpdateStateCharacterComponentInterface>& StateCharacterComponent,
 		const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& SelectorPoseSearchDatabase,
 		const bool bIsStarted
