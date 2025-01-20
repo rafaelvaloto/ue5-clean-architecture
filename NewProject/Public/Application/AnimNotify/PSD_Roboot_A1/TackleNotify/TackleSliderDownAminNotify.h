@@ -13,4 +13,7 @@ UCLASS()
 class NEWPROJECT_API UTackleSliderDownAminNotify : public UAnimNotify
 {
 	GENERATED_BODY()
+	
+public:
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 };

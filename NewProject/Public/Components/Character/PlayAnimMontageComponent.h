@@ -27,9 +27,13 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void PlayDynamicMontage(UAnimSequence* AnimationSequence, FName SlotName, float PlayRate) override;
-	virtual void PlayDynamicMontage(TArray<UAnimSequence*> AnimationSequences, FName SlotName, float PlayRate) override;
+	virtual void SetDynamicMontages(TArray<UAnimSequence*> AnimationSequences, FName SlotName, float PlayRate) override;
 	virtual void DefineIndexPlayDynamicMontage(int32 Index) override;
 
 private:
+	UPROPERTY()
 	int32 IndexPlayDynamicMontage = 0;
+
+	UPROPERTY()
+	TArray<UAnimSequence*> ArrayAnimationSequences;
 };

@@ -27,4 +27,6 @@ public:
 	virtual void ControlYaw(const float InputValue) = 0;
 	virtual void SetBlockMove(const bool bIsBlocked) = 0;
 	virtual bool GetBlockMove() = 0;
+	virtual void AlignWithMovementInput() = 0;
+	virtual void RecoverFromRagdoll() = 0;
 };

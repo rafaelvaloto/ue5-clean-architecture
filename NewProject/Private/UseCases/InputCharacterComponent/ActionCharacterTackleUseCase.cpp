@@ -19,28 +19,31 @@ void UActionCharacterTackleUseCase::Handle(
 			CurrentBallComponent->CurrentBall());
 
 		SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::Waiting);
-		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Tackle);
+		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::TackleSlider);
 		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
 
 		if (DefineBoneAnim == ESelectClosestBoneCharacterEnum::LeftFoot)
 		{
 			UAnimSequence* MyAnimationSequence = LoadObject<UAnimSequence>(
 				nullptr, TEXT(
-					"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/077_AA_Soccer_Player_Tackle_L.077_AA_Soccer_Player_Tackle_L"));
+					"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/077_AA_Soccer_Player_Tackle_L.077_AA_Soccer_Player_Tackle_L"
+				));
 			if (MyAnimationSequence)
 			{
-				PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 1.0f);
+				PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f);
 				return;
 			}
 		}
 
 		UAnimSequence* MyAnimationSequence = LoadObject<UAnimSequence>(
 			nullptr, TEXT(
-				"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/076_AA_Soccer_Player_Tackle_R.076_AA_Soccer_Player_Tackle_R"));
+				"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/076_AA_Soccer_Player_Tackle_R.076_AA_Soccer_Player_Tackle_R"
+			));
 		if (MyAnimationSequence)
 		{
-			PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 1.0f);
+			PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f);
 		}
+
 		return;
 	}
 
@@ -51,11 +54,13 @@ void UActionCharacterTackleUseCase::Handle(
 
 	if (StateCharacterComponent->GetPeviousState() == EPlayerCharacterStateEnum::Tackle)
 	{
+		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Idle);
+		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
 		SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::None);
-		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Walking);
 		return;
 	}
 
-	SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::None);
 	StateCharacterComponent->SetCurrentState(StateCharacterComponent->GetPeviousState());
+	SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
+	SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::None);
 }

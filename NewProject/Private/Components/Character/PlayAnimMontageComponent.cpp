@@ -12,8 +12,6 @@ UPlayAnimMontageComponent::UPlayAnimMontageComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
 
@@ -61,16 +59,28 @@ void UPlayAnimMontageComponent::PlayDynamicMontage(UAnimSequence* AnimationSeque
 	}
 }
 
-void UPlayAnimMontageComponent::PlayDynamicMontage(TArray<UAnimSequence*> AnimationSequences, const FName SlotName,
+void UPlayAnimMontageComponent::SetDynamicMontages(TArray<UAnimSequence*> AnimationSequences, const FName SlotName,
                                                    const float PlayRate)
 {
+	if (ArrayAnimationSequences.Num() > 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ArrayAnimationSequences is not empty!"));
+		ArrayAnimationSequences.Empty();
+	}
+
 	if (AnimationSequences.IsValidIndex(IndexPlayDynamicMontage))
 	{
+		ArrayAnimationSequences = AnimationSequences;
 		PlayDynamicMontage(AnimationSequences[IndexPlayDynamicMontage], SlotName, PlayRate);
 	}
 }
 
 void UPlayAnimMontageComponent::DefineIndexPlayDynamicMontage(const int32 Index)
 {
-	IndexPlayDynamicMontage = Index;
+	if (!ArrayAnimationSequences.IsValidIndex(Index))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("IsValidIndex is not valid!"));
+		return;
+	}
+	PlayDynamicMontage(ArrayAnimationSequences[Index], FName("DefaultSlot"), 1.0f);
 }

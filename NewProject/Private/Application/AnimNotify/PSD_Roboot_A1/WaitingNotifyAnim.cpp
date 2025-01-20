@@ -13,9 +13,7 @@ void UWaitingNotifyAnim::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 
 	APlayerCharacter* Character = Cast<APlayerCharacter>(MeshComp->GetOwner());
 	if (!Character) return;
-
-	Character->StartInpulse = !Character->StartInpulse; // Inverte o valor
-
+	
 	UActionCharacterTackleUseCase::Handle(
 	Character->BallActive,
 	Character->ClosestBone,
@@ -33,4 +31,6 @@ void UWaitingNotifyAnim::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 		Character->SelectorPoseSearchDatabaseComponent,
 		false
 	);
+
+	Character->StartInpulse = false;
 }

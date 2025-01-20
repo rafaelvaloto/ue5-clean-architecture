@@ -5,6 +5,7 @@
 
 #include "Application/PlayerCharacter/PlayerCharacter.h"
 #include "Application/PlayerController/JogPlayerController.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -33,6 +34,44 @@ void UInputCharacterComponent::SetBlockMove(const bool bIsBlocked)
 bool UInputCharacterComponent::GetBlockMove()
 {
 	return bIsBlockMove;
+}
+
+void UInputCharacterComponent::AlignWithMovementInput()
+{
+	APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
+	if (!Character)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Character not found in UInputCharacterComponent::Move"));
+		return;
+	}
+	
+	// Capturar vetor de movimento de entrada atual
+	FVector MovementInput = Character->GetLastMovementInputVector();
+	FRotator DesiredRotation = MovementInput.Rotation();
+	UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
+	CapsuleComponent->SetWorldRotation(DesiredRotation);
+}
+
+void UInputCharacterComponent::RecoverFromRagdoll()
+{
+	APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
+	if (!Character)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Character not found in UInputCharacterComponent::Move"));
+		return;
+	}
+
+	const AJogPlayerController* Controller = Cast<AJogPlayerController>(Character->GetController());
+	if (!Controller)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Controller not found in UInputCharacterComponent::Move"));
+		return;
+	}
+
+	// Ativar movimento novamente
+	Character->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+
+	UE_LOG(LogTemp, Warning, TEXT("Character recovered from ragdoll!"));
 }
 
 void UInputCharacterComponent::ControlYaw(const float InputValue)

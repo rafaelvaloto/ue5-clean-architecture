@@ -5,8 +5,13 @@
 
 void UInterceptTackleSliderDownAminNotifyUseCase::Handle(
 	TScriptInterface<ICurrentBallComponentInterface> CurrentBallComponent,
-	TScriptInterface<IPlayAnimMontageComponentInterface> PlayAnimMontageComponent
+	TScriptInterface<IPlayAnimMontageComponentInterface> PlayAnimMontageComponent,
+	TScriptInterface<IInputCharacterInterface> InputCharacterComponent
 )
 {
-	// todo: escrever regra para selecionar o index da proxima animacao com base no que correu apos a primeira animacao ter terminado
+	UE_LOG(LogTemp, Warning, TEXT("InterceptTackleSliderDownAminNotifyUseCase"));
+
+	InputCharacterComponent->RecoverFromRagdoll();
+	InputCharacterComponent->AlignWithMovementInput();
+	PlayAnimMontageComponent->DefineIndexPlayDynamicMontage(1);
 }
