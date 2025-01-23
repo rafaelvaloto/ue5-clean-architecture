@@ -11,8 +11,5 @@ void UMovementCharacterUseCase::Handle
 	const FVector& InputController
 )
 {
-	if (!MovementComponent->GetBlockMove())
-	{
-		MovementComponent->Move(InputController);
-	}
+	MovementComponent->Move(InputController);
 }

@@ -4,12 +4,9 @@
 #include "UseCases/InputCharacterComponent/MovementCharacterControlYawUseCase.h"
 
 void UMovementCharacterControlYawUseCase::Handle(
-		const TScriptInterface<IInputCharacterInterface>& MovementComponent,
-		const float InputValue
-	)
+	const TScriptInterface<IInputCharacterInterface>& MovementComponent,
+	const float InputValue
+)
 {
-	if (!MovementComponent->GetBlockMove())
-	{
-		MovementComponent->ControlYaw(InputValue);	
-	}
+	MovementComponent->ControlYaw(InputValue);
 }

@@ -33,8 +33,7 @@ public:
 	virtual void ControlYaw(const float InputValue) override;
 	virtual void SetBlockMove(const bool bIsBlocked) override;
 	virtual bool GetBlockMove() override;
-	virtual void AlignWithMovementInput() override;
-	virtual void RecoverFromRagdoll() override;
+	virtual void NormalizeCharacterAfterGetUp() override;
 
 private:
 	bool bIsBlockMove = false;

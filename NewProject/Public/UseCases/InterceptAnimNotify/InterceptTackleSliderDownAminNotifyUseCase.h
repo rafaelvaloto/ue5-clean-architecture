@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "NewProject/Interfaces/CharacterComponents/InputCharacterInterface.h"
 #include "NewProject/Interfaces/CharacterComponents/PlayAnimMontageComponentInterface.h"
+#include "NewProject/Interfaces/CharacterComponents/UpdateAttributesCharacterComponentInterface.h"
+#include "NewProject/Interfaces/CharacterComponents/UpdateStateCharacterComponentInterface.h"
+#include "NewProject/Interfaces/MotionMatchHelpersComponents/SelectorPoseSearchDatabaseInterface.h"
 #include "NewProject/Interfaces/StaticMeshActorComponents/CurrentBallComponentInterface.h"
 #include "UObject/Object.h"
 #include "InterceptTackleSliderDownAminNotifyUseCase.generated.h"
@@ -21,6 +24,9 @@ public:
 	static void Handle(
 		TScriptInterface<ICurrentBallComponentInterface> CurrentBallComponent,
 		TScriptInterface<IPlayAnimMontageComponentInterface> PlayAnimMontageComponent,
-		TScriptInterface<IInputCharacterInterface> InputCharacterComponent
+		TScriptInterface<IInputCharacterInterface> InputCharacterComponent,
+		TScriptInterface<IUpdateStateCharacterComponentInterface> StateCharacterComponent,
+		TScriptInterface<IUpdateAttributesCharacterComponentInterface> AttributesCharacterComponent,
+		TScriptInterface<ISelectorPoseSearchDatabaseInterface> SelectorPoseSearchDatabase
 	);
 };

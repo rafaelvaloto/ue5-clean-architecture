@@ -22,7 +22,7 @@ class NEWPROJECT_API IPlayAnimMontageComponentInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void PlayDynamicMontage(UAnimSequence* AnimationSequence, FName SlotName, float PlayRate) = 0;
-	virtual void SetDynamicMontages(TArray<UAnimSequence*> AnimationSequences, FName SlotName, float PlayRate) = 0;
-	virtual void DefineIndexPlayDynamicMontage(int32 Index) = 0;
+	virtual void PlayDynamicMontage(UAnimSequence* AnimationSequence, FName SlotName, float PlayRate, float NewPlayRate = 0.0f, float TimeToChangePlayRate = 0.0) = 0;
+	virtual void SetDynamicMontages(TArray<UAnimSequence*> AnimationSequences, FName SlotName, float PlayRate, float NewPlayRate = 0.0f, float TimeToChangePlayRate = 0.0) = 0;
+	virtual void DefineIndexPlayDynamicMontage(int32 Index, FName SlotName, float PlayRate) = 0;
 };

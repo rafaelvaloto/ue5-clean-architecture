@@ -19,7 +19,7 @@ void UActionCharacterTackleUseCase::Handle(
 			CurrentBallComponent->CurrentBall());
 
 		SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::Waiting);
-		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::TackleSlider);
+		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Tackle);
 		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
 
 		if (DefineBoneAnim == ESelectClosestBoneCharacterEnum::LeftFoot)
@@ -49,18 +49,20 @@ void UActionCharacterTackleUseCase::Handle(
 
 	if (StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle"));
 		return;
 	}
 
 	if (StateCharacterComponent->GetPeviousState() == EPlayerCharacterStateEnum::Tackle)
 	{
-		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Idle);
 		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
 		SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::None);
+		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Idle);
 		return;
 	}
 
-	StateCharacterComponent->SetCurrentState(StateCharacterComponent->GetPeviousState());
 	SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
 	SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::None);
+	StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Walking);
+
 }

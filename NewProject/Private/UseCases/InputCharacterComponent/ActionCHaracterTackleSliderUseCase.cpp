@@ -21,7 +21,7 @@ void UActionCHaracterTackleSliderUseCase::Handle(
 
 
 		SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::Waiting);
-		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Tackle);
+		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::TackleSlider);
 		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
 
 		if (DefineBoneAnim == ESelectClosestBoneCharacterEnum::LeftFoot)
@@ -33,10 +33,10 @@ void UActionCHaracterTackleSliderUseCase::Handle(
 			Animations.Add(
 				LoadObject<UAnimSequence>(
 					nullptr, TEXT(
-					"/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Neutral_Stand_Turn_045_L.M_Neutral_Stand_Turn_045_L")
+					"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/024_AA_Soccer_Player_CIdle_R.024_AA_Soccer_Player_CIdle_R")
 				)
 			);
-			PlayAnimMontageComponent->SetDynamicMontages(Animations, FName("DefaultSlot"), 1.0f);
+			PlayAnimMontageComponent->SetDynamicMontages(Animations, FName("DefaultSlot"), 1.0f, 2.0f, 1.23f);
 			return;
 		}
 
@@ -50,19 +50,9 @@ void UActionCHaracterTackleSliderUseCase::Handle(
 		Animations.Add(
 			LoadObject<UAnimSequence>(
 				nullptr, TEXT(
-					"/Game/Characters/UEFN_Mannequin/Animations/Idle/M_Neutral_Stand_Turn_045_L.M_Neutral_Stand_Turn_045_L")
+					"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/024_AA_Soccer_Player_CIdle_R.024_AA_Soccer_Player_CIdle_R")
 			)
 		);
-		PlayAnimMontageComponent->SetDynamicMontages(Animations, FName("DefaultSlot"), 1.0f);
-		return;
+		PlayAnimMontageComponent->SetDynamicMontages(Animations, FName("DefaultSlot"), 1.0f, 2.0f, 1.23f);
 	}
-
-	if (StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::TackleSlider)
-	{
-		return;
-	}
-
-	StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Idle);
-	SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
-	SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::None);
 }

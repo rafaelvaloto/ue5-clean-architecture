@@ -50,21 +50,10 @@ bool UUpdatePoseSearchDatabaseWithStateUseCase::Handle
 			)
 		)
 		{
-			if (
-				CurrentState == EPlayerCharacterStateEnum::Tackle &&
-				Entity->GetNameAsset() == "PSD_Roboot_A1_Tackle"
-				)
-			{
-				Component->SetInterruptMode(EPoseSearchInterruptMode::ForceInterruptAndInvalidateContinuingPose);
-				Component->SetDatabaseCurrent(Index);
-
-				Component->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
-				UE_LOG(LogTemp, Warning, TEXT("Mudou para Tackle DoNotInterrupt"));
-				break;
-			}
 			Component->SetInterruptMode(EPoseSearchInterruptMode::InterruptOnDatabaseChange);
 			Component->SetDatabaseCurrent(Index);
 			Component->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
+			break;
 		}
 		Index++;
 	}

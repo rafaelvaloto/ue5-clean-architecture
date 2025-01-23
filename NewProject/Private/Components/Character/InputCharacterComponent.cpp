@@ -7,6 +7,7 @@
 #include "Application/PlayerController/JogPlayerController.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "UseCases/UpdateStateCharacterComponent/UpdateStateCharacterComponentUseCase.h"
 
 
 // Sets default values for this component's properties
@@ -36,42 +37,24 @@ bool UInputCharacterComponent::GetBlockMove()
 	return bIsBlockMove;
 }
 
-void UInputCharacterComponent::AlignWithMovementInput()
+void UInputCharacterComponent::NormalizeCharacterAfterGetUp()
 {
 	APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
 	if (!Character)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Character not found in UInputCharacterComponent::Move"));
-		return;
-	}
-	
-	// Capturar vetor de movimento de entrada atual
-	FVector MovementInput = Character->GetLastMovementInputVector();
-	FRotator DesiredRotation = MovementInput.Rotation();
-	UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
-	CapsuleComponent->SetWorldRotation(DesiredRotation);
-}
-
-void UInputCharacterComponent::RecoverFromRagdoll()
-{
-	APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
-	if (!Character)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Character not found in UInputCharacterComponent::Move"));
 		return;
 	}
 
-	const AJogPlayerController* Controller = Cast<AJogPlayerController>(Character->GetController());
-	if (!Controller)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Controller not found in UInputCharacterComponent::Move"));
-		return;
-	}
+	// Garantir que o Capsule Component está configurado corretamente
+	Character->GetCapsuleComponent()->SetHiddenInGame(false);
+	Character->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    
+	// Ajustar orientação do personagem para o padrão:
+	Character->GetCharacterMovement()->bOrientRotationToMovement = true;
+	Character->GetCharacterMovement()->bUseControllerDesiredRotation = false;
 
-	// Ativar movimento novamente
-	Character->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-
-	UE_LOG(LogTemp, Warning, TEXT("Character recovered from ragdoll!"));
+	// Garantir que velocidades e forças estão padrão
+	Character->GetCharacterMovement()->StopMovementImmediately();
 }
 
 void UInputCharacterComponent::ControlYaw(const float InputValue)

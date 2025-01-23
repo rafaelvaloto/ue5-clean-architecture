@@ -17,9 +17,6 @@ void UUpdatePoseSearchDatabaseWithDecelerationUseCase::Handle
 	int32 Index = 0;
 	for (IEntityAsset* Entity : EntitiesAssets)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Entity %s"), *Entity->GetNameAsset());
-		UE_LOG(LogTemp, Warning, TEXT("ESelectorDatabaseValidateRuleModeEnum %d"), ESelectorDatabaseValidateRuleModeEnum::Deceleration);
-		
 		// Filtrar apenas entidades de um tipo específico
 		if (
 			!Entity->GetTypesValidateRule().Contains(ESelectorDatabaseValidateRuleModeEnum::Deceleration)
@@ -28,7 +25,7 @@ void UUpdatePoseSearchDatabaseWithDecelerationUseCase::Handle
 			Index++;
 			continue;
 		}
-		
+
 		if (
 			Entity->ValidateAll(
 				Component->GetActor(),
@@ -38,9 +35,11 @@ void UUpdatePoseSearchDatabaseWithDecelerationUseCase::Handle
 			)
 		)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Mudou para Deleration"));
 			Component->SetInterruptMode(EPoseSearchInterruptMode::InterruptOnDatabaseChange);
 			Component->SetDatabaseCurrent(Index);
 			Component->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
+			break;
 		}
 		
 		Index++;

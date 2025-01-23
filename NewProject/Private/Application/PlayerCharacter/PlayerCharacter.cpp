@@ -2,6 +2,8 @@
 
 
 #include "Application/PlayerCharacter/PlayerCharacter.h"
+
+#include "Components/CapsuleComponent.h"
 #include "Components/Character/InputCharacterComponent.h"
 #include "Components/Character/PlayAnimMontageComponent.h"
 #include "Components/Character/UpdateAttributesCharacterComponent.h"
@@ -40,6 +42,9 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetCapsuleComponent()->SetVisibility(true);
+	GetCapsuleComponent()->SetHiddenInGame(false);
 
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotação baseada no movimento.
 	GetCharacterMovement()->bUseControllerDesiredRotation = false; // Ignore o ControlRotation
@@ -130,7 +135,7 @@ void APlayerCharacter::SetupSkeletonMesh() const
 		UE_LOG(LogTemp, Error, TEXT("SkeletonMesh not found"));
 		return;
 	}
-
+	
 	GetMesh()->SetSkeletalMesh(SkeletonMesh.Object);
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -88.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));

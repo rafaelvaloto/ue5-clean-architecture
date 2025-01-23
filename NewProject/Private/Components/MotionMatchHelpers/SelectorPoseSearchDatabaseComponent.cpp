@@ -68,7 +68,7 @@ void USelectorPoseSearchDatabaseComponent::OnState(const EPlayerCharacterStateEn
 	bIsBlockingDeceleration = true;
 	bIsBlockingAcceleration = true;
 
-	if (WaitingNotifyAnim == EWaitingNotifyAnimEnum::Waiting)
+	if (GetInterruptMode() == EPoseSearchInterruptMode::ForceInterrupt)
 	{
 		return;
 	}
@@ -84,22 +84,35 @@ void USelectorPoseSearchDatabaseComponent::OnState(const EPlayerCharacterStateEn
 
 auto USelectorPoseSearchDatabaseComponent::OnDeceleration(const float PrevVelocity, float CurrentVelocity) -> void
 {
+
+	if (GetInterruptMode() == EPoseSearchInterruptMode::ForceInterrupt)
+	{
+		return;
+	}
+	
 	if (bIsBlockingDeceleration)
 	{
 		return;
 	}
 
 	UUpdatePoseSearchDatabaseWithDecelerationUseCase::Handle(this, PrevVelocity, CurrentVelocity);
+	bIsBlockingDeceleration = true;
 }
 
 void USelectorPoseSearchDatabaseComponent::OnAcceleration(const float PrevVelocity, const float CurrentVelocity, const float Acceleration)
 {
+	if (GetInterruptMode() == EPoseSearchInterruptMode::ForceInterrupt)
+	{
+		return;
+	}
+	
 	if (bIsBlockingAcceleration)
 	{
 		return;
 	}
 
 	UUpdatePoseSearchDatabaseWithAccelerationUseCase::Handle(this, PrevVelocity, CurrentVelocity, Acceleration);
+	bIsBlockingAcceleration = true;
 }
 
 AActor* USelectorPoseSearchDatabaseComponent::GetActor()

@@ -36,9 +36,10 @@ void UUpdatePoseSearchDatabaseWithAccelerationUseCase::Handle
 		)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Mudou para Acceleration"));
-			Component->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
+			Component->SetInterruptMode(EPoseSearchInterruptMode::InterruptOnDatabaseChange);
 			Component->SetDatabaseCurrent(Index);
 			Component->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
+			break;
 		}
 		
 		Index++;
