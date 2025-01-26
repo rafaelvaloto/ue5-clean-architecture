@@ -3,9 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Application/BallStaticMeshActor/BallStaticMeshActor.h"
-#include "NewProject/Enums/CharacterStates/SelectClosestBoneCharacterEnum.h"
 #include "UObject/Interface.h"
+#include "NewProject/Enums/CharacterStates/SelectClosestBoneCharacterEnum.h"
 #include "SelectClosestBoneCharacterComponentInterface.generated.h"
 
 // This class does not need to be modified.
@@ -24,5 +23,5 @@ class NEWPROJECT_API ISelectClosestBoneCharacterComponentInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual ESelectClosestBoneCharacterEnum SelectClosestFootBoneToBall(ABallStaticMeshActor* BallActor) = 0;
+	virtual ESelectClosestBoneCharacterEnum SelectClosestFootBoneToBall(AActor* BallActor) = 0;
 };

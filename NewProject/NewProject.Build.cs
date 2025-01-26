@@ -6,7 +6,8 @@ public class NewProject : ModuleRules
 {
 	public NewProject(ReadOnlyTargetRules Target) : base(Target)
 	{
-		
+		PrivateDependencyModuleNames.AddRange(new string[] { "AITestSuite" });
+
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[]

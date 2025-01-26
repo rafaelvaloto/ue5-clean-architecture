@@ -22,7 +22,6 @@ class NEWPROJECT_API UInterceptTackleSliderDownAminNotifyUseCase : public UObjec
 
 public:
 	static void Handle(
-		TScriptInterface<ICurrentBallComponentInterface> CurrentBallComponent,
 		TScriptInterface<IPlayAnimMontageComponentInterface> PlayAnimMontageComponent,
 		TScriptInterface<IInputCharacterInterface> InputCharacterComponent,
 		TScriptInterface<IUpdateStateCharacterComponentInterface> StateCharacterComponent,

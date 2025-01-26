@@ -2,12 +2,11 @@
 
 
 #include "UseCases/InputCharacterComponent/ActionCharacterTackleUseCase.h"
-#include "NewProject/Enums/PoseSearchDatabaseModeStates/WaitingNotifyAnimEnum.h"
+#include "Services/CurrentBall/CurrentBallService.h"
 
 void UActionCharacterTackleUseCase::Handle(
-	const TScriptInterface<ICurrentBallComponentInterface> CurrentBallComponent,
-	const TScriptInterface<ISelectClosestBoneCharacterComponentInterface> SelectBoneComponent,
-	const TScriptInterface<IPlayAnimMontageComponentInterface> PlayAnimMontageComponent,
+	const TScriptInterface<ISelectClosestBoneCharacterComponentInterface>& SelectBoneComponent,
+	const TScriptInterface<IPlayAnimMontageComponentInterface>& PlayAnimMontageComponent,
 	const TScriptInterface<IUpdateStateCharacterComponentInterface>& StateCharacterComponent,
 	const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& SelectorPoseSearchDatabase,
 	const bool bIsStarted
@@ -15,10 +14,9 @@ void UActionCharacterTackleUseCase::Handle(
 {
 	if (bIsStarted)
 	{
-		const ESelectClosestBoneCharacterEnum DefineBoneAnim = SelectBoneComponent->SelectClosestFootBoneToBall(
-			CurrentBallComponent->CurrentBall());
+		const ESelectClosestBoneCharacterEnum DefineBoneAnim =
+			SelectBoneComponent->SelectClosestFootBoneToBall(UCurrentBallService::CurrentBall());
 
-		SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::Waiting);
 		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Tackle);
 		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
 
@@ -30,7 +28,7 @@ void UActionCharacterTackleUseCase::Handle(
 				));
 			if (MyAnimationSequence)
 			{
-				PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f);
+				PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f, 0.0f, 0.0f, false);
 				return;
 			}
 		}
@@ -41,7 +39,7 @@ void UActionCharacterTackleUseCase::Handle(
 			));
 		if (MyAnimationSequence)
 		{
-			PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f);
+			PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f, 0.0f, 0.0f, false);
 		}
 
 		return;
@@ -56,13 +54,10 @@ void UActionCharacterTackleUseCase::Handle(
 	if (StateCharacterComponent->GetPeviousState() == EPlayerCharacterStateEnum::Tackle)
 	{
 		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
-		SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::None);
 		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Idle);
 		return;
 	}
 
 	SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
-	SelectorPoseSearchDatabase->SetWaitingNotifyAnim(EWaitingNotifyAnimEnum::None);
 	StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Walking);
-
 }

@@ -6,6 +6,7 @@
 #include "InputAction.h"
 #include "GameFramework/PlayerController.h"
 #include "InputMappingContext.h"
+#include "Components/StaticMeshActor/CurrentBallComponent.h"
 #include "JogPlayerController.generated.h"
 
 /**

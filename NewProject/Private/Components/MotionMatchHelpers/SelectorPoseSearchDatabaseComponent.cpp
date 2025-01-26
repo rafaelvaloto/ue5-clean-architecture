@@ -14,6 +14,7 @@
 USelectorPoseSearchDatabaseComponent::USelectorPoseSearchDatabaseComponent():
 	bIsBlockingDeceleration(true),
 	bIsBlockingAcceleration(true),
+	WaitingNotifyAnim(EWaitingNotifyAnimEnum::None),
 	DatabaseCurrent(nullptr)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
@@ -72,7 +73,7 @@ void USelectorPoseSearchDatabaseComponent::OnState(const EPlayerCharacterStateEn
 	{
 		return;
 	}
-	
+
 	if (
 		const bool Return = UUpdatePoseSearchDatabaseWithStateUseCase::Handle(this, CurrentState, PreviousState); Return
 	)
@@ -84,12 +85,11 @@ void USelectorPoseSearchDatabaseComponent::OnState(const EPlayerCharacterStateEn
 
 auto USelectorPoseSearchDatabaseComponent::OnDeceleration(const float PrevVelocity, float CurrentVelocity) -> void
 {
-
 	if (GetInterruptMode() == EPoseSearchInterruptMode::ForceInterrupt)
 	{
 		return;
 	}
-	
+
 	if (bIsBlockingDeceleration)
 	{
 		return;
@@ -99,13 +99,14 @@ auto USelectorPoseSearchDatabaseComponent::OnDeceleration(const float PrevVeloci
 	bIsBlockingDeceleration = true;
 }
 
-void USelectorPoseSearchDatabaseComponent::OnAcceleration(const float PrevVelocity, const float CurrentVelocity, const float Acceleration)
+void USelectorPoseSearchDatabaseComponent::OnAcceleration(const float PrevVelocity, const float CurrentVelocity,
+                                                          const float Acceleration)
 {
 	if (GetInterruptMode() == EPoseSearchInterruptMode::ForceInterrupt)
 	{
 		return;
 	}
-	
+
 	if (bIsBlockingAcceleration)
 	{
 		return;
@@ -175,7 +176,5 @@ UPoseSearchDatabase* USelectorPoseSearchDatabaseComponent::GetDatabase()
 
 void USelectorPoseSearchDatabaseComponent::SetDatabaseCurrent(const uint32 Index)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Return Old DatabaseCurrent %s"), *DatabaseCurrent->GetName());
-	UE_LOG(LogTemp, Warning, TEXT("Return DatabaseCurrent %s"), *Databases[Index]->GetName());
 	DatabaseCurrent = Databases[Index];
 }

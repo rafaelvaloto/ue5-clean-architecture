@@ -3,18 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Application/PlayerCharacter/PlayerCharacter.h"
+#include "UObject/Object.h"
+#include "NewProject/Interfaces/CharacterComponents/PlayAnimMontageComponentInterface.h"
+#include "NewProject/Interfaces/CharacterComponents/SelectClosestBoneCharacterComponentInterface.h"
 #include "NewProject/Interfaces/CharacterComponents/UpdateStateCharacterComponentInterface.h"
 #include "NewProject/Interfaces/MotionMatchHelpersComponents/SelectorPoseSearchDatabaseInterface.h"
-#include "NewProject/Interfaces/StaticMeshActorComponents/CurrentBallComponentInterface.h"
-#include "UObject/Object.h"
-#include "ActionCharacterTackleUseCase.generated.h"
+#include "ActionCharacterTackleSliderUseCase.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class NEWPROJECT_API UActionCharacterTackleUseCase : public UObject
+class NEWPROJECT_API UActionCharacterTackleSliderUseCase : public UObject
 {
 	GENERATED_BODY()
 
@@ -26,5 +26,4 @@ public:
 		const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& SelectorPoseSearchDatabase,
 		const bool bIsStarted
 	);
-	
 };

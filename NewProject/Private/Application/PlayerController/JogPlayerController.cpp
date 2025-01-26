@@ -8,7 +8,7 @@
 #include "InputMappingContext.h"
 #include "Camera/CameraActor.h"
 #include "EnhancedInput/Public/EnhancedInputSubsystems.h"
-#include "UseCases/InputCharacterComponent/ActionCHaracterTackleSliderUseCase.h"
+#include "UseCases/InputCharacterComponent/ActionCharacterTackleSliderUseCase.h"
 #include "UseCases/InputCharacterComponent/ActionCharacterTackleUseCase.h"
 #include "UseCases/InputCharacterComponent/MovementCharacterControlYawUseCase.h"
 
@@ -121,8 +121,7 @@ void AJogPlayerController::TackleSlider(const FInputActionValue& InputController
 		return;
 	}
 
-	UActionCHaracterTackleSliderUseCase::Handle(
-		PlayerCharacter->BallActive,
+	UActionCharacterTackleSliderUseCase::Handle(
 		PlayerCharacter->ClosestBone,
 		PlayerCharacter->PlayAnimMontageComponent,
 		PlayerCharacter->UpdateStateCharacterComponent,
@@ -141,7 +140,6 @@ void AJogPlayerController::Tackle(const FInputActionValue& InputController)
 	}
 
 	UActionCharacterTackleUseCase::Handle(
-		PlayerCharacter->BallActive,
 		PlayerCharacter->ClosestBone,
 		PlayerCharacter->PlayAnimMontageComponent,
 		PlayerCharacter->UpdateStateCharacterComponent,

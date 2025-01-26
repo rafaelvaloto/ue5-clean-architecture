@@ -7,11 +7,11 @@
 #include "Components/Character/InputCharacterComponent.h"
 #include "Components/Character/PlayAnimMontageComponent.h"
 #include "Components/Character/SelectClosestBoneCharacterComponent.h"
+#include "Components/Character/SweepByChannelComponent.h"
 #include "Components/Character/UpdateAttributesCharacterComponent.h"
 #include "Components/Character/UpdateStateCharacterComponent.h"
 #include "Components/Character/UpdateTrajectoryCharacterComponent.h"
 #include "Components/MotionMatchHelpers/SelectorPoseSearchDatabaseComponent.h"
-#include "Components/StaticMeshActor/CurrentBallComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "PlayerCharacter.generated.h"
@@ -37,7 +37,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Functions
 private:
 	void SetupComponents();
 	void SetupSkeletonMesh() const;
@@ -68,12 +67,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "TrajectoryComponent")
 	UUpdateTrajectoryCharacterComponent* TrajectoryComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BallActorComponent")
-	UCurrentBallComponent* BallActive;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SelectClesestBone")
 	USelectClosestBoneCharacterComponent* ClosestBone;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AnimationComponent")
 	UPlayAnimMontageComponent* PlayAnimMontageComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "SweepByChannel Component")
+	USweepByChannelComponent* SweepByChannel;
 };

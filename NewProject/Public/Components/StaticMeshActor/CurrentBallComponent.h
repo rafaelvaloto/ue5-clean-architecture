@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
 #include "NewProject/Interfaces/StaticMeshActorComponents/CurrentBallComponentInterface.h"
 #include "CurrentBallComponent.generated.h"
 
@@ -17,16 +16,5 @@ public:
 	// Sets default values for this component's properties
 	UCurrentBallComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
-
-	virtual ABallStaticMeshActor* CurrentBall() override;
-	virtual FVector GetLocationBall() override;
-	virtual FVector GetVelocityBall() override;
+	virtual AActor* CurrentBall() override;
 };

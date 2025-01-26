@@ -3,8 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/StaticMeshActor/CurrentBallComponent.h"
 #include "Engine/StaticMeshActor.h"
-#include "Components/StaticMeshActor/SplineDrawComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "BallStaticMeshActor.generated.h"
 
 UCLASS()
@@ -24,12 +27,28 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spline")
-	USplineDrawComponent* Spline;
-
+	// Registrar os servicos
+	void SetupServices() const;
+	void SetupComponents();
+	void SetupMesh() const;
 
 	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
-						UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, 
-						const FHitResult& SweepResult);
+	static void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+	                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, 
+	                           const FHitResult& SweepResult);
+
+	// Componente de Movimento de Projetil
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UProjectileMovementComponent* ProjectileMovement;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UCurrentBallComponent* CurrentBallComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UFloatingPawnMovement* FloatingPawn;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPhysicsHandleComponent* PhysicsHandle;
 };
+
+

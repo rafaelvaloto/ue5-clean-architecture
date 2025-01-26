@@ -15,7 +15,6 @@ void UTackleSliderDownAminNotify::Notify(USkeletalMeshComponent* MeshComp, UAnim
 	if (!Character) return;
 
 	UInterceptTackleSliderDownAminNotifyUseCase::Handle(
-		Character->BallActive,
 		Character->PlayAnimMontageComponent,
 		Character->MovementPlayerCharacter,
 		Character->UpdateStateCharacterComponent,

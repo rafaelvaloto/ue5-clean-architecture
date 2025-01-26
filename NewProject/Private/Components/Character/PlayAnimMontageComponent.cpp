@@ -33,7 +33,8 @@ void UPlayAnimMontageComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	// ...
 }
 
-void UPlayAnimMontageComponent::PlayDynamicMontage(UAnimSequence* AnimationSequence, FName SlotName, float PlayRate, float NewPlayRate, float TimeToChangePlayRate)
+void UPlayAnimMontageComponent::PlayDynamicMontage(UAnimSequence* AnimationSequence, FName SlotName, float PlayRate,
+                                                   float NewPlayRate, float TimeToChangePlayRate, bool Loop)
 {
 	const APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
 	if (!AnimationSequence || !Character->GetMesh() || !Character->GetMesh()->GetAnimInstance())
@@ -44,13 +45,24 @@ void UPlayAnimMontageComponent::PlayDynamicMontage(UAnimSequence* AnimationSeque
 
 	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
 
+	if (AnimInstance->IsPlayingSlotAnimation(AnimationSequence, SlotName))
+	{
+		return;
+	}
+
+	int32 LoopCount = 1;
+	if (Loop)
+	{
+		LoopCount = 10;
+	}
+	
 	const UAnimMontage* DynamicMontage = AnimInstance->PlaySlotAnimationAsDynamicMontage(
 		AnimationSequence, // A sequência de animação que será reproduzida
 		SlotName, // Nome do slot no Animation Blueprint
 		0.25f, // BlendInTime (tempo para interpolar o início da animação)
 		0.25f, // BlendOutTime (tempo para interpolar o fim da animação)
 		PlayRate, // PlayRate (taxa de reprodução da animação)
-		1 // LoopCount (número de vezes que a animação será executada)
+		LoopCount // LoopCount (número de vezes que a animação será executada)
 	);
 
 	if (DynamicMontage)
@@ -73,13 +85,14 @@ void UPlayAnimMontageComponent::PlayDynamicMontage(UAnimSequence* AnimationSeque
 				false // Não repete
 			);
 		}
-		
+
 		UE_LOG(LogTemp, Warning, TEXT("Dynamic Montage started successfully!"));
 	}
 }
 
 void UPlayAnimMontageComponent::SetDynamicMontages(TArray<UAnimSequence*> AnimationSequences, const FName SlotName,
-                                                   const float PlayRate, float NewPlayRate, float TimeToChangePlayRate)
+                                                   const float PlayRate, float NewPlayRate, float TimeToChangePlayRate,
+                                                   bool Loop)
 {
 	if (ArrayAnimationSequences.Num() > 0)
 	{
@@ -90,12 +103,13 @@ void UPlayAnimMontageComponent::SetDynamicMontages(TArray<UAnimSequence*> Animat
 	if (AnimationSequences.IsValidIndex(IndexPlayDynamicMontage))
 	{
 		ArrayAnimationSequences = AnimationSequences;
-		PlayDynamicMontage(AnimationSequences[IndexPlayDynamicMontage], SlotName, PlayRate, NewPlayRate, TimeToChangePlayRate);
+		PlayDynamicMontage(AnimationSequences[IndexPlayDynamicMontage], SlotName, PlayRate, NewPlayRate,
+		                   TimeToChangePlayRate, Loop);
 	}
 }
 
 void UPlayAnimMontageComponent::DefineIndexPlayDynamicMontage(const int32 Index, const FName SlotName,
-                                                              const float PlayRate)
+                                                              const float PlayRate, bool Loop)
 {
 	if (!ArrayAnimationSequences.IsValidIndex(Index))
 	{

@@ -7,7 +7,6 @@
 #include "NewProject/Interfaces/MotionMatchHelpersComponents/SelectorPoseSearchDatabaseInterface.h"
 
 void UInterceptTackleSliderDownAminNotifyUseCase::Handle(
-	TScriptInterface<ICurrentBallComponentInterface> CurrentBallComponent,
 	TScriptInterface<IPlayAnimMontageComponentInterface> PlayAnimMontageComponent,
 	TScriptInterface<IInputCharacterInterface> InputCharacterComponent,
 	TScriptInterface<IUpdateStateCharacterComponentInterface> StateCharacterComponent,
@@ -15,10 +14,7 @@ void UInterceptTackleSliderDownAminNotifyUseCase::Handle(
 	TScriptInterface<ISelectorPoseSearchDatabaseInterface> SelectorPoseSearchDatabase
 )
 {
-	UE_LOG(LogTemp, Warning, TEXT("InterceptTackleSliderDownAminNotifyUseCase"));
 	InputCharacterComponent->NormalizeCharacterAfterGetUp();
 	SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
-	AttributesCharacterComponent->SetVelocityCurrent(FVector::ZeroVector);
-	StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Running);
-	// PlayAnimMontageComponent->DefineIndexPlayDynamicMontage(1, FName("DefaultSlot"), 2.0f);
+	StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Idle);
 }

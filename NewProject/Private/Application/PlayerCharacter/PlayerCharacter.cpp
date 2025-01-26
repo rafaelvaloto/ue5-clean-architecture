@@ -14,9 +14,8 @@
 #include "UseCases/UpdateStateCharacterComponent/UpdateStateCharacterComponentUseCase.h"
 #include "UseCases/UpdateAttributesCharacterComponent/UpdateAttributesCharacterComponentUseCase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "UseCases/CharacterControllBall/CharacterControllBallUseCase.h"
 
-
-class UCurrentBallComponent;
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -52,7 +51,6 @@ void APlayerCharacter::BeginPlay()
 	SelectorPoseSearchDatabaseComponent->LoadDatabaseAsset(
 		"C:\\Users\\rafae\\Documents\\Unreal Projects\\NewProject\\Source\\NewProject\\Entities\\PoseSearchDatabases"
 	);
-	
 }
 
 // Called every frame
@@ -60,17 +58,25 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
 	if (StartInpulse)
 	{
-		FRotator CharacterRotation = GetOwner()->GetActorRotation(); // Rotação do personagem
+		const FRotator CharacterRotation = GetOwner()->GetActorRotation(); // Rotação do personagem
 		const FVector TargetImpulse = CharacterRotation.Vector() * 600.0f; // Ajuste o valor como necessário
 		LaunchCharacter(
-		FMath::VInterpTo(GetOwner()->GetVelocity(), TargetImpulse, DeltaTime, 5.0f),
-		true,
-		true
+			FMath::VInterpTo(GetOwner()->GetVelocity(), TargetImpulse, DeltaTime, 5.0f),
+			true,
+			true
 		);
 	}
-	
+
+	UCharacterControllBallUseCase::Handle(
+		SweepByChannel,
+		ClosestBone,
+		PlayAnimMontageComponent,
+		SelectorPoseSearchDatabaseComponent
+	);
+
 	// Update Persistent Attrs Character, Velocity, Location etc..
 	UUpdateAttributesCharacterComponentUseCase::Handle(UpdatedBaseAttributesComponent, this);
 
@@ -89,12 +95,14 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::SetupComponents()
 {
+
+	SweepByChannel = CreateDefaultSubobject<USweepByChannelComponent>(TEXT("SweepByChannelComponent"));
+	SweepByChannel->DebugDrawLines(true);
+	SweepByChannel->RegisterComponent();
+
 	// UCharacterTrajectoryComponent Component Plugin
 	TrajectoryComponent = CreateDefaultSubobject<UUpdateTrajectoryCharacterComponent>(TEXT("TrajectoryComponent"));
 	TrajectoryComponent->RegisterComponent();
-
-	BallActive = CreateDefaultSubobject<UCurrentBallComponent>(TEXT("BallActorComponent"));
-	BallActive->RegisterComponent();
 
 	ClosestBone = CreateDefaultSubobject<USelectClosestBoneCharacterComponent>(TEXT("SelectClesestBone"));
 	ClosestBone->RegisterComponent();
@@ -135,10 +143,12 @@ void APlayerCharacter::SetupSkeletonMesh() const
 		UE_LOG(LogTemp, Error, TEXT("SkeletonMesh not found"));
 		return;
 	}
-	
+
 	GetMesh()->SetSkeletalMesh(SkeletonMesh.Object);
 	GetMesh()->SetRelativeLocation(FVector(0.f, 0.f, -88.f));
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+	GetMesh()->SetCollisionProfileName("CharacterProfile");
+	GetMesh()->SetGenerateOverlapEvents(true);
 }
 
 void APlayerCharacter::SetupAnimInstanceBlueprint() const
