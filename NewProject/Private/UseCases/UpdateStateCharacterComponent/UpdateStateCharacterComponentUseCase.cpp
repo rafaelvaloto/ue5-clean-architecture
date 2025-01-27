@@ -16,7 +16,11 @@ void UUpdateStateCharacterComponentUseCase::Handle
 	const bool IsDirectionChange = ComponentBaseAttributes->IsDetectedDirectionChange();
 	const float AccelerationCurrent = ComponentBaseAttributes->GetMagnitudeAcceleration();
 
-	if (ComponentState->GetState() == EPlayerCharacterStateEnum::Tackle)
+	if (
+			ComponentState->GetState() == EPlayerCharacterStateEnum::Tackle ||
+			ComponentState->GetState() == EPlayerCharacterStateEnum::TackleSlider ||
+			ComponentState->GetState() == EPlayerCharacterStateEnum::Controlling
+		)
 	{
 		return;
 	}

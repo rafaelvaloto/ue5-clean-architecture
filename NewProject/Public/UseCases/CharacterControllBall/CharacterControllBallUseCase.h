@@ -7,6 +7,7 @@
 #include "NewProject/Interfaces/CharacterComponents/PlayAnimMontageComponentInterface.h"
 #include "NewProject/Interfaces/CharacterComponents/SelectClosestBoneCharacterComponentInterface.h"
 #include "NewProject/Interfaces/CharacterComponents/SweepByChannelComponentInterface.h"
+#include "NewProject/Interfaces/CharacterComponents/UpdateStateCharacterComponentInterface.h"
 #include "NewProject/Interfaces/MotionMatchHelpersComponents/SelectorPoseSearchDatabaseInterface.h"
 #include "CharacterControllBallUseCase.generated.h"
 
@@ -22,6 +23,7 @@ public:
 	static void Handle(
 		const TScriptInterface<ISweepByChannelComponentInterface>& SweepByChannel,
 		const TScriptInterface<ISelectClosestBoneCharacterComponentInterface>& SelectBoneComponent,
+		const TScriptInterface<IUpdateStateCharacterComponentInterface>& StateCharacterComponent,
 		const TScriptInterface<IPlayAnimMontageComponentInterface>& PlayAnimMontageComponent,
 		const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& SelectorPoseSearchDatabase
 		);

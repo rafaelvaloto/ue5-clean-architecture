@@ -6,7 +6,6 @@
 #include "Application/PlayerCharacter/PlayerCharacter.h"
 #include "NewProject/Interfaces/CharacterComponents/UpdateStateCharacterComponentInterface.h"
 #include "NewProject/Interfaces/MotionMatchHelpersComponents/SelectorPoseSearchDatabaseInterface.h"
-#include "NewProject/Interfaces/StaticMeshActorComponents/CurrentBallComponentInterface.h"
 #include "UObject/Object.h"
 #include "ActionCharacterTackleUseCase.generated.h"
 

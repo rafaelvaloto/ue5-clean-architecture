@@ -2,7 +2,6 @@
 
 
 #include "Components/StaticMeshActor/CurrentBallComponent.h"
-#include "Engine/World.h"
 
 
 UCurrentBallComponent::UCurrentBallComponent()

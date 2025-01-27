@@ -73,6 +73,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	UCharacterControllBallUseCase::Handle(
 		SweepByChannel,
 		ClosestBone,
+		UpdateStateCharacterComponent,
 		PlayAnimMontageComponent,
 		SelectorPoseSearchDatabaseComponent
 	);

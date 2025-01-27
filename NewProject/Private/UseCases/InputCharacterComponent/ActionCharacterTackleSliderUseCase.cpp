@@ -11,7 +11,7 @@ void UActionCharacterTackleSliderUseCase::Handle(
 	const bool bIsStarted
 )
 {
-	if (bIsStarted)
+	if (bIsStarted && StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::TackleSlider)
 	{
 
 		const ESelectClosestBoneCharacterEnum DefineBoneAnim =

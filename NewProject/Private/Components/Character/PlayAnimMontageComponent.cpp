@@ -45,17 +45,22 @@ void UPlayAnimMontageComponent::PlayDynamicMontage(UAnimSequence* AnimationSeque
 
 	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
 
-	if (AnimInstance->IsPlayingSlotAnimation(AnimationSequence, SlotName))
+	if (
+		AnimInstance->IsPlayingSlotAnimation(AnimationSequence, SlotName) ||
+		AnimInstance->DynamicMontage_IsPlayingFrom(AnimationSequence)
+	)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Animation is already playing!"));
 		return;
 	}
 
 	int32 LoopCount = 1;
 	if (Loop)
 	{
-		LoopCount = 10;
+		UE_LOG(LogTemp, Warning, TEXT("Entrou em loop!"));
+		LoopCount = 300;
 	}
-	
+
 	const UAnimMontage* DynamicMontage = AnimInstance->PlaySlotAnimationAsDynamicMontage(
 		AnimationSequence, // A sequência de animação que será reproduzida
 		SlotName, // Nome do slot no Animation Blueprint

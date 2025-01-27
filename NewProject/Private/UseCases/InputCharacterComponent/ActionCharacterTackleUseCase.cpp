@@ -12,14 +12,14 @@ void UActionCharacterTackleUseCase::Handle(
 	const bool bIsStarted
 )
 {
-	if (bIsStarted)
+	if (bIsStarted && StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle)
 	{
 		const ESelectClosestBoneCharacterEnum DefineBoneAnim =
 			SelectBoneComponent->SelectClosestFootBoneToBall(UCurrentBallService::CurrentBall());
-
+	
 		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Tackle);
 		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
-
+	
 		if (DefineBoneAnim == ESelectClosestBoneCharacterEnum::LeftFoot)
 		{
 			UAnimSequence* MyAnimationSequence = LoadObject<UAnimSequence>(
@@ -32,7 +32,7 @@ void UActionCharacterTackleUseCase::Handle(
 				return;
 			}
 		}
-
+	
 		UAnimSequence* MyAnimationSequence = LoadObject<UAnimSequence>(
 			nullptr, TEXT(
 				"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/076_AA_Soccer_Player_Tackle_R.076_AA_Soccer_Player_Tackle_R"
@@ -41,23 +41,23 @@ void UActionCharacterTackleUseCase::Handle(
 		{
 			PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f, 0.0f, 0.0f, false);
 		}
-
+	
 		return;
 	}
-
+	
 	if (StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle"));
 		return;
 	}
-
+	
 	if (StateCharacterComponent->GetPeviousState() == EPlayerCharacterStateEnum::Tackle)
 	{
 		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
 		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Idle);
 		return;
 	}
-
+	
 	SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
 	StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Walking);
 }

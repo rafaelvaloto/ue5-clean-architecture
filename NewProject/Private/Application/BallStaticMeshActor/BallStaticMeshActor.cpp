@@ -37,26 +37,59 @@ ABallStaticMeshActor::ABallStaticMeshActor()
 	
 }
 
-void ABallStaticMeshActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                          UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-                                          const FHitResult& SweepResult)
-{
-	if (OtherActor->IsA(ACharacter::StaticClass()))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Colisão detectada com: %s"), *OtherActor->GetName());
-	}
-}
-
 void ABallStaticMeshActor::BeginPlay()
 {
 	Super::BeginPlay();
 	SetupServices();
+
+	GetStaticMeshComponent()->OnComponentBeginOverlap.AddDynamic(this, &ABallStaticMeshActor::OnOverlapBegin);
 }
+
+void ABallStaticMeshActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+										  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+										  const FHitResult& SweepResult)
+{
+	
+}
+
+
 
 
 void ABallStaticMeshActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+
+	// APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	// if (PlayerController) 
+	// {
+	// 	// Obtém o Pawn controlado pelo PlayerController
+	// 	APawn* PlayerPawn = PlayerController->GetPawn();
+	// 	if (PlayerPawn)
+	// 	{
+	// 		// Faz cast do Pawn para o PlayerCharacter (ou o tipo específico do seu personagem)
+	// 		ACharacter* PlayerCharacter = Cast<ACharacter>(PlayerPawn); // Substitua ACharacter pelo seu PlayerCharacter personalizado
+	//
+	// 		const float BallRadius = 10.0f; // Altere conforme o tamanho da bola
+	// 		float TravelDistance = PlayerCharacter->GetVelocity().Size() * DeltaTime;
+	// 		float BallRotationRadians = TravelDistance / BallRadius;
+	//
+	// 		// Define o eixo de rotação baseado na direção do movimento
+	// 		FVector VelocityNormalized = PlayerCharacter->GetVelocity().GetSafeNormal();
+	// 		FVector RotationAxis = FVector::CrossProduct(FVector::UpVector, VelocityNormalized); // Eixo no plano XY
+	// 		RotationAxis.Z = 22.5f; // Garante que só rotacione no plano XY
+	// 		
+	// 		// Calcula a rotação delta
+	// 		FQuat RotationDelta = FQuat(RotationAxis, BallRotationRadians);
+	// 		// Suaviza a rotação da bola usando interpolação
+	// 		FQuat CurrentRotation = GetActorRotation().Quaternion();
+	// 		FQuat TargetRotation = CurrentRotation * RotationDelta;
+	// 		FQuat InterpolatedRotation = FQuat::Slerp(CurrentRotation, TargetRotation, 5.0f); // 0.1f é a velocidade da interpolação
+	// 		SetActorTransform(FTransform(InterpolatedRotation, GetActorLocation(), FVector(1.1f, 1.1f, 1.1f)));
+	// 	}
+	// }
+	
+	
 }
 
 void ABallStaticMeshActor::SetupServices() const

@@ -5,37 +5,37 @@
 #include "Services/CurrentBall/CurrentBallService.h"
 
 void UCharacterControllBallUseCase::Handle(
-		const TScriptInterface<ISweepByChannelComponentInterface>& SweepByChannel,
-		const TScriptInterface<ISelectClosestBoneCharacterComponentInterface>& SelectBoneComponent,
-		const TScriptInterface<IPlayAnimMontageComponentInterface>& PlayAnimMontageComponent,
-		const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& SelectorPoseSearchDatabase
-		)
+	const TScriptInterface<ISweepByChannelComponentInterface>& SweepByChannel,
+	const TScriptInterface<ISelectClosestBoneCharacterComponentInterface>& SelectBoneComponent,
+	const TScriptInterface<IUpdateStateCharacterComponentInterface>& StateCharacterComponent,
+	const TScriptInterface<IPlayAnimMontageComponentInterface>& PlayAnimMontageComponent,
+	const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& SelectorPoseSearchDatabase
+)
 {
-	if (SweepByChannel->DetectBallCollision())
+	if (
+		SweepByChannel->DetectBallCollision() &&
+		StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Controlling
+	)
 	{
-		ESelectClosestBoneCharacterEnum DefineBoneAnim = SelectBoneComponent->SelectClosestFootBoneToBall(UCurrentBallService::CurrentBall());
-
+		UE_LOG(LogTemp, Warning, TEXT("StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Controlling"));
+		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Controlling);
 		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
+		
+		ESelectClosestBoneCharacterEnum DefineBoneAnim = SelectBoneComponent->SelectClosestFootBoneToBall(
+			UCurrentBallService::CurrentBall());
 		if (DefineBoneAnim == ESelectClosestBoneCharacterEnum::LeftFoot)
 		{
-			UAnimSequence* MyAnimationSequence = LoadObject<UAnimSequence>(
+			PlayAnimMontageComponent->PlayDynamicMontage(LoadObject<UAnimSequence>(
 				nullptr, TEXT(
 					"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/095_AA_Soccer_Player_DribbleF_L.095_AA_Soccer_Player_DribbleF_L"
-				));
-			if (MyAnimationSequence)
-			{
-				PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f, 0.0f, 0.0f, true);
-				return;
-			}
+				)), FName("DefaultSlot"), 0.8f, 0.0f,
+															 0.0f, true);
+			return;
 		}
 
-		UAnimSequence* MyAnimationSequence = LoadObject<UAnimSequence>(
+		PlayAnimMontageComponent->PlayDynamicMontage(LoadObject<UAnimSequence>(
 			nullptr, TEXT(
 				"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/094_AA_Soccer_Player_DribbleF_R.094_AA_Soccer_Player_DribbleF_R"
-			));
-		if (MyAnimationSequence)
-		{
-			PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f, 0.0f, 0.0f, true);
-		}
+			)), FName("DefaultSlot"), 0.8f, 0.0f, 0.0f, true);
 	}
 }

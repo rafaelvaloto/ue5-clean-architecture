@@ -3,6 +3,7 @@
 
 #include "Components/Character/SweepByChannelComponent.h"
 #include "Application/BallStaticMeshActor/BallStaticMeshActor.h"
+#include "Application/PlayerCharacter/PlayerCharacter.h"
 
 
 // Sets default values for this component's properties
@@ -39,14 +40,18 @@ void USweepByChannelComponent::DebugDrawLines(const bool IsDebug)
 bool USweepByChannelComponent::DetectBallCollision()
 {
 	AActor* Actor = GetOwner();
-	if (!Actor)
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+	if (!Actor || !Character)
 	{
 		return false;
 	}
 
 	const float CapsuleRadius = 100.0f; // Raio da cápsula
-	const float CapsuleHalfHeight = 25.0f; // Altura da cápsula (meia-altura)
-
+	const float CapsuleHalfHeight = 200.0f; // Altura da cápsula (meia-altura)
+	
+	FRotator PlayerRotation = Character->GetActorRotation();
+	FVector PlayerLocation = Character->GetActorLocation();
+	
 	// Cria a forma da cápsula
 	FCollisionShape CapsuleShape = FCollisionShape::MakeCapsule(CapsuleRadius, CapsuleHalfHeight);
 
@@ -54,8 +59,8 @@ bool USweepByChannelComponent::DetectBallCollision()
 	QueryParams.AddIgnoredActor(Actor); // Ignorar o próprio jogador
 
 	// Configuração do QueryParams (detecção)
-	const FVector Start = Actor->GetActorLocation(); // Ponto inicial da cápsula
-	const FVector End = Start; // A cápsula não se move, então Start == End
+	const FVector Start = PlayerLocation; // Ponto inicial da cápsula
+	const FVector End = Start + PlayerRotation.Vector() * CapsuleRadius; // A cápsula não se move, então Start == End
 
 	TArray<FHitResult> HitResults; // Vetor para armazenar todos os objetos atingidos no Sweep
 
@@ -85,9 +90,29 @@ bool USweepByChannelComponent::DetectBallCollision()
 					                 false, 0.0f);
 				}
 
-				UE_LOG(LogTemp, Warning, TEXT("Bola detectada por Capsule Sweep!"));
+				// Ball->DisableComponentsSimulatePhysics();
+				FVector ComponentLocation = Ball->GetActorLocation();
+				
+				// Calcula a nova posição da bola com base no pé do jogador
+				FVector TargetLocation = PlayerLocation + (PlayerRotation.Vector() * 100.0f); // Ajuste de 50 unidades
+				FVector SmoothedLocation = FMath::VInterpTo(Ball->GetActorLocation(), FVector(TargetLocation.X, TargetLocation.Y, Ball->GetActorLocation().Z), GetWorld()->GetDeltaSeconds(), 10.0f); // 10.0f é a rapidez da suavização
+				Ball->SetActorLocation(SmoothedLocation);
 
-				HitResult = Hit;
+				// Localização da bola e ponto de impacto
+				FVector ImpactPoint = Hit.ImpactPoint;
+
+				// Vetor de alavanca (do centro da bola até o ponto de impacto)
+				FVector LeverArm = ImpactPoint - ComponentLocation;
+
+				// Normal do impacto (força "direcional" da colisão) * -1.0f para inverter
+				FVector ImpactForce = Hit.ImpactNormal; // Inverte se necessário para gerar torque na direção correta
+
+				// Calcula o torque usando o produto vetorial entre alavanca e força
+				FVector Torque = FVector::CrossProduct(LeverArm, ImpactForce);
+				
+				Ball->GetStaticMeshComponent()->AddTorqueInRadians(Torque * 100.f, NAME_None, false);
+
+				// Aplica a rotação
 				return true;
 			}
 

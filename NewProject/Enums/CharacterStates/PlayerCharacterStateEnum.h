@@ -15,6 +15,7 @@ enum class EPlayerCharacterStateEnum : uint8
 	RunningPivot UMETA(DisplayName = "RunningPivot"), // Correndo
 
 	// States Actions
+	Controlling UMETA(DisplayName = "Controlling"), // Controlling
 	Tackle UMETA(DisplayName = "Tackle"), // Boote
 	TackleSlider UMETA(DisplayName = "TackleSlider"), // Carrinho
 
