@@ -45,6 +45,14 @@ private:
 	// Components And Variables
 public:
 	bool StartInpulse = false;
+
+	FTimerHandle CollisionCheckTimer;
+
+	float CollisionCheckInterval;
+	void CheckBallCollision();
+
+	UPROPERTY()
+	FVector LastPosition = FVector::ZeroVector;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* CameraComponent;

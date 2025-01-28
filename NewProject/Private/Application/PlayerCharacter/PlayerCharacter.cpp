@@ -22,6 +22,8 @@ APlayerCharacter::APlayerCharacter()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	CollisionCheckInterval = 0.001f;
+
 	// Init Components
 	SetupComponents();
 	SetupSkeletonMesh();
@@ -38,9 +40,28 @@ APlayerCharacter::APlayerCharacter()
 
 
 // Called when the game starts or when spawned
+void APlayerCharacter::CheckBallCollision()
+{
+	UCharacterControllBallUseCase::Handle(
+		SweepByChannel,
+		ClosestBone,
+		UpdateStateCharacterComponent,
+		PlayAnimMontageComponent,
+		SelectorPoseSearchDatabaseComponent
+	);
+}
+
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// GetWorldTimerManager().SetTimer(
+	// 	CollisionCheckTimer,
+	// 	this,
+	// 	&APlayerCharacter::CheckBallCollision,
+	// 	CollisionCheckInterval,
+	// 	true
+	// );
 
 	GetCapsuleComponent()->SetVisibility(true);
 	GetCapsuleComponent()->SetHiddenInGame(false);
@@ -70,14 +91,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 		);
 	}
 
-	UCharacterControllBallUseCase::Handle(
-		SweepByChannel,
-		ClosestBone,
-		UpdateStateCharacterComponent,
-		PlayAnimMontageComponent,
-		SelectorPoseSearchDatabaseComponent
-	);
+	UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling ?  GetCharacterMovement()->MaxWalkSpeed = 350.0f : GetCharacterMovement()->MaxWalkSpeed = 500.0f;
 
+	CheckBallCollision();
+	
 	// Update Persistent Attrs Character, Velocity, Location etc..
 	UUpdateAttributesCharacterComponentUseCase::Handle(UpdatedBaseAttributesComponent, this);
 
@@ -96,7 +113,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::SetupComponents()
 {
-
 	SweepByChannel = CreateDefaultSubobject<USweepByChannelComponent>(TEXT("SweepByChannelComponent"));
 	SweepByChannel->DebugDrawLines(true);
 	SweepByChannel->RegisterComponent();
@@ -150,6 +166,7 @@ void APlayerCharacter::SetupSkeletonMesh() const
 	GetMesh()->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 	GetMesh()->SetCollisionProfileName("CharacterProfile");
 	GetMesh()->SetGenerateOverlapEvents(true);
+	GetMesh()->SetNotifyRigidBodyCollision(false);
 }
 
 void APlayerCharacter::SetupAnimInstanceBlueprint() const

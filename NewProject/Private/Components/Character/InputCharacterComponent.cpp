@@ -89,10 +89,11 @@ void UInputCharacterComponent::Move(FVector InputController)
 	// Consistência nas direções da frente e lateral.
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X); // Frente
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);  // Direita
-
+	
 	// Aplica Input de movimento sem inversões.
 	Character->AddMovementInput(ForwardDirection, -InputController.Y);
 	Character->AddMovementInput(RightDirection, -InputController.X);
+	Character->LastPosition  = FVector(InputController.X, -InputController.Y, 0.0f);
 }
 
 void UInputCharacterComponent::ResetRotationForController() const
