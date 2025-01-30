@@ -13,8 +13,12 @@ class NEWPROJECT_API USelectClosestBoneCharacterComponent : public UActorCompone
 {
 	GENERATED_BODY()
 
+	ESelectClosestBoneCharacterEnum Foot = ESelectClosestBoneCharacterEnum::RightFoot;
 public:
 	USelectClosestBoneCharacterComponent();
 
 	virtual ESelectClosestBoneCharacterEnum SelectClosestFootBoneToBall(AActor* BallActor) override;
+
+	virtual void SetFoot(ESelectClosestBoneCharacterEnum FootAt) override;
+	virtual ESelectClosestBoneCharacterEnum GetFoot() override;
 };

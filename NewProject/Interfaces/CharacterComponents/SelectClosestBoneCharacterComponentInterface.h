@@ -24,4 +24,6 @@ class NEWPROJECT_API ISelectClosestBoneCharacterComponentInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual ESelectClosestBoneCharacterEnum SelectClosestFootBoneToBall(AActor* BallActor) = 0;
+	virtual void SetFoot(ESelectClosestBoneCharacterEnum FootAt) = 0;
+	virtual ESelectClosestBoneCharacterEnum GetFoot() = 0;
 };

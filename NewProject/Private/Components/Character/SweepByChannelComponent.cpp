@@ -46,7 +46,7 @@ bool USweepByChannelComponent::DetectBallCollision()
 		return false;
 	}
 
-	const float CapsuleRadius = 50.0f; // Raio da cápsula
+	const float CapsuleRadius = 60.0f; // Raio da cápsula
 	const float CapsuleHalfHeight = 100.0f; // Altura da cápsula (meia-altura)
 
 	FRotator PlayerRotation = Character->GetActorRotation();
@@ -60,7 +60,7 @@ bool USweepByChannelComponent::DetectBallCollision()
 
 	// Configuração do QueryParams (detecção)
 	const FVector Start = PlayerLocation; // Ponto inicial da cápsula
-	const FVector End = Start + PlayerRotation.Vector() * CapsuleRadius;
+	const FVector End = Start + (PlayerRotation.Vector() * CapsuleRadius);  // + 
 
 	TArray<FHitResult> HitResults; // Vetor para armazenar todos os objetos atingidos no Sweep
 
@@ -75,6 +75,8 @@ bool USweepByChannelComponent::DetectBallCollision()
 		QueryParams // Configurações de traçado
 	);
 
+	DrawDebugLine(GetWorld(), Start, End, FColor::Blue,
+								 false, 0.0f);
 
 	if (bHit)
 	{
@@ -89,17 +91,40 @@ bool USweepByChannelComponent::DetectBallCollision()
 					DrawDebugCapsule(GetWorld(), Start, CapsuleHalfHeight, CapsuleRadius, FQuat::Identity, FColor::Red,
 					                 false, 0.0f);
 				}
-				
+
 				if (Character->UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling)
 				{
-					// Calcula a nova posição da bola com base no pé do jogador
-					FVector TargetLocation = PlayerLocation + (PlayerRotation.Vector() * 80.0f); // Ajuste de 50 unidades
-					FVector SmoothedLocation = FMath::VInterpTo(Ball->GetActorLocation(), FVector(TargetLocation.X, TargetLocation.Y, Ball->GetActorLocation().Z), GetWorld()->GetDeltaSeconds(), 2.5f); // 10.0f é a rapidez da suavização
-					Ball->SetActorLocation(SmoothedLocation);
+					ESelectClosestBoneCharacterEnum DefineBone = Character->ClosestBone->GetFoot();
+
+					FVector FootBoneLocation = Character->GetMesh()->GetBoneLocation(
+						TEXT("foot_l"), EBoneSpaces::WorldSpace);
+					if (DefineBone == ESelectClosestBoneCharacterEnum::RightFoot)
+					{
+						FootBoneLocation = Character->GetMesh()->GetBoneLocation(
+							TEXT("foot_r"), EBoneSpaces::WorldSpace);
+					}
+
+					FVector TargetLocation = FootBoneLocation + (PlayerRotation.Vector() * 200.f);
+					// Ajuste de 50 unidades
+
+					FVector SmoothedLocation = FMath::VInterpTo(
+						Ball->GetActorLocation(),
+							FVector(TargetLocation.X, TargetLocation.Y, Ball->GetActorLocation().Z),
+							// Ajusta apenas X e Y
+							GetWorld()->GetDeltaSeconds(),
+							0.4f // Velocidade de interpolação
+						);
+
+					DrawDebugLine(GetWorld(), SmoothedLocation, FVector(TargetLocation.X, TargetLocation.Y, Ball->GetActorLocation().Z), FColor::Yellow,
+								 false, 0.0f);
+
+					if (Ball->IsContact)
+					{
+						Ball->SetActorLocation(SmoothedLocation);
+						return true;
+					}
 				}
-				
-				// Ball->DisableComponentsSimulatePhysics();
-				// Aplica a rotação
+
 				return true;
 			}
 
@@ -111,16 +136,6 @@ bool USweepByChannelComponent::DetectBallCollision()
 			}
 		}
 	}
-
-	if (Character->SelectorPoseSearchDatabaseComponent->GetInterruptMode() == EPoseSearchInterruptMode::ForceInterrupt)
-	{
-		Character->SelectorPoseSearchDatabaseComponent->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
-	}
-	
-	Character->GetVelocity().Size() >= 20.f
-		? Character->UpdateStateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Running)
-		: Character->UpdateStateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Walking);
-	
 	return false;
 }
 

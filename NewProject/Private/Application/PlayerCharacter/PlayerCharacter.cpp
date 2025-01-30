@@ -64,7 +64,7 @@ void APlayerCharacter::BeginPlay()
 	// );
 
 	GetCapsuleComponent()->SetVisibility(true);
-	GetCapsuleComponent()->SetHiddenInGame(false);
+	GetCapsuleComponent()->SetHiddenInGame(true);
 
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotação baseada no movimento.
 	GetCharacterMovement()->bUseControllerDesiredRotation = false; // Ignore o ControlRotation
@@ -91,7 +91,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 		);
 	}
 
-	UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling ?  GetCharacterMovement()->MaxWalkSpeed = 350.0f : GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+	UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling ?  GetCharacterMovement()->MaxWalkSpeed = 320.0f : GetCharacterMovement()->MaxWalkSpeed = 500.0f;
 
 	CheckBallCollision();
 	

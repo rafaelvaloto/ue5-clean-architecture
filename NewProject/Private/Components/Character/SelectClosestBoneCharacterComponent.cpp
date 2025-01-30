@@ -38,3 +38,13 @@ ESelectClosestBoneCharacterEnum USelectClosestBoneCharacterComponent::SelectClos
 
 	return ESelectClosestBoneCharacterEnum::RightFoot;
 }
+
+void USelectClosestBoneCharacterComponent::SetFoot(ESelectClosestBoneCharacterEnum FootAt)
+{
+	Foot = FootAt;
+}
+
+ESelectClosestBoneCharacterEnum USelectClosestBoneCharacterComponent::GetFoot()
+{
+	return Foot;
+}

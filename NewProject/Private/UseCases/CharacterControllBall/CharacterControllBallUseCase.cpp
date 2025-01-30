@@ -23,6 +23,8 @@ void UCharacterControllBallUseCase::Handle(
 		
 		ESelectClosestBoneCharacterEnum DefineBoneAnim = SelectBoneComponent->SelectClosestFootBoneToBall(
 			UCurrentBallService::CurrentBall());
+
+		SelectBoneComponent->SetFoot(DefineBoneAnim);
 		if (DefineBoneAnim == ESelectClosestBoneCharacterEnum::LeftFoot)
 		{
 			PlayAnimMontageComponent->PlayDynamicMontage(LoadObject<UAnimSequence>(
@@ -37,5 +39,13 @@ void UCharacterControllBallUseCase::Handle(
 			nullptr, TEXT(
 				"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/094_AA_Soccer_Player_DribbleF_R.094_AA_Soccer_Player_DribbleF_R"
 			)), FName("DefaultSlot"), 0.8f, 0.0f, 0.0f, true);
+		return;
+	}
+
+	if (!SweepByChannel->DetectBallCollision() && StateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling)
+	{
+		PlayAnimMontageComponent->StopDynamicMontage();
+		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::RunningPivot);
+		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
 	}
 }

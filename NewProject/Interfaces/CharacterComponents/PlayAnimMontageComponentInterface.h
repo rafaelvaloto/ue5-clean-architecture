@@ -25,4 +25,5 @@ public:
 	virtual void PlayDynamicMontage(UAnimSequence* AnimationSequence, FName SlotName, float PlayRate, float NewPlayRate = 0.0f, float TimeToChangePlayRate = 0.0, bool Loop = false) = 0;
 	virtual void SetDynamicMontages(TArray<UAnimSequence*> AnimationSequences, FName SlotName, float PlayRate, float NewPlayRate = 0.0f, float TimeToChangePlayRate = 0.0, bool Loop = false) = 0;
 	virtual void DefineIndexPlayDynamicMontage(int32 Index, FName SlotName, float PlayRate, bool Loop = false) = 0;
+	virtual void StopDynamicMontage() = 0;
 };

@@ -33,6 +33,7 @@ public:
 	void SetupMesh() const;
 
 	FVector LastPosition = FVector::ZeroVector;
+	bool IsContact = false;
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

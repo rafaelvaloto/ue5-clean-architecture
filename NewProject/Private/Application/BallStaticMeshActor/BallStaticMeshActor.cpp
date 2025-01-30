@@ -57,10 +57,8 @@ void ABallStaticMeshActor::OnOverlapBegin(UPrimitiveComponent* OverlappedCompone
 
 	if (OtherActor->IsA(APlayerCharacter::StaticClass()))
 	{
+		IsContact = true;
 		APlayerCharacter* Character = Cast<APlayerCharacter>(OtherActor);
-		UE_LOG(LogTemp, Warning, TEXT("Overlap Begin"));
-		UE_LOG(LogTemp, Warning, TEXT("SweepResult %s"), *SweepResult.ToString());
-		UE_LOG(LogTemp, Warning, TEXT("OtherComp %s"), *OtherComp->GetName());
 
 		DrawDebugSphere(
 				GetWorld(),
@@ -71,17 +69,18 @@ void ABallStaticMeshActor::OnOverlapBegin(UPrimitiveComponent* OverlappedCompone
 				false,                         // Persistente (desenho permanentemente ou temporariamente)
 				5.0f                           // Tempo de vida da esfera (5 segundos)
 			);
-
-		FRotator PlayerRotation = Character->GetActorRotation();
-		FVector PlayerLocation = Character->GetActorLocation();
 		
 		// Calcula a nova posição da bola com base no pé do jogador
-		FVector TargetLocation = PlayerLocation + (PlayerRotation.Vector() * 100.0f); // Ajuste de 50 unidades
-		FVector SmoothedLocation = FMath::VInterpTo(GetActorLocation(), FVector(TargetLocation.X, TargetLocation.Y, GetActorLocation().Z), GetWorld()->GetDeltaSeconds(), 5.0f); // 10.0f é a rapidez da suavização
-		SetActorLocation(SmoothedLocation);
-		
-		UE_LOG(LogTemp, Warning, TEXT("LastPosition %s"), *Character->LastPosition.ToString());
-		GetStaticMeshComponent()->AddTorqueInRadians(Character->LastPosition * 4000.f, NAME_None, false);
+		ESelectClosestBoneCharacterEnum DefineBone = Character->ClosestBone->GetFoot();
+
+		FVector FootBoneLocation = Character->GetMesh()->GetBoneLocation(TEXT("foot_l"), EBoneSpaces::WorldSpace);
+		if (DefineBone == ESelectClosestBoneCharacterEnum::RightFoot)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("FootBone r in ball"));
+			FootBoneLocation = Character->GetMesh()->GetBoneLocation(TEXT("foot_r"), EBoneSpaces::WorldSpace);	
+		}
+					
+		GetStaticMeshComponent()->AddTorqueInRadians(FootBoneLocation.GetSafeNormal() * 500.0f);
 	}
 }
 
@@ -93,10 +92,41 @@ void ABallStaticMeshActor::Tick(float DeltaTime)
 	APlayerCharacter* Character = Cast<APlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	if (Character) 
 	{
-		if (Character->UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling)
+		float Distance = FVector::Dist(GetActorLocation(), Character->GetActorLocation());
+
+		// Ajusta os valores de amortecimento com base na distância
+		if (Distance > 150.0f) // Exemplo: se estiver a menos de 200 unidades
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Distance %f"), Distance);
+			GetStaticMeshComponent()->SetAngularDamping(1.0f); // Maior amortecimento angular
+			GetStaticMeshComponent()->SetLinearDamping(1.0f);  // Maior amortecimento linear
+			IsContact = false;
+		}
+		else if (Distance > 90.0f) // Exemplo: se estiver a menos de 200 unidades
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Distance Normal %f"), Distance);
+			GetStaticMeshComponent()->SetAngularDamping(2.5f); // Valores padrão
+			GetStaticMeshComponent()->SetLinearDamping(2.0f);
+		}
+		else
+		{
+			GetStaticMeshComponent()->SetAngularDamping(2.0f);
+			GetStaticMeshComponent()->SetLinearDamping(1.0f);
+		}
+		
+		
+		if (Character->UpdateStateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Controlling)
+		{
+			IsContact = false;
+		}
+		
+		if (
+			Character->UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling &&
+			IsContact
+			)
 		{
 			// Calcula a direção do torque tentando limitar rotação cumulativa
-			FVector TargetAngularVelocity = Character->LastPosition * 100.f;
+			FVector TargetAngularVelocity = Character->LastPosition * 70.f;
 
 			// GetCurrentAngularVelocity método fictício para obter velocidades atuais de rotação do objeto
 			FVector CurrentAngularVelocity = GetStaticMeshComponent()->GetPhysicsAngularVelocityInRadians();
@@ -150,7 +180,7 @@ void ABallStaticMeshActor::SetupMesh() const
 	GetStaticMeshComponent()->SetCollisionProfileName("BallOverlapProfile");
 	GetStaticMeshComponent()->SetGenerateOverlapEvents(true);
 	GetStaticMeshComponent()->SetNotifyRigidBodyCollision(false);
-	GetStaticMeshComponent()->SetPhysicsMaxAngularVelocityInDegrees(100.f);
-	GetStaticMeshComponent()->SetAngularDamping(3.0f);
-	GetStaticMeshComponent()->SetLinearDamping(0.5f);
+	GetStaticMeshComponent()->SetPhysicsMaxAngularVelocityInDegrees(70.f);
+	GetStaticMeshComponent()->SetAngularDamping(2.0f);
+	GetStaticMeshComponent()->SetLinearDamping(1.0f);
 }

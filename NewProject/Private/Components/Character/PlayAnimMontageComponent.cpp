@@ -33,6 +33,20 @@ void UPlayAnimMontageComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 	// ...
 }
 
+void UPlayAnimMontageComponent::StopDynamicMontage()
+{
+	const APlayerCharacter* Character = Cast<APlayerCharacter>(GetOwner());
+	if (!Character->GetMesh() || !Character->GetMesh()->GetAnimInstance())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid Animation Sequence or Mesh/AnimInstance is null."));
+		return;
+	}
+
+	
+	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+	AnimInstance->StopSlotAnimation(0.25, FName("DefaultSlot"));
+}
+
 void UPlayAnimMontageComponent::PlayDynamicMontage(UAnimSequence* AnimationSequence, FName SlotName, float PlayRate,
                                                    float NewPlayRate, float TimeToChangePlayRate, bool Loop)
 {
