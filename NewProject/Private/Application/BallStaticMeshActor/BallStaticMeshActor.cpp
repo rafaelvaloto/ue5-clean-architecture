@@ -57,7 +57,8 @@ void ABallStaticMeshActor::OnOverlapBegin(UPrimitiveComponent* OverlappedCompone
 
 	if (OtherActor->IsA(APlayerCharacter::StaticClass()))
 	{
-		IsContact = true;
+		UE_LOG(LogTemp, Error, TEXT("Overlap Begin, %s"), *OtherActor->GetName());
+		
 		APlayerCharacter* Character = Cast<APlayerCharacter>(OtherActor);
 
 		DrawDebugSphere(
@@ -76,11 +77,13 @@ void ABallStaticMeshActor::OnOverlapBegin(UPrimitiveComponent* OverlappedCompone
 		FVector FootBoneLocation = Character->GetMesh()->GetBoneLocation(TEXT("foot_l"), EBoneSpaces::WorldSpace);
 		if (DefineBone == ESelectClosestBoneCharacterEnum::RightFoot)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("FootBone r in ball"));
+			UE_LOG(LogTemp, Error, TEXT("FootBone r in ball"));
 			FootBoneLocation = Character->GetMesh()->GetBoneLocation(TEXT("foot_r"), EBoneSpaces::WorldSpace);	
 		}
-					
+
+		UE_LOG(LogTemp, Error, TEXT("IsContact"));
 		GetStaticMeshComponent()->AddTorqueInRadians(FootBoneLocation.GetSafeNormal() * 500.0f);
+		IsContact = true;
 	}
 }
 
@@ -107,6 +110,7 @@ void ABallStaticMeshActor::Tick(float DeltaTime)
 			UE_LOG(LogTemp, Warning, TEXT("Distance Normal %f"), Distance);
 			GetStaticMeshComponent()->SetAngularDamping(2.5f); // Valores padrão
 			GetStaticMeshComponent()->SetLinearDamping(2.0f);
+			IsContact = false;
 		}
 		else
 		{

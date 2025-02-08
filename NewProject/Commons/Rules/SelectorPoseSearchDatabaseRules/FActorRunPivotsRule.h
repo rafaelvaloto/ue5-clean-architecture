@@ -33,11 +33,10 @@ public:
 		if (!Actor) return false;
 
 		const float Speed = Actor->UpdatedBaseAttributesComponent->GetVelocitySize();
-		const float Acceleration = Actor->UpdatedBaseAttributesComponent->GetMagnitudeAcceleration();
 		const float isDetectDirectChange = Actor->UpdatedBaseAttributesComponent->IsDetectedDirectionChange();
+
 		if (
-			Acceleration >= MinAccelerationThreshold && Speed <= MaxSpeedThreshold ||
-			isDetectDirectChange
+			Speed >= 30.f && isDetectDirectChange
 		)
 		{
 			return true;

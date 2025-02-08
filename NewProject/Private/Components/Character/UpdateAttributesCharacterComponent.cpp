@@ -3,7 +3,6 @@
 
 #include "Components/Character/UpdateAttributesCharacterComponent.h"
 
-#include "Application/PlayerCharacter/PlayerCharacter.h"
 
 // Sets default values for this component's properties
 UUpdateAttributesCharacterComponent::UUpdateAttributesCharacterComponent():
@@ -52,11 +51,10 @@ void UUpdateAttributesCharacterComponent::SetVelocityCurrent(const FVector Veloc
 	CurrentVelocity = VelocityAt;
 }
 
-
 void UUpdateAttributesCharacterComponent::DetectDirectionChange(float DeltaTime)
 {
 	bIsDetectedDirectionChange = false;
-	
+
 	// Obtenha a direção de movimento atual
 	const FVector CurrentDirection = GetVelocityCurrent().GetSafeNormal();
 
@@ -79,7 +77,6 @@ void UUpdateAttributesCharacterComponent::DetectDirectionChange(float DeltaTime)
 	}
 
 	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, TEXT("Mesma direcao"));
-
 	PreviousDirection = CurrentDirection;
 }
 

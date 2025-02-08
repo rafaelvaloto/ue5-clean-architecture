@@ -16,18 +16,25 @@ public class NewProject : ModuleRules
 			"Engine",
 			"CoreUObject",
 			"InputCore",
-			"InputCore",
+			"InputDevice",
 			"EnhancedInput",
+			"XInput",
+			"XInputDevice",
 			"PoseSearch",
 			"MotionWarping",
 			"MotionTrajectory",
-			"IKRig"
+			"IKRig",
 		});
+		
+		PublicSystemLibraries.Add("xinput.lib");
+		
+		PublicSystemLibraries.Add("dinput8.lib");
+		PublicSystemLibraries.Add("dxguid.lib");
 
 		// PrivateDependencyModuleNames.AddRange(new string[] {  });
 
 		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
 		// Uncomment if you are using online features
 		PrivateDependencyModuleNames.Add("OnlineSubsystem");
@@ -35,7 +42,3 @@ public class NewProject : ModuleRules
 		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
 	}
 }
-
-
-
-

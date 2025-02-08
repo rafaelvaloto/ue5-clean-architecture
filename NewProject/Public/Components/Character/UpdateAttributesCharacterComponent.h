@@ -31,6 +31,7 @@ public:
 
 	virtual void SetLocationCurrent(const FVector LocationAt) override;
 	virtual void SetVelocityCurrent(const FVector VelocityAt) override;
+	
 	virtual FVector GetVelocityCurrent() override;
 	virtual FVector GetPreviousVelocity() override;
 	virtual FVector GetLocationCurrent() override;
@@ -73,5 +74,4 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Direction")
 	bool bIsDetectedDirectionChange;
-	// ...
 };

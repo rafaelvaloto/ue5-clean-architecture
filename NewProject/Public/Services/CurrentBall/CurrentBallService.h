@@ -23,6 +23,7 @@ public:
 	static bool IsServiceRegistered();
 
 	static AActor* CurrentBall();
+	static bool IsContact();
 
 	
 };

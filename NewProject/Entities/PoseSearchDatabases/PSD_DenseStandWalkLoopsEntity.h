@@ -40,13 +40,14 @@ public:
 					return CurrentState == EPlayerCharacterStateEnum::Walking;
 				}
 
-				if (ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Velocity)
+				if (
+					ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Acceleration ||
+					ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Velocity
+				)
 				{
-					if (const float CurrentVelocity = std::any_cast<float>(Params[1]); CurrentVelocity > 5.f)
-					{
-						return true;
-					}
+					return true;
 				}
+
 
 				return false;
 			}
@@ -66,8 +67,9 @@ public:
 	virtual TArray<ESelectorDatabaseValidateRuleModeEnum> GetTypesValidateRule() override
 	{
 		return {
-			ESelectorDatabaseValidateRuleModeEnum::Velocity,
-			ESelectorDatabaseValidateRuleModeEnum::Acceleration
+			ESelectorDatabaseValidateRuleModeEnum::StateCharacter,
+			ESelectorDatabaseValidateRuleModeEnum::Acceleration,
+			ESelectorDatabaseValidateRuleModeEnum::Velocity
 		};
 	}
 

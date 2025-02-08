@@ -14,6 +14,8 @@
 #include "UseCases/UpdateStateCharacterComponent/UpdateStateCharacterComponentUseCase.h"
 #include "UseCases/UpdateAttributesCharacterComponent/UpdateAttributesCharacterComponentUseCase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "UseCases/CharacterControllBall/CharacterChangeAnimMontageDirectionUseCase.h"
+#include "UseCases/CharacterControllBall/CharacterChangeDirectionControllBallUseCase.h"
 #include "UseCases/CharacterControllBall/CharacterControllBallUseCase.h"
 
 // Sets default values
@@ -40,15 +42,64 @@ APlayerCharacter::APlayerCharacter()
 
 
 // Called when the game starts or when spawned
-void APlayerCharacter::CheckBallCollision()
+void APlayerCharacter::CheckBallCollisionAndControlling(const float DeltaTime)
 {
-	UCharacterControllBallUseCase::Handle(
-		SweepByChannel,
-		ClosestBone,
-		UpdateStateCharacterComponent,
-		PlayAnimMontageComponent,
-		SelectorPoseSearchDatabaseComponent
-	);
+
+	if (
+				UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling ||
+				UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::ControllingTrajectoryChange ||
+				UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Interval
+			)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 320.0f;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+	}
+	
+	if (!SweepByChannel->DetectBallCollision())
+	{
+		if (
+			UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling ||
+			UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::ControllingTrajectoryChange
+		)
+		{
+			UpdateStateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Walking);
+			SelectorPoseSearchDatabaseComponent->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
+		}
+
+		// Update Machine State Character, Idle, Walk etc..
+		UUpdateStateCharacterComponentUseCase::Handle(UpdateStateCharacterComponent, UpdatedBaseAttributesComponent);
+	}
+	else
+	{
+		UCharacterChangeDirectionControllBallUseCase::Handle(
+			UpdatedBaseAttributesComponent,
+			UpdateStateCharacterComponent
+		);
+
+		UCharacterChangeAnimMontageDirectionUseCase::Handle(
+			ClosestBone,
+			UpdateStateCharacterComponent,
+			PlayAnimMontageComponent,
+			SelectorPoseSearchDatabaseComponent,
+			LastPosition
+		);
+
+		UCharacterControllBallUseCase::Handle(
+			ClosestBone,
+			UpdateStateCharacterComponent,
+			PlayAnimMontageComponent,
+			SelectorPoseSearchDatabaseComponent
+		);
+	}
+
+	// Update Persistent Attrs Character, Velocity, Location etc..
+	UUpdateAttributesCharacterComponentUseCase::Handle(UpdatedBaseAttributesComponent, this);
+
+	// Update Character Trajectory Component
+	UCharacterTrajectoryComponentUseCase::Handle(TrajectoryComponent, UpdatedBaseAttributesComponent, DeltaTime);
 }
 
 void APlayerCharacter::BeginPlay()
@@ -83,26 +134,15 @@ void APlayerCharacter::Tick(float DeltaTime)
 	if (StartInpulse)
 	{
 		const FRotator CharacterRotation = GetOwner()->GetActorRotation(); // Rotação do personagem
-		const FVector TargetImpulse = CharacterRotation.Vector() * 600.0f; // Ajuste o valor como necessário
+		const FVector TargetImpulse = CharacterRotation.Vector() * 800.0f; // Ajuste o valor como necessário
 		LaunchCharacter(
-			FMath::VInterpTo(GetOwner()->GetVelocity(), TargetImpulse, DeltaTime, 5.0f),
+			FMath::VInterpTo(GetOwner()->GetVelocity(), TargetImpulse, DeltaTime, 10.0f),
 			true,
 			true
 		);
 	}
 
-	UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling ?  GetCharacterMovement()->MaxWalkSpeed = 320.0f : GetCharacterMovement()->MaxWalkSpeed = 500.0f;
-
-	CheckBallCollision();
-	
-	// Update Persistent Attrs Character, Velocity, Location etc..
-	UUpdateAttributesCharacterComponentUseCase::Handle(UpdatedBaseAttributesComponent, this);
-
-	// Update Machine State Character, Idle, Walk etc..
-	UUpdateStateCharacterComponentUseCase::Handle(UpdateStateCharacterComponent, UpdatedBaseAttributesComponent);
-
-	// Update Character Trajectory Component
-	UCharacterTrajectoryComponentUseCase::Handle(TrajectoryComponent, UpdatedBaseAttributesComponent, DeltaTime);
+	CheckBallCollisionAndControlling(DeltaTime);
 }
 
 // Called to bind functionality to input

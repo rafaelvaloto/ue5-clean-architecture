@@ -40,24 +40,18 @@ public:
 					return CurrentState == EPlayerCharacterStateEnum::Running;
 				}
 
-				if (ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Velocity)
+				if (
+					ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Acceleration ||
+					ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Velocity
+				)
 				{
-					if (const float CurrentVelocity = std::any_cast<float>(Params[1]); CurrentVelocity > 20.f)
-					{
-						return true;
-					}
-
-					if (const float Acceleration = std::any_cast<float>(Params[3]); Acceleration > 50.f)
-					{
-						return true;
-					}
+					return true;
 				}
 
 				return false;
 			}
 			catch (const std::bad_any_cast&)
 			{
-				UE_LOG(LogTemp, Error, TEXT("Nao foi possivel converter os parametros, os tipos estavam errados!"));
 				return false;
 			}
 		};
@@ -71,8 +65,9 @@ public:
 	virtual TArray<ESelectorDatabaseValidateRuleModeEnum> GetTypesValidateRule() override
 	{
 		return {
-			ESelectorDatabaseValidateRuleModeEnum::Velocity,
-			ESelectorDatabaseValidateRuleModeEnum::Acceleration
+			ESelectorDatabaseValidateRuleModeEnum::StateCharacter,
+			ESelectorDatabaseValidateRuleModeEnum::Acceleration,
+			ESelectorDatabaseValidateRuleModeEnum::Velocity
 		};
 	}
 

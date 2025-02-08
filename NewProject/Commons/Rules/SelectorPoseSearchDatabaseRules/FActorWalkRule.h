@@ -26,7 +26,7 @@ public:
 		const float Speed = Actor->UpdatedBaseAttributesComponent->GetVelocitySize();
 		const float AccelMagnitude = Actor->UpdatedBaseAttributesComponent->GetMagnitudeAcceleration();
 
-		return Speed < 20.0f && AccelMagnitude < 50.f;
+		return Speed < 30.0f && AccelMagnitude < 200.f;
 	}
 
 	virtual FString GetRuleName() const override

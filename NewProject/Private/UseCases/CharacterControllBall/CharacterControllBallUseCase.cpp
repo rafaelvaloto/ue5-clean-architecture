@@ -5,7 +5,6 @@
 #include "Services/CurrentBall/CurrentBallService.h"
 
 void UCharacterControllBallUseCase::Handle(
-	const TScriptInterface<ISweepByChannelComponentInterface>& SweepByChannel,
 	const TScriptInterface<ISelectClosestBoneCharacterComponentInterface>& SelectBoneComponent,
 	const TScriptInterface<IUpdateStateCharacterComponentInterface>& StateCharacterComponent,
 	const TScriptInterface<IPlayAnimMontageComponentInterface>& PlayAnimMontageComponent,
@@ -13,39 +12,61 @@ void UCharacterControllBallUseCase::Handle(
 )
 {
 	if (
-		SweepByChannel->DetectBallCollision() &&
-		StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Controlling
+		(
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Controlling &&
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::ControllingTrajectoryChange &&
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Interval
+		) ||
+		(
+			StateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling &&
+			StateCharacterComponent->GetPeviousState() == EPlayerCharacterStateEnum::ControllingTrajectoryChange
+		)
 	)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Controlling"));
-		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Controlling);
-		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
+		if (SelectorPoseSearchDatabase->GetInterruptMode() != EPoseSearchInterruptMode::ForceInterrupt)
+		{
+			SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
+		}
 		
+		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Controlling);
+
 		ESelectClosestBoneCharacterEnum DefineBoneAnim = SelectBoneComponent->SelectClosestFootBoneToBall(
 			UCurrentBallService::CurrentBall());
 
 		SelectBoneComponent->SetFoot(DefineBoneAnim);
 		if (DefineBoneAnim == ESelectClosestBoneCharacterEnum::LeftFoot)
 		{
-			PlayAnimMontageComponent->PlayDynamicMontage(LoadObject<UAnimSequence>(
-				nullptr, TEXT(
+			UAnimSequence* AnimSeq = LoadObject<UAnimSequence>(
+				nullptr,
+				TEXT(
 					"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/095_AA_Soccer_Player_DribbleF_L.095_AA_Soccer_Player_DribbleF_L"
-				)), FName("DefaultSlot"), 0.8f, 0.0f,
-															 0.0f, true);
+				)
+			);
+
+			if (!AnimSeq)
+			{
+				return;
+			}
+			
+			PlayAnimMontageComponent->PlayDynamicMontage(AnimSeq, FName("DefaultSlot"), 0.8f, 0.0f,
+			                                             0.0f, true);
 			return;
 		}
 
-		PlayAnimMontageComponent->PlayDynamicMontage(LoadObject<UAnimSequence>(
-			nullptr, TEXT(
-				"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/094_AA_Soccer_Player_DribbleF_R.094_AA_Soccer_Player_DribbleF_R"
-			)), FName("DefaultSlot"), 0.8f, 0.0f, 0.0f, true);
-		return;
-	}
 
-	if (!SweepByChannel->DetectBallCollision() && StateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling)
-	{
-		PlayAnimMontageComponent->StopDynamicMontage();
-		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::RunningPivot);
-		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
+		UAnimSequence* AnimSeq = LoadObject<UAnimSequence>(
+			nullptr,
+			TEXT(
+				"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/094_AA_Soccer_Player_DribbleF_R.094_AA_Soccer_Player_DribbleF_R"
+			)
+		);
+
+		if (!AnimSeq)
+		{
+			return;
+		}
+		
+		PlayAnimMontageComponent->PlayDynamicMontage(AnimSeq, FName("DefaultSlot"), 0.8f, 0.0f,
+		                                             0.0f, true);
 	}
 }

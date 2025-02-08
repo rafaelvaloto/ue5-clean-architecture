@@ -35,23 +35,21 @@ public:
 					)
 				{
 					const EPlayerCharacterStateEnum CurrentState = std::any_cast<EPlayerCharacterStateEnum>(Params[1]);
-					const EPlayerCharacterStateEnum PreviousState = std::any_cast<EPlayerCharacterStateEnum>(Params[2]);
-					return CurrentState == EPlayerCharacterStateEnum::RunningPivot || PreviousState == EPlayerCharacterStateEnum::Running;
+					return CurrentState == EPlayerCharacterStateEnum::RunningPivot;
 				}
 
 				if (
+					ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Acceleration ||
 					ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Velocity
-					)
+				)
 				{
-					const float CurrentVelocity = std::any_cast<float>(Params[1]);
-					return CurrentVelocity >= 20.f;
+					return true;
 				}
 				
 				return false;
 			}
 			catch (const std::bad_any_cast&)
 			{
-				UE_LOG(LogTemp, Error, TEXT("Nao foi possivel converter os parametros, os tipos estavam errados!"));
 				return false;
 			}
 		};
@@ -66,7 +64,8 @@ public:
 	{
 		return {
 			ESelectorDatabaseValidateRuleModeEnum::StateCharacter,
-			ESelectorDatabaseValidateRuleModeEnum::Velocity
+			ESelectorDatabaseValidateRuleModeEnum::Acceleration,
+			ESelectorDatabaseValidateRuleModeEnum::Velocity,
 		};
 	}
 

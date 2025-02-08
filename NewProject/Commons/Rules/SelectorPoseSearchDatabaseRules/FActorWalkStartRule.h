@@ -17,7 +17,7 @@ class NEWPROJECT_API FActorWalkStartRule : public IRuleBase
 public:
 	explicit FActorWalkStartRule
 	(
-		const float MaxAccelerationThreshold = 100.0f, const float MaxSpeedThreshold = 5.0f
+		const float MaxAccelerationThreshold = 50.0f, const float MaxSpeedThreshold = 15.0f
 	): MaxAccelerationThreshold(MaxAccelerationThreshold), MaxSpeedThreshold(MaxSpeedThreshold) {}
 
 	virtual ~FActorWalkStartRule() override
@@ -33,13 +33,11 @@ public:
 		const float Speed = Actor->UpdatedBaseAttributesComponent->GetVelocitySize();
 		const float AccelMagnitude = Actor->UpdatedBaseAttributesComponent->GetMagnitudeAcceleration();
 
-		if (const bool IsValid = AccelMagnitude <= MaxAccelerationThreshold && Speed <= MaxSpeedThreshold; !IsValid)
+		if (AccelMagnitude > MaxAccelerationThreshold && Speed > MaxSpeedThreshold)
 		{
-			UE_LOG(LogTemp, Error, TEXT("FActorWalkStartRule Invalid %s"), *GetRuleName());
 			return false;
 		}
-
-		UE_LOG(LogTemp, Error, TEXT("FActorWalkStartRule Valid %s"), *GetRuleName());
+		
 		return true;
 	}
 	

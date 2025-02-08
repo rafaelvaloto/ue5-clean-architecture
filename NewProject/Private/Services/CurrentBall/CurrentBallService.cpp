@@ -25,3 +25,8 @@ AActor* UCurrentBallService::CurrentBall()
 {
 	return BallServiceInstance->CurrentBall();
 }
+
+bool UCurrentBallService::IsContact()
+{
+	return BallServiceInstance->IsContact();
+}

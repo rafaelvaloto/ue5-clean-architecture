@@ -9,40 +9,44 @@
 
 class NEWPROJECT_API FPSD_DenseStandWalkStartsEntity : public FRuleManager
 {
-
 public:
 	FPSD_DenseStandWalkStartsEntity()
 	{
 		NameAsset = "PSD_Dense_Stand_Walk_Starts";
-		PathAsset = "/Game/Characters/UEFN_Mannequin/Animations/MotionMatchingData/Databases/Dense/PSD_Dense_Stand_Walk_Starts.PSD_Dense_Stand_Walk_Starts";
-		
-		Callback = [](const std::vector<std::any>& Params) -> bool {
+		PathAsset =
+			"/Game/Characters/UEFN_Mannequin/Animations/MotionMatchingData/Databases/Dense/PSD_Dense_Stand_Walk_Starts.PSD_Dense_Stand_Walk_Starts";
 
+		Callback = [](const std::vector<std::any>& Params) -> bool
+		{
 			try
 			{
 				if (Params.empty())
 				{
 					return false;
 				}
-				
-				const ESelectorDatabaseValidateRuleModeEnum ModeValidate = std::any_cast<ESelectorDatabaseValidateRuleModeEnum>(Params[0]);
 
-				if (ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Velocity)
-				{
-					const float CurrentVelocity = std::any_cast<float>(Params[1]);
-					const float PreviousVelocity = std::any_cast<float>(Params[2]);
-				
-					return CurrentVelocity > PreviousVelocity;
-				}
-				
+				const ESelectorDatabaseValidateRuleModeEnum ModeValidate = std::any_cast<
+					ESelectorDatabaseValidateRuleModeEnum>(Params[0]);
+
 				if (ModeValidate == ESelectorDatabaseValidateRuleModeEnum::StateCharacter)
 				{
 					const EPlayerCharacterStateEnum CurrentState = std::any_cast<EPlayerCharacterStateEnum>(Params[1]);
 					const EPlayerCharacterStateEnum PreviousState = std::any_cast<EPlayerCharacterStateEnum>(Params[2]);
-					
-					return (CurrentState == EPlayerCharacterStateEnum::Walking && PreviousState == EPlayerCharacterStateEnum::Idle);
+
+					return CurrentState == EPlayerCharacterStateEnum::Walking && (
+						PreviousState == EPlayerCharacterStateEnum::Idle ||
+						PreviousState == EPlayerCharacterStateEnum::WalkingPivot
+					);
 				}
-				
+
+				if (
+					ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Acceleration ||
+					ModeValidate == ESelectorDatabaseValidateRuleModeEnum::Velocity
+				)
+				{
+					return true;
+				}
+
 				return false;
 			}
 			catch (const std::bad_any_cast&)
@@ -61,9 +65,9 @@ public:
 	virtual TArray<ESelectorDatabaseValidateRuleModeEnum> GetTypesValidateRule() override
 	{
 		return {
-			ESelectorDatabaseValidateRuleModeEnum::Velocity,
+			ESelectorDatabaseValidateRuleModeEnum::StateCharacter,
 			ESelectorDatabaseValidateRuleModeEnum::Acceleration,
-			ESelectorDatabaseValidateRuleModeEnum::StateCharacter
+			ESelectorDatabaseValidateRuleModeEnum::Velocity,
 		};
 	}
 
@@ -73,7 +77,7 @@ public:
 		IRuleBase* Rule = new FActorWalkStartRule();
 		AddRule(Rule);
 	}
-	
+
 	virtual void ListRules() override
 	{
 		for (IRuleBase* Rule : Rules)
@@ -81,7 +85,7 @@ public:
 			UE_LOG(LogTemp, Log, TEXT("Listando regras: %s"), *Rule->GetRuleName());
 		}
 	}
-	
+
 	virtual void PrintInformation() override
 	{
 		UE_LOG(LogTemp, Warning, TEXT("PSD_SparseStandWalkStartsEntity exc method PrintInformation"));

@@ -17,17 +17,19 @@ void UUpdateStateCharacterComponentUseCase::Handle
 	const float AccelerationCurrent = ComponentBaseAttributes->GetMagnitudeAcceleration();
 
 	if (
-			ComponentState->GetState() == EPlayerCharacterStateEnum::Tackle ||
-			ComponentState->GetState() == EPlayerCharacterStateEnum::TackleSlider ||
-			ComponentState->GetState() == EPlayerCharacterStateEnum::Controlling
-		)
+		ComponentState->GetState() == EPlayerCharacterStateEnum::Interval ||
+		ComponentState->GetState() == EPlayerCharacterStateEnum::Tackle ||
+		ComponentState->GetState() == EPlayerCharacterStateEnum::TackleSlider ||
+		ComponentState->GetState() == EPlayerCharacterStateEnum::Controlling ||
+		ComponentState->GetState() == EPlayerCharacterStateEnum::ControllingTrajectoryChange
+	)
 	{
 		return;
 	}
 
 	if (
-		VelocityCurrent > 25.0f ||
-		AccelerationCurrent > 50.f
+		VelocityCurrent >= 30.0f ||
+		AccelerationCurrent > 100.f
 	)
 	{
 		if (ComponentState->GetState() != EPlayerCharacterStateEnum::RunningPivot && IsDirectionChange)
@@ -45,16 +47,21 @@ void UUpdateStateCharacterComponentUseCase::Handle
 
 	if (
 		VelocityCurrent > 0.01f &&
-		VelocityCurrent < 20.0f
+		VelocityCurrent < 30.0f
 	)
 	{
-		if (ComponentState->GetState() != EPlayerCharacterStateEnum::WalkingPivot && IsDirectionChange)
+		if (
+			ComponentState->GetState() != EPlayerCharacterStateEnum::WalkingPivot
+			&& IsDirectionChange
+		)
 		{
 			ComponentState->SetCurrentState(EPlayerCharacterStateEnum::WalkingPivot);
 			return;
 		}
-		
-		if (ComponentState->GetState() != EPlayerCharacterStateEnum::Walking)
+
+		if (
+			ComponentState->GetState() != EPlayerCharacterStateEnum::Walking
+		)
 		{
 			ComponentState->SetCurrentState(EPlayerCharacterStateEnum::Walking);
 			return;

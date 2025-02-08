@@ -47,9 +47,9 @@ public:
 	bool StartInpulse = false;
 
 	FTimerHandle CollisionCheckTimer;
-
 	float CollisionCheckInterval;
-	void CheckBallCollision();
+	
+	void CheckBallCollisionAndControlling(float DeltaTime);
 
 	UPROPERTY()
 	FVector LastPosition = FVector::ZeroVector;

@@ -24,7 +24,6 @@ class NEWPROJECT_API IUpdateAttributesCharacterComponentInterface
 public:
 	virtual void SetLocationCurrent(FVector VelocityAt) = 0;
 	virtual void SetVelocityCurrent(FVector VelocityAt) = 0;
-
 	
 	virtual FVector GetVelocityCurrent() = 0;
 	virtual FVector GetPreviousVelocity() = 0;

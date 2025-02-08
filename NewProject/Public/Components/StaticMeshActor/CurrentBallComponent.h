@@ -17,4 +17,5 @@ public:
 	UCurrentBallComponent();
 
 	virtual AActor* CurrentBall() override;
+	virtual bool IsContact() override;
 };

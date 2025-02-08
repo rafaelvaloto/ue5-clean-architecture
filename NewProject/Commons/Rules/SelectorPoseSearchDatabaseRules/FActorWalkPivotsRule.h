@@ -16,8 +16,8 @@ class NEWPROJECT_API FActorWalkPivotsRule final : public IRuleBase
 
 public:
 	explicit FActorWalkPivotsRule(
-		const float MinSpeedThreshold = 1.0f,
-		const float MaxSpeedThreshold = 20.0f
+		const float MinSpeedThreshold = 5.0f,
+		const float MaxSpeedThreshold = 30.0f
 	): MaxSpeedThreshold(MaxSpeedThreshold), MinSpeedThreshold(MinSpeedThreshold) {}
 
 	virtual ~FActorWalkPivotsRule() override
@@ -31,9 +31,12 @@ public:
 		if (!Actor) return false;
 
 		const float Speed = Actor->UpdatedBaseAttributesComponent->GetVelocitySize();
-		if (Speed < MinSpeedThreshold || Speed > MaxSpeedThreshold) return false;
+		if (Speed > MinSpeedThreshold && Speed < MaxSpeedThreshold)
+		{
+			return true;
+		}
 		
-		return true;
+		return false;
 	}
 	
 	virtual FString GetRuleName() const override

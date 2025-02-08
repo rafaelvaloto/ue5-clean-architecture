@@ -60,7 +60,7 @@ bool USweepByChannelComponent::DetectBallCollision()
 
 	// Configuração do QueryParams (detecção)
 	const FVector Start = PlayerLocation; // Ponto inicial da cápsula
-	const FVector End = Start + (PlayerRotation.Vector() * CapsuleRadius);  // + 
+	const FVector End = Start + (PlayerRotation.Vector() * CapsuleRadius); // + 
 
 	TArray<FHitResult> HitResults; // Vetor para armazenar todos os objetos atingidos no Sweep
 
@@ -75,9 +75,15 @@ bool USweepByChannelComponent::DetectBallCollision()
 		QueryParams // Configurações de traçado
 	);
 
-	DrawDebugLine(GetWorld(), Start, End, FColor::Blue,
-								 false, 0.0f);
-
+	if (bIsDebugDrawLines)
+	{
+		DrawDebugLine(GetWorld(), Start, End, FColor::Blue,
+				  false, 0.0f);
+		
+		DrawDebugCapsule(GetWorld(), Start, CapsuleHalfHeight, CapsuleRadius, FQuat::Identity, FColor::Green,
+						 false, 0.0f);
+	}
+	
 	if (bHit)
 	{
 		for (const FHitResult& Hit : HitResults)
@@ -109,32 +115,29 @@ bool USweepByChannelComponent::DetectBallCollision()
 
 					FVector SmoothedLocation = FMath::VInterpTo(
 						Ball->GetActorLocation(),
-							FVector(TargetLocation.X, TargetLocation.Y, Ball->GetActorLocation().Z),
-							// Ajusta apenas X e Y
-							GetWorld()->GetDeltaSeconds(),
-							0.4f // Velocidade de interpolação
-						);
+						FVector(TargetLocation.X, TargetLocation.Y, Ball->GetActorLocation().Z),
+						// Ajusta apenas X e Y
+						GetWorld()->GetDeltaSeconds(),
+						0.4f // Velocidade de interpolação
+					);
 
-					DrawDebugLine(GetWorld(), SmoothedLocation, FVector(TargetLocation.X, TargetLocation.Y, Ball->GetActorLocation().Z), FColor::Yellow,
-								 false, 0.0f);
+					if (bIsDebugDrawLines)
+					{
+						DrawDebugLine(GetWorld(), SmoothedLocation,
+									  FVector(TargetLocation.X, TargetLocation.Y, Ball->GetActorLocation().Z),
+									  FColor::Yellow,
+									  false, 0.0f);
+					}
 
 					if (Ball->IsContact)
 					{
 						Ball->SetActorLocation(SmoothedLocation);
-						return true;
 					}
 				}
-
 				return true;
 			}
-
-			if (bIsDebugDrawLines)
-			{
-				// Desenhar a cápsula no mundo para depuração (opcional)
-				DrawDebugCapsule(GetWorld(), Start, CapsuleHalfHeight, CapsuleRadius, FQuat::Identity, FColor::Green,
-				                 false, 0.0f);
-			}
 		}
+		return false;
 	}
 	return false;
 }

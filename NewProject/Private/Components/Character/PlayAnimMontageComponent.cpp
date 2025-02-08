@@ -44,7 +44,7 @@ void UPlayAnimMontageComponent::StopDynamicMontage()
 
 	
 	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
-	AnimInstance->StopSlotAnimation(0.25, FName("DefaultSlot"));
+	AnimInstance->StopSlotAnimation(0.10, FName("DefaultSlot"));
 }
 
 void UPlayAnimMontageComponent::PlayDynamicMontage(UAnimSequence* AnimationSequence, FName SlotName, float PlayRate,
@@ -64,26 +64,27 @@ void UPlayAnimMontageComponent::PlayDynamicMontage(UAnimSequence* AnimationSeque
 		AnimInstance->DynamicMontage_IsPlayingFrom(AnimationSequence)
 	)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Animation is already playing!"));
+		UE_LOG(LogTemp, Error, TEXT("Animation is already playing!"));
 		return;
 	}
 
 	int32 LoopCount = 1;
 	if (Loop)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Entrou em loop!"));
-		LoopCount = 300;
+		UE_LOG(LogTemp, Error, TEXT("Entrou em loop!"));
+		LoopCount = 100;
 	}
 
+	StopDynamicMontage();
 	const UAnimMontage* DynamicMontage = AnimInstance->PlaySlotAnimationAsDynamicMontage(
 		AnimationSequence, // A sequência de animação que será reproduzida
 		SlotName, // Nome do slot no Animation Blueprint
-		0.25f, // BlendInTime (tempo para interpolar o início da animação)
-		0.25f, // BlendOutTime (tempo para interpolar o fim da animação)
+		0.20f, // BlendInTime (tempo para interpolar o início da animação)
+		0.10f, // BlendOutTime (tempo para interpolar o fim da animação)
 		PlayRate, // PlayRate (taxa de reprodução da animação)
 		LoopCount // LoopCount (número de vezes que a animação será executada)
 	);
-
+	
 	if (DynamicMontage)
 	{
 		if (NewPlayRate > 0.0f && TimeToChangePlayRate > 0.0f)

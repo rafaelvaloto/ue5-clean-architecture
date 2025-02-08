@@ -16,9 +16,13 @@ enum class EPlayerCharacterStateEnum : uint8
 
 	// States Actions
 	Controlling UMETA(DisplayName = "Controlling"), // Controlling
+	ControllingTrajectoryChange UMETA(DisplayName = "ControllingTrajectoryChange"), // Controlling
 	Tackle UMETA(DisplayName = "Tackle"), // Boote
 	TackleSlider UMETA(DisplayName = "TackleSlider"), // Carrinho
 
 	Attacking UMETA(DisplayName = "Attacking"), // Atacando
 	Jumping UMETA(DisplayName = "Jumping"), // Pulando
+
+	// Intervalo
+	Interval UMETA(DisplayName = "Interval"),
 };
