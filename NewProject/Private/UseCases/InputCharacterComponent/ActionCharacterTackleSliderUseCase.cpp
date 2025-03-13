@@ -11,11 +11,22 @@ void UActionCharacterTackleSliderUseCase::Handle(
 	const bool bIsStarted
 )
 {
-	if (bIsStarted && StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::TackleSlider)
+	if (
+		bIsStarted &&
+		(
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Controlling &&
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::ControllingTrajectoryChange &&
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle &&
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::TackleSlider
+		)
+	)
 	{
+		ESelectClosestBoneCharacterEnum DefineBoneAnim = ESelectClosestBoneCharacterEnum::LeftFoot;
+		if (UCurrentBallService::CurrentBall())
+		{
+			DefineBoneAnim = SelectBoneComponent->SelectClosestFootBoneToBall(UCurrentBallService::CurrentBall());
+		}
 
-		const ESelectClosestBoneCharacterEnum DefineBoneAnim =
-			SelectBoneComponent->SelectClosestFootBoneToBall(UCurrentBallService::CurrentBall());
 
 		TArray<UAnimSequence*> Animations = TArray<UAnimSequence*>();
 

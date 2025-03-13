@@ -6,9 +6,6 @@
 #include "InputAction.h"
 #include "GameFramework/PlayerController.h"
 #include "InputMappingContext.h"
-#include "Components/ForceFeedbackComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Microsoft/AllowMicrosoftPlatformTypes.h"
 #include "JogPlayerController.generated.h"
 
 
@@ -23,10 +20,9 @@ class NEWPROJECT_API AJogPlayerController : public APlayerController
 public:
 	AJogPlayerController();
 
-	virtual void Tick(float DeltaTime) override;
+	virtual void SetDisableHaptics(bool bNewDisabled) override;
 
-	static void CheckControllerState();
-	static void InitializeDirectInput(HWND hwnd);
+	virtual void Tick(float DeltaTime) override;
 
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
@@ -37,6 +33,7 @@ public:
 	void ControllRotationCanceled(const FInputActionValue& InputController);
 	void Tackle(const FInputActionValue& InputController);
 	void TackleSlider(const FInputActionValue& InputController);
+	void SetupDevice();
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Deafult Mapping Context")
@@ -56,7 +53,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input Actions")
 	UInputAction* IA_ControllRigth;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input Actions")
-	UForceFeedbackEffect* ForceFeedbackEffect;
 };

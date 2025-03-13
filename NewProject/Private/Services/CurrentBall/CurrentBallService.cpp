@@ -23,10 +23,12 @@ bool UCurrentBallService::IsServiceRegistered()
 
 AActor* UCurrentBallService::CurrentBall()
 {
+	if (!IsServiceRegistered() || !BallServiceInstance) return nullptr;
 	return BallServiceInstance->CurrentBall();
 }
 
 bool UCurrentBallService::IsContact()
 {
+	if (!IsServiceRegistered() || !BallServiceInstance) return false;
 	return BallServiceInstance->IsContact();
 }

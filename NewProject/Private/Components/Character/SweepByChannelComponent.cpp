@@ -55,8 +55,12 @@ bool USweepByChannelComponent::DetectBallCollision()
 	// Cria a forma da cápsula
 	FCollisionShape CapsuleShape = FCollisionShape::MakeCapsule(CapsuleRadius, CapsuleHalfHeight);
 
-	FCollisionQueryParams QueryParams(FName(TEXT("CapsuleSweep")), false, Actor);
-	QueryParams.AddIgnoredActor(Actor); // Ignorar o próprio jogador
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(Actor);
+	QueryParams.AddIgnoredActor(Character);
+	QueryParams.DefaultQueryParam.OwnerTag = TEXT("SweepByChannelComponent");
+	QueryParams.DefaultQueryParam.bIgnoreBlocks = true;
+	QueryParams.DefaultQueryParam.MobilityType = EQueryMobilityType::Dynamic;
 
 	// Configuração do QueryParams (detecção)
 	const FVector Start = PlayerLocation; // Ponto inicial da cápsula
@@ -64,30 +68,35 @@ bool USweepByChannelComponent::DetectBallCollision()
 
 	TArray<FHitResult> HitResults; // Vetor para armazenar todos os objetos atingidos no Sweep
 
+	FCollisionResponseParams ResponseParams;
+	ResponseParams.CollisionResponse = ECollisionResponse::ECR_Block;
+	ResponseParams.DefaultResponseParam = ECollisionResponse::ECR_Block;
+
 	// Realiza o Capsule Sweep
 	bool bHit = GetWorld()->SweepMultiByChannel(
-		HitResults, // Resultado do Sweep
-		Start, // Ponto inicial da cápsula
-		End, // Ponto final (fixo, sem movimento)
-		FQuat::Identity, // Orientação da cápsula
-		ECC_Visibility, // Canal de detecção (ajustar conforme necessário)
-		CapsuleShape, // Forma da cápsula
-		QueryParams // Configurações de traçado
+		HitResults,
+		Start,
+		End,
+		FQuat::Identity,
+		ECC_Visibility,
+		CapsuleShape,
+		QueryParams
 	);
 
 	if (bIsDebugDrawLines)
 	{
 		DrawDebugLine(GetWorld(), Start, End, FColor::Blue,
-				  false, 0.0f);
-		
+		              false, 0.0f);
+
 		DrawDebugCapsule(GetWorld(), Start, CapsuleHalfHeight, CapsuleRadius, FQuat::Identity, FColor::Green,
-						 false, 0.0f);
+		                 false, 0.0f);
 	}
-	
+
 	if (bHit)
 	{
 		for (const FHitResult& Hit : HitResults)
 		{
+			
 			// Verifica se o objeto atingido é a bola (`ABallStaticMeshActor`)
 			ABallStaticMeshActor* Ball = Cast<ABallStaticMeshActor>(Hit.GetActor());
 			if (Ball)
@@ -98,7 +107,10 @@ bool USweepByChannelComponent::DetectBallCollision()
 					                 false, 0.0f);
 				}
 
-				if (Character->UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling)
+				if (
+					Character->UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling ||
+					Character->UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::ControllingTrajectoryChange
+				)
 				{
 					ESelectClosestBoneCharacterEnum DefineBone = Character->ClosestBone->GetFoot();
 
@@ -111,31 +123,29 @@ bool USweepByChannelComponent::DetectBallCollision()
 					}
 
 					FVector TargetLocation = FootBoneLocation + (PlayerRotation.Vector() * 200.f);
-					// Ajuste de 50 unidades
-
 					FVector SmoothedLocation = FMath::VInterpTo(
 						Ball->GetActorLocation(),
 						FVector(TargetLocation.X, TargetLocation.Y, Ball->GetActorLocation().Z),
-						// Ajusta apenas X e Y
 						GetWorld()->GetDeltaSeconds(),
-						0.4f // Velocidade de interpolação
+						1.5f
 					);
 
 					if (bIsDebugDrawLines)
 					{
 						DrawDebugLine(GetWorld(), SmoothedLocation,
-									  FVector(TargetLocation.X, TargetLocation.Y, Ball->GetActorLocation().Z),
-									  FColor::Yellow,
-									  false, 0.0f);
-					}
-
-					if (Ball->IsContact)
-					{
-						Ball->SetActorLocation(SmoothedLocation);
+						              FVector(TargetLocation.X, TargetLocation.Y, Ball->GetActorLocation().Z),
+						              FColor::Yellow,
+						              false, 0.0f);
 					}
 				}
 				return true;
 			}
+			
+			if (!Hit.GetActor()->IsA(ABallStaticMeshActor::StaticClass()))
+			{
+				return false;	
+			}
+			return false;
 		}
 		return false;
 	}

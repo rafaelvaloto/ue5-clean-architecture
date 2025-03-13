@@ -5,21 +5,22 @@
 #include "Services/CurrentBall/CurrentBallService.h"
 
 void UCharacterControllBallUseCase::Handle(
+	const TScriptInterface<ISweepByChannelComponentInterface>& SweepChannel,
 	const TScriptInterface<ISelectClosestBoneCharacterComponentInterface>& SelectBoneComponent,
 	const TScriptInterface<IUpdateStateCharacterComponentInterface>& StateCharacterComponent,
 	const TScriptInterface<IPlayAnimMontageComponentInterface>& PlayAnimMontageComponent,
 	const TScriptInterface<ISelectorPoseSearchDatabaseInterface>& SelectorPoseSearchDatabase
 )
 {
+	const bool SweepDetect = SweepChannel->DetectBallCollision();
+
 	if (
+		SweepDetect &&
 		(
 			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Controlling &&
 			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::ControllingTrajectoryChange &&
-			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Interval
-		) ||
-		(
-			StateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling &&
-			StateCharacterComponent->GetPeviousState() == EPlayerCharacterStateEnum::ControllingTrajectoryChange
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle &&
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::TackleSlider
 		)
 	)
 	{
@@ -27,7 +28,7 @@ void UCharacterControllBallUseCase::Handle(
 		{
 			SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
 		}
-		
+
 		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Controlling);
 
 		ESelectClosestBoneCharacterEnum DefineBoneAnim = SelectBoneComponent->SelectClosestFootBoneToBall(
@@ -47,7 +48,7 @@ void UCharacterControllBallUseCase::Handle(
 			{
 				return;
 			}
-			
+
 			PlayAnimMontageComponent->PlayDynamicMontage(AnimSeq, FName("DefaultSlot"), 0.8f, 0.0f,
 			                                             0.0f, true);
 			return;
@@ -65,8 +66,23 @@ void UCharacterControllBallUseCase::Handle(
 		{
 			return;
 		}
-		
+
 		PlayAnimMontageComponent->PlayDynamicMontage(AnimSeq, FName("DefaultSlot"), 0.8f, 0.0f,
 		                                             0.0f, true);
+		return;
+	}
+
+	if (
+		!SweepDetect &&
+		(
+			StateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling ||
+			StateCharacterComponent->GetState() == EPlayerCharacterStateEnum::ControllingTrajectoryChange
+		)
+	)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Stop Controlling"));
+		PlayAnimMontageComponent->StopDynamicMontage();
+		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Idle);
+		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
 	}
 }

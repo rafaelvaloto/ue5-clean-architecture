@@ -12,14 +12,25 @@ void UActionCharacterTackleUseCase::Handle(
 	const bool bIsStarted
 )
 {
-	if (bIsStarted && StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle)
+	if (
+		bIsStarted &&
+		(
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Controlling &&
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::ControllingTrajectoryChange &&
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle &&
+			StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::TackleSlider
+		)
+	)
 	{
-		const ESelectClosestBoneCharacterEnum DefineBoneAnim =
-			SelectBoneComponent->SelectClosestFootBoneToBall(UCurrentBallService::CurrentBall());
-	
+		ESelectClosestBoneCharacterEnum DefineBoneAnim = ESelectClosestBoneCharacterEnum::LeftFoot;
+		if (UCurrentBallService::CurrentBall())
+		{
+			DefineBoneAnim = SelectBoneComponent->SelectClosestFootBoneToBall(UCurrentBallService::CurrentBall());
+		}
+
 		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Tackle);
 		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
-	
+
 		if (DefineBoneAnim == ESelectClosestBoneCharacterEnum::LeftFoot)
 		{
 			UAnimSequence* MyAnimationSequence = LoadObject<UAnimSequence>(
@@ -28,36 +39,38 @@ void UActionCharacterTackleUseCase::Handle(
 				));
 			if (MyAnimationSequence)
 			{
-				PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f, 0.0f, 0.0f, false);
+				PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f, 0.0f,
+				                                             0.0f, false);
 				return;
 			}
 		}
-	
+
 		UAnimSequence* MyAnimationSequence = LoadObject<UAnimSequence>(
 			nullptr, TEXT(
 				"/Game/Characters/UEFN_Mannequin/Animations/Roboot_A1/076_AA_Soccer_Player_Tackle_R.076_AA_Soccer_Player_Tackle_R"
 			));
 		if (MyAnimationSequence)
 		{
-			PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f, 0.0f, 0.0f, false);
+			PlayAnimMontageComponent->PlayDynamicMontage(MyAnimationSequence, FName("DefaultSlot"), 0.8f, 0.0f, 0.0f,
+			                                             false);
 		}
-	
+
 		return;
 	}
-	
+
 	if (StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("StateCharacterComponent->GetState() != EPlayerCharacterStateEnum::Tackle"));
 		return;
 	}
-	
+
 	if (StateCharacterComponent->GetPeviousState() == EPlayerCharacterStateEnum::Tackle)
 	{
 		SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
 		StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Idle);
 		return;
 	}
-	
+
 	SelectorPoseSearchDatabase->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
 	StateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Walking);
 }

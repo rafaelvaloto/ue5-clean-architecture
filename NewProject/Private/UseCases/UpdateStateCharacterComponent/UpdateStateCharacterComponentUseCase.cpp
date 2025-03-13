@@ -17,7 +17,6 @@ void UUpdateStateCharacterComponentUseCase::Handle
 	const float AccelerationCurrent = ComponentBaseAttributes->GetMagnitudeAcceleration();
 
 	if (
-		ComponentState->GetState() == EPlayerCharacterStateEnum::Interval ||
 		ComponentState->GetState() == EPlayerCharacterStateEnum::Tackle ||
 		ComponentState->GetState() == EPlayerCharacterStateEnum::TackleSlider ||
 		ComponentState->GetState() == EPlayerCharacterStateEnum::Controlling ||

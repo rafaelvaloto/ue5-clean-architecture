@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "NewProject/Interfaces/CharacterComponents/InputCharacterInterface.h"
+#include "NewProject/Interfaces/CharacterComponents/UpdateStateCharacterComponentInterface.h"
 #include "UObject/Object.h"
 #include "MovementCharacterControlYawUseCase.generated.h"
 
@@ -18,6 +19,7 @@ class NEWPROJECT_API UMovementCharacterControlYawUseCase : public UObject
 public:
 	static void Handle(
 		const TScriptInterface<IInputCharacterInterface>& MovementComponent,
+		const TScriptInterface<IUpdateStateCharacterComponentInterface>& StateComponent,
 		const float InputValue
 	);
 };

@@ -6,7 +6,7 @@ public class NewProject : ModuleRules
 {
 	public NewProject(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PrivateDependencyModuleNames.AddRange(new string[] { "AITestSuite" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "AITestSuite"});
 
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -16,20 +16,12 @@ public class NewProject : ModuleRules
 			"Engine",
 			"CoreUObject",
 			"InputCore",
-			"InputDevice",
 			"EnhancedInput",
-			"XInput",
-			"XInputDevice",
 			"PoseSearch",
 			"MotionWarping",
 			"MotionTrajectory",
-			"IKRig",
+			"IKRig", "WindowsDualsense_ds5w",
 		});
-		
-		PublicSystemLibraries.Add("xinput.lib");
-		
-		PublicSystemLibraries.Add("dinput8.lib");
-		PublicSystemLibraries.Add("dxguid.lib");
 
 		// PrivateDependencyModuleNames.AddRange(new string[] {  });
 

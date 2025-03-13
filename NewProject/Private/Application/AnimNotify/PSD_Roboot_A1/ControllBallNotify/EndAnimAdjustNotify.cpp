@@ -13,6 +13,6 @@ void UEndAnimAdjustNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenc
 	APlayerCharacter* Character = Cast<APlayerCharacter>(MeshComp->GetOwner());
 	if (!Character) return;
 
-	Character->UpdateStateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Controlling);
-	Character->SelectorPoseSearchDatabaseComponent->SetInterruptMode(EPoseSearchInterruptMode::ForceInterrupt);
+	Character->SelectorPoseSearchDatabaseComponent->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
+	Character->UpdateStateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Interval);
 }

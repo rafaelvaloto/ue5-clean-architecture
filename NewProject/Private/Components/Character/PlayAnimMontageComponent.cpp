@@ -64,14 +64,12 @@ void UPlayAnimMontageComponent::PlayDynamicMontage(UAnimSequence* AnimationSeque
 		AnimInstance->DynamicMontage_IsPlayingFrom(AnimationSequence)
 	)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Animation is already playing!"));
 		return;
 	}
 
 	int32 LoopCount = 1;
 	if (Loop)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Entrou em loop!"));
 		LoopCount = 100;
 	}
 
@@ -97,7 +95,6 @@ void UPlayAnimMontageComponent::PlayDynamicMontage(UAnimSequence* AnimationSeque
 				{
 					if (AnimInstance && DynamicMontage)
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Dynamic Montage started change play rate!"));
 						AnimInstance->Montage_SetPlayRate(DynamicMontage, NewPlayRate);
 					}
 				},
@@ -105,8 +102,6 @@ void UPlayAnimMontageComponent::PlayDynamicMontage(UAnimSequence* AnimationSeque
 				false // Não repete
 			);
 		}
-
-		UE_LOG(LogTemp, Warning, TEXT("Dynamic Montage started successfully!"));
 	}
 }
 

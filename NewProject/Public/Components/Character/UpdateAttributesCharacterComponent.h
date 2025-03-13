@@ -31,6 +31,7 @@ public:
 
 	virtual void SetLocationCurrent(const FVector LocationAt) override;
 	virtual void SetVelocityCurrent(const FVector VelocityAt) override;
+	virtual FVector GetComponentActorForwardVector() override;
 	
 	virtual FVector GetVelocityCurrent() override;
 	virtual FVector GetPreviousVelocity() override;

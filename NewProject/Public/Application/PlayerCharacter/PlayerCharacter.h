@@ -48,6 +48,9 @@ public:
 
 	FTimerHandle CollisionCheckTimer;
 	float CollisionCheckInterval;
+
+	
+
 	
 	void CheckBallCollisionAndControlling(float DeltaTime);
 

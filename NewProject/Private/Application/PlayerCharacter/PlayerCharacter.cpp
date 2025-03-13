@@ -14,8 +14,8 @@
 #include "UseCases/UpdateStateCharacterComponent/UpdateStateCharacterComponentUseCase.h"
 #include "UseCases/UpdateAttributesCharacterComponent/UpdateAttributesCharacterComponentUseCase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Haptics/HapticFeedbackEffect_Base.h"
 #include "UseCases/CharacterControllBall/CharacterChangeAnimMontageDirectionUseCase.h"
-#include "UseCases/CharacterControllBall/CharacterChangeDirectionControllBallUseCase.h"
 #include "UseCases/CharacterControllBall/CharacterControllBallUseCase.h"
 
 // Sets default values
@@ -38,62 +38,35 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->BrakingDecelerationWalking = 100.0f;
 
 	GetRootComponent()->SetWorldScale3D(FVector(0.8f, 0.8f, 0.8f));
+
+	
 }
 
 
 // Called when the game starts or when spawned
 void APlayerCharacter::CheckBallCollisionAndControlling(const float DeltaTime)
 {
-
 	if (
-				UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling ||
-				UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::ControllingTrajectoryChange ||
-				UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Interval
-			)
+		UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling ||
+		UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::ControllingTrajectoryChange
+	)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = 320.0f;
 	}
 	else
 	{
-		GetCharacterMovement()->MaxWalkSpeed = 500.0f;
+		GetCharacterMovement()->MaxWalkSpeed = 400.0f;
 	}
-	
-	if (!SweepByChannel->DetectBallCollision())
-	{
-		if (
-			UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::Controlling ||
-			UpdateStateCharacterComponent->GetState() == EPlayerCharacterStateEnum::ControllingTrajectoryChange
-		)
-		{
-			UpdateStateCharacterComponent->SetCurrentState(EPlayerCharacterStateEnum::Walking);
-			SelectorPoseSearchDatabaseComponent->SetInterruptMode(EPoseSearchInterruptMode::DoNotInterrupt);
-		}
 
-		// Update Machine State Character, Idle, Walk etc..
-		UUpdateStateCharacterComponentUseCase::Handle(UpdateStateCharacterComponent, UpdatedBaseAttributesComponent);
-	}
-	else
-	{
-		UCharacterChangeDirectionControllBallUseCase::Handle(
-			UpdatedBaseAttributesComponent,
-			UpdateStateCharacterComponent
+	UCharacterControllBallUseCase::Handle(
+		SweepByChannel,
+		ClosestBone,
+		UpdateStateCharacterComponent,
+		PlayAnimMontageComponent,
+		SelectorPoseSearchDatabaseComponent
 		);
 
-		UCharacterChangeAnimMontageDirectionUseCase::Handle(
-			ClosestBone,
-			UpdateStateCharacterComponent,
-			PlayAnimMontageComponent,
-			SelectorPoseSearchDatabaseComponent,
-			LastPosition
-		);
-
-		UCharacterControllBallUseCase::Handle(
-			ClosestBone,
-			UpdateStateCharacterComponent,
-			PlayAnimMontageComponent,
-			SelectorPoseSearchDatabaseComponent
-		);
-	}
+	UUpdateStateCharacterComponentUseCase::Handle(UpdateStateCharacterComponent, UpdatedBaseAttributesComponent);
 
 	// Update Persistent Attrs Character, Velocity, Location etc..
 	UUpdateAttributesCharacterComponentUseCase::Handle(UpdatedBaseAttributesComponent, this);
@@ -114,6 +87,8 @@ void APlayerCharacter::BeginPlay()
 	// 	true
 	// );
 
+
+	
 	GetCapsuleComponent()->SetVisibility(true);
 	GetCapsuleComponent()->SetHiddenInGame(true);
 
@@ -129,8 +104,6 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-
 	if (StartInpulse)
 	{
 		const FRotator CharacterRotation = GetOwner()->GetActorRotation(); // Rotação do personagem
